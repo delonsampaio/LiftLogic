@@ -16,4 +16,12 @@ struct WeightUnitTests {
         #expect(WeightUnit.lbs.symbol == "lbs")
         #expect(WeightUnit.kg.symbol == "kg")
     }
+    @Test func roundTripIsApproximate() {
+        let original = 100.0
+        let roundTripped = WeightUnit.kg.convert(
+            WeightUnit.lbs.convert(original, to: .kg),
+            to: .lbs
+        )
+        #expect(abs(roundTripped - original) < 0.1)
+    }
 }

@@ -1,4 +1,4 @@
-enum AppMode: String, CaseIterable {
+enum AppMode: String, Codable, CaseIterable {
     case calc, warmup, oneRM, reverse
 
     var displayName: String {

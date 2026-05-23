@@ -5,10 +5,8 @@ enum WeightUnit: String, Codable, CaseIterable {
 
     func convert(_ value: Double, to other: WeightUnit) -> Double {
         guard self != other else { return value }
-        switch (self, other) {
-        case (.lbs, .kg): return (value * 0.453592 * 100).rounded() / 100
-        case (.kg, .lbs): return (value * 2.20462 * 100).rounded() / 100
-        default: return value
-        }
+        let inKg = self == .lbs ? value * 0.453592 : value
+        let result = other == .lbs ? inKg * 2.20462 : inKg
+        return (result * 100).rounded() / 100
     }
 }
