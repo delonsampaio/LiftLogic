@@ -15,7 +15,10 @@ struct OneRMEngineTests {
     }
     @Test func averageIsHalfSum() {
         let result = OneRMEngine.calculate(weight: 100, reps: 10)
-        #expect(abs(result.average - (result.epley + result.brzycki) / 2) < 0.001)
+        let expectedEpley   = 100.0 * (1 + 10.0 / 30)
+        let expectedBrzycki = 100.0 * 36 / (37.0 - 10)
+        let expectedAverage = (expectedEpley + expectedBrzycki) / 2
+        #expect(abs(result.average - expectedAverage) < 0.001)
     }
     @Test func repsClampedAtMax() {
         let result = OneRMEngine.calculate(weight: 100, reps: 40)
