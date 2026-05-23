@@ -1,0 +1,60 @@
+import SwiftUI
+
+struct NumpadView: View {
+    let vm: CalculatorViewModel
+
+    private let keys: [[String]] = [
+        ["7", "8", "9"],
+        ["4", "5", "6"],
+        ["1", "2", "3"],
+        [".", "0", "⌫"]
+    ]
+
+    var body: some View {
+        VStack(spacing: 8) {
+            ForEach(keys, id: \.self) { row in
+                HStack(spacing: 8) {
+                    ForEach(row, id: \.self) { key in
+                        NumpadKeyView(key: key) {
+                            if key == "⌫" {
+                                vm.deleteLastDigit()
+                            } else {
+                                vm.appendDigit(key)
+                            }
+                            HapticManager.shared.numpadKey()
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+struct NumpadKeyView: View {
+    let key: String
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            ZStack {
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(Color(white: 0.13))
+                Text(key)
+                    .font(ThemeTokens.numpadFont)
+                    .foregroundStyle(ThemeTokens.textPrimary)
+            }
+        }
+        .buttonStyle(NumpadButtonStyle())
+        .frame(maxWidth: .infinity)
+        .frame(height: 60)
+    }
+}
+
+struct NumpadButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? 0.93 : 1.0)
+            .opacity(configuration.isPressed ? 0.8 : 1.0)
+            .animation(.spring(response: 0.15, dampingFraction: 0.7), value: configuration.isPressed)
+    }
+}
