@@ -31,17 +31,30 @@ enum BarType: String, Codable, CaseIterable, Identifiable {
     }
 
     func weight(in unit: WeightUnit) -> Double {
-        let lbs: Double
         switch self {
-        case .olympic45lb:  lbs = 45
-        case .olympic35lb:  lbs = 35
-        case .olympic20kg:  lbs = 44.09
-        case .olympic15kg:  lbs = 33.07
-        case .trapHex:      lbs = 55
-        case .safetySquat:  lbs = 65
-        case .ezCurl:       lbs = 25
-        case .custom:       lbs = 0  // CalculatorViewModel resolves the actual weight
+        case .olympic45lb:
+            let lbs = 45.0
+            return unit == .lbs ? lbs : WeightUnit.lbs.convert(lbs, to: .kg)
+        case .olympic35lb:
+            let lbs = 35.0
+            return unit == .lbs ? lbs : WeightUnit.lbs.convert(lbs, to: .kg)
+        case .olympic20kg:
+            let kg = 20.0
+            return unit == .kg ? kg : WeightUnit.kg.convert(kg, to: .lbs)
+        case .olympic15kg:
+            let kg = 15.0
+            return unit == .kg ? kg : WeightUnit.kg.convert(kg, to: .lbs)
+        case .trapHex:
+            let lbs = 55.0
+            return unit == .lbs ? lbs : WeightUnit.lbs.convert(lbs, to: .kg)
+        case .safetySquat:
+            let lbs = 65.0
+            return unit == .lbs ? lbs : WeightUnit.lbs.convert(lbs, to: .kg)
+        case .ezCurl:
+            let lbs = 25.0
+            return unit == .lbs ? lbs : WeightUnit.lbs.convert(lbs, to: .kg)
+        case .custom:
+            return 0
         }
-        return unit == .lbs ? lbs : WeightUnit.lbs.convert(lbs, to: .kg)
     }
 }

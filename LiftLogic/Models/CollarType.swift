@@ -9,6 +9,7 @@ enum CollarType: String, Codable, CaseIterable {
         }
     }
 
+    // lbs and kg values are independent rounded constants, not conversions — intentional for friendly display
     func weightPerCollar(in unit: WeightUnit) -> Double {
         switch self {
         case .none:        return 0
