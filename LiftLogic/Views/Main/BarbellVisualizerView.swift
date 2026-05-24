@@ -124,11 +124,26 @@ struct BarbellVisualizerView: View {
     @ViewBuilder
     private func plateView(_ plate: LoadedPlate) -> some View {
         let height = plateHeight(plate.weight)
-        RoundedRectangle(cornerRadius: 3)
-            .fill(ThemeTokens.plateColor(for: plate.weight, unit: settings.unit))
-            .frame(width: plateWidth(plate.weight), height: height)
-            .shadow(color: .black.opacity(0.5), radius: 2, x: 1, y: 2)
-            .animation(.spring(response: 0.3, dampingFraction: 0.75), value: plates.count)
+        let width = plateWidth(plate.weight)
+        ZStack {
+            RoundedRectangle(cornerRadius: 3)
+                .fill(ThemeTokens.plateColor(for: plate.weight, unit: settings.unit))
+                .shadow(color: .black.opacity(0.5), radius: 2, x: 1, y: 2)
+            if height >= 30 {
+                Text(formatPlateLabel(plate.weight))
+                    .font(.system(size: 7, weight: .bold))
+                    .foregroundStyle(.white.opacity(0.85))
+                    .rotationEffect(.degrees(-90))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.5)
+            }
+        }
+        .frame(width: width, height: height)
+        .animation(.spring(response: 0.3, dampingFraction: 0.75), value: plates.count)
+    }
+
+    private func formatPlateLabel(_ weight: Double) -> String {
+        weight.truncatingRemainder(dividingBy: 1) == 0 ? "\(Int(weight))" : "\(weight)"
     }
 
     private func plateHeight(_ weight: Double) -> CGFloat {

@@ -25,6 +25,17 @@ struct ReadoutView: View {
         return String(format: "%.2f× bodyweight", ratio)
     }
 
+    private var secondaryUnitText: String? {
+        guard displayWeight > 0 else { return nil }
+        if settings.unit == .lbs {
+            let kg = displayWeight / 2.20462
+            return String(format: "%.1f kg", kg)
+        } else {
+            let lbs = displayWeight * 2.20462
+            return String(format: "%.1f lbs", lbs)
+        }
+    }
+
     var body: some View {
         VStack(spacing: 4) {
             HStack(alignment: .firstTextBaseline, spacing: 8) {
@@ -50,6 +61,12 @@ struct ReadoutView: View {
                 Text(text)
                     .font(ThemeTokens.readoutSubFont)
                     .foregroundStyle(ThemeTokens.accentPro)
+            } else if let text = secondaryUnitText {
+                Text(text)
+                    .font(.system(size: 15, weight: .medium, design: .monospaced))
+                    .foregroundStyle(ThemeTokens.textMuted)
+                    .contentTransition(.numericText())
+                    .animation(.spring(response: 0.3, dampingFraction: 0.8), value: displayWeight)
             }
         }
         .padding(.horizontal)
