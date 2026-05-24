@@ -14,7 +14,3 @@ struct ReverseModeView: View {
     let vm: CalculatorViewModel; let settings: AppSettings
     var body: some View { Text("Reverse — Pro").foregroundStyle(.white) }
 }
-struct ProPaywallView: View {
-    let settings: AppSettings
-    var body: some View { Text("Pro Paywall").foregroundStyle(.white) }
-}
