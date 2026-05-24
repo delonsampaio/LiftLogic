@@ -36,6 +36,14 @@ struct MainView: View {
 
                     Spacer()
 
+                    Button {
+                        ShareService.share(vm: vm, settings: settings)
+                    } label: {
+                        Image(systemName: "square.and.arrow.up")
+                            .font(.system(size: 20))
+                            .foregroundStyle(ThemeTokens.textMuted)
+                    }
+
                     if settings.isPro {
                         Button {
                             showSavedSetups = true
