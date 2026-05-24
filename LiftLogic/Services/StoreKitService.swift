@@ -4,7 +4,7 @@ import Observation
 @Observable
 @MainActor
 final class StoreKitService {
-    static let proProductID = "com.yourcompany.liftlogic.pro"
+    static let proProductID = "com.DelonSampaio.LiftLogic.pro"
 
     var product: Product?
     var isPurchasing = false
