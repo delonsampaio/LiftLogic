@@ -18,16 +18,16 @@ enum ThemeTokens {
     // Warning
     static let warningAmber = Color(red: 0.95, green: 0.61, blue: 0.07)
 
-    // Plate colors (IWF-inspired: red=heavy, blue=35, yellow=25, white=10, green=5, gray=2.5)
+    // Plate colors — thresholds in lbs (45 lb / 20 kg = 44.1 lbs)
     static func plateColor(for weight: Double, unit: WeightUnit) -> Color {
-        let lbsWeight = unit == .lbs ? weight : WeightUnit.kg.convert(weight, to: .lbs)
-        switch lbsWeight {
-        case 99...:       return Color(red: 0.8, green: 0.1, blue: 0.1)   // red   — 45s
-        case 75..<99:     return Color(red: 0.1, green: 0.3, blue: 0.8)   // blue  — 35s
-        case 50..<75:     return Color(red: 0.9, green: 0.75, blue: 0.1)  // yellow — 25s
-        case 20..<50:     return Color(white: 0.85)                        // white — 10s
-        case 9..<20:      return Color(red: 0.1, green: 0.6, blue: 0.15)  // green — 5s
-        default:          return Color(white: 0.5)                         // gray  — 2.5s
+        let lbs = unit == .lbs ? weight : WeightUnit.kg.convert(weight, to: .lbs)
+        switch lbs {
+        case 44...:   return Color(red: 0.8, green: 0.1, blue: 0.1)   // red    — 45 lb / 20 kg
+        case 33..<44: return Color(red: 0.1, green: 0.3, blue: 0.8)   // blue   — 35 lb / 15 kg
+        case 22..<33: return Color(red: 0.9, green: 0.75, blue: 0.1)  // yellow — 25 lb / 10 kg
+        case 9..<22:  return Color(white: 0.88)                        // white  — 10 lb / 5 kg
+        case 4..<9:   return Color(red: 0.1, green: 0.6, blue: 0.15)  // green  — 5 lb / 2.5 kg
+        default:      return Color(white: 0.5)                         // gray   — 2.5 lb / 1.25 kg
         }
     }
 

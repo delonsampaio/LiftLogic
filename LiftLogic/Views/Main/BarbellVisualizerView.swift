@@ -12,12 +12,35 @@ struct BarbellVisualizerView: View {
 
     var body: some View {
         GeometryReader { geo in
-            ZStack {
-                // Bar sleeve (center)
+            ZStack(alignment: .center) {
+                // Ground shadow
+                Ellipse()
+                    .fill(Color.black.opacity(0.25))
+                    .frame(width: geo.size.width * 0.72, height: 6)
+                    .blur(radius: 5)
+                    .offset(y: 30)
+
+                // Main bar shaft
                 RoundedRectangle(cornerRadius: 4)
                     .fill(Color(white: 0.55))
                     .frame(width: geo.size.width * 0.85, height: 10)
                     .shadow(color: .black.opacity(0.6), radius: 4, x: 0, y: 3)
+
+                // Sleeve end caps — lighter, slightly taller, extend past the plates
+                HStack {
+                    RoundedRectangle(cornerRadius: 3)
+                        .fill(Color(white: 0.72))
+                        .frame(width: geo.size.width * 0.075, height: 15)
+                        .padding(.leading, geo.size.width * 0.055)
+                    Spacer()
+                }
+                HStack {
+                    Spacer()
+                    RoundedRectangle(cornerRadius: 3)
+                        .fill(Color(white: 0.72))
+                        .frame(width: geo.size.width * 0.075, height: 15)
+                        .padding(.trailing, geo.size.width * 0.055)
+                }
 
                 // Center collar marks
                 HStack(spacing: geo.size.width * 0.85 - 40) {
@@ -29,23 +52,23 @@ struct BarbellVisualizerView: View {
                         .frame(width: 6, height: 24)
                 }
 
-                // Plates — right side
+                // Plates — right side (inset so sleeve tip stays visible)
                 HStack(spacing: 0) {
                     Spacer()
                     plateStackView(plates: plates, mirrored: false)
-                        .padding(.trailing, geo.size.width * 0.075)
+                        .padding(.trailing, geo.size.width * 0.115)
                 }
 
                 // Plates — left side (mirrored)
                 HStack(spacing: 0) {
                     plateStackView(plates: plates, mirrored: true)
-                        .padding(.leading, geo.size.width * 0.075)
+                        .padding(.leading, geo.size.width * 0.115)
                     Spacer()
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
-        .frame(height: 100)
+        .frame(height: 110)
         .offset(x: swipeOffset)
         .gesture(
             DragGesture()
@@ -88,17 +111,21 @@ struct BarbellVisualizerView: View {
     private func plateHeight(_ weight: Double) -> CGFloat {
         let lbs = settings.unit == .lbs ? weight : WeightUnit.kg.convert(weight, to: .lbs)
         switch lbs {
-        case 99...:   return 80
-        case 75..<99: return 72
-        case 50..<75: return 64
-        case 20..<50: return 52
-        case 9..<20:  return 42
-        default:      return 34
+        case 44...:   return 76
+        case 33..<44: return 64
+        case 22..<33: return 54
+        case 9..<22:  return 40
+        case 4..<9:   return 30
+        default:      return 22
         }
     }
 
     private func plateWidth(_ weight: Double) -> CGFloat {
         let lbs = settings.unit == .lbs ? weight : WeightUnit.kg.convert(weight, to: .lbs)
-        return lbs >= 45 ? 14 : 10
+        switch lbs {
+        case 44...:   return 16
+        case 22..<44: return 13
+        default:      return 10
+        }
     }
 }

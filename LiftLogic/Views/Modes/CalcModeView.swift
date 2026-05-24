@@ -92,8 +92,8 @@ struct CalcModeView: View {
         let grouped = vm.plateResult.grouped
         let parts = grouped.map { "\($0.count)× \(formatPlateWeight($0.weight))" }
         return Text(parts.joined(separator: " · "))
-            .font(.system(size: 13, weight: .medium, design: .monospaced))
-            .foregroundStyle(ThemeTokens.textMuted)
+            .font(.system(size: 15, weight: .medium, design: .monospaced))
+            .foregroundStyle(ThemeTokens.textSecondary)
             .lineLimit(1)
             .minimumScaleFactor(0.7)
     }
