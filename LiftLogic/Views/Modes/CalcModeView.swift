@@ -6,6 +6,18 @@ struct CalcModeView: View {
 
     var body: some View {
         VStack(spacing: 12) {
+            // Empty state
+            if vm.targetWeight == 0 {
+                EmptyStateView()
+                    .transition(.opacity)
+            }
+
+            // Smart add delta banner
+            if let delta = vm.deltaResult, !delta.platesPerSide.isEmpty {
+                smartAddBanner(delta: delta)
+                    .transition(.opacity.combined(with: .move(edge: .top)))
+            }
+
             // Quick increment row
             HStack(spacing: 16) {
                 Button {
@@ -55,6 +67,23 @@ struct CalcModeView: View {
         .onChange(of: vm.targetWeight) { _, new in
             if new > 0 { vm.commitWeight() }
         }
+    }
+
+    private func smartAddBanner(delta: PlateResult) -> some View {
+        let grouped = delta.grouped
+        let parts = grouped.map { "\($0.count)× \(formatPlateWeight($0.weight))" }
+        let isAdding = vm.isDeltaAdding
+        let color = isAdding ? ThemeTokens.accent : ThemeTokens.warningAmber
+        return HStack(spacing: 6) {
+            Image(systemName: isAdding ? "plus.circle.fill" : "minus.circle.fill")
+                .font(.system(size: 13))
+                .foregroundStyle(color)
+            Text("\(isAdding ? "Add" : "Remove") per side: \(parts.joined(separator: " + "))")
+                .font(.system(size: 13, weight: .medium, design: .monospaced))
+                .foregroundStyle(color)
+            Spacer()
+        }
+        .padding(.horizontal)
     }
 
     @ViewBuilder

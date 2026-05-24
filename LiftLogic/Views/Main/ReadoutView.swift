@@ -33,6 +33,8 @@ struct ReadoutView: View {
                     .foregroundStyle(isAmber ? ThemeTokens.warningAmber : ThemeTokens.textPrimary)
                     .contentTransition(.numericText())
                     .animation(.spring(response: 0.3, dampingFraction: 0.8), value: displayWeight)
+                    .minimumScaleFactor(0.4)
+                    .lineLimit(1)
 
                 Text(settings.unit.symbol)
                     .font(.system(size: 24, weight: .semibold))

@@ -5,6 +5,7 @@ struct BarbellVisualizerView: View {
     let settings: AppSettings
 
     @State private var swipeOffset: CGFloat = 0
+    @State private var pulseScale: CGFloat = 1.0
 
     private var plates: [LoadedPlate] {
         vm.currentMode == .reverse ? vm.reversePlateStack : vm.plateResult.platesPerSide
@@ -69,16 +70,38 @@ struct BarbellVisualizerView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .frame(height: 110)
+        .scaleEffect(pulseScale)
         .offset(x: swipeOffset)
+        .onChange(of: plates.count) { _, _ in
+            withAnimation(.spring(response: 0.18, dampingFraction: 0.35)) { pulseScale = 1.05 }
+            withAnimation(.spring(response: 0.3, dampingFraction: 0.6).delay(0.12)) { pulseScale = 1.0 }
+        }
         .gesture(
             DragGesture()
                 .onChanged { swipeOffset = $0.translation.width * 0.3 }
                 .onEnded { _ in
-                    withAnimation(.spring(response: 0.4, dampingFraction: 0.6)) {
-                        swipeOffset = 0
-                    }
+                    withAnimation(.spring(response: 0.4, dampingFraction: 0.6)) { swipeOffset = 0 }
                     vm.resetWeight()
                     HapticManager.shared.swipeReset()
+                }
+        )
+        .simultaneousGesture(
+            TapGesture(count: 2)
+                .onEnded {
+                    vm.resetWeight()
+                    HapticManager.shared.swipeReset()
+                }
+        )
+        .simultaneousGesture(
+            LongPressGesture(minimumDuration: 0.55)
+                .onEnded { _ in
+                    HapticManager.shared.swipeReset()
+                    withAnimation(.spring(response: 0.3, dampingFraction: 0.85)) { swipeOffset = 440 }
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.22) { vm.resetWeight() }
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.28) {
+                        swipeOffset = -18
+                        withAnimation(.spring(response: 0.5, dampingFraction: 0.7)) { swipeOffset = 0 }
+                    }
                 }
         )
     }

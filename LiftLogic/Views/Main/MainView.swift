@@ -1,4 +1,5 @@
 import SwiftUI
+import StoreKit
 
 struct MainView: View {
     @State private var settings = AppSettings()
@@ -7,6 +8,7 @@ struct MainView: View {
     @State private var showSettings = false
     @State private var showSavedSetups = false
     @State private var showTimer = false
+    @Environment(\.requestReview) private var requestReview
 
     init() {
         let s = AppSettings()
@@ -115,6 +117,17 @@ struct MainView: View {
         .sheet(isPresented: $showTimer) {
             RestTimerView(isPresented: $showTimer)
                 .presentationDetents([.medium])
+        }
+        .onAppear {
+            UIApplication.shared.isIdleTimerDisabled = true
+        }
+        .onDisappear {
+            UIApplication.shared.isIdleTimerDisabled = false
+        }
+        .onChange(of: settings.successfulCalculationCount) { _, count in
+            if count == 5 || count == 20 || count == 75 {
+                requestReview()
+            }
         }
     }
 

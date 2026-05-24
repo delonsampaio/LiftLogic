@@ -29,6 +29,11 @@ final class AppSettings {
         didSet { UserDefaults.standard.set(isPro, forKey: "isPro") }
     }
 
+    // App engagement — used for review prompt
+    var successfulCalculationCount: Int {
+        didSet { UserDefaults.standard.set(successfulCalculationCount, forKey: "successfulCalculationCount") }
+    }
+
     // Pro features
     var bodyWeight: Double {
         didSet { UserDefaults.standard.set(bodyWeight, forKey: "bodyWeight") }
@@ -48,6 +53,7 @@ final class AppSettings {
         lbsInventory = loadInventory(key: "lbsInventoryJSON") ?? AppSettings.defaultLbs
         kgInventory = loadInventory(key: "kgInventoryJSON") ?? AppSettings.defaultKg
         isPro = ud.bool(forKey: "isPro")
+        successfulCalculationCount = ud.integer(forKey: "successfulCalculationCount")
         bodyWeight = ud.double(forKey: "bodyWeight")
         recentWeights = loadDoubleArray(key: "recentWeights") ?? []
         savedSetups = loadCodable([SavedSetup].self, key: "savedSetupsJSON") ?? []

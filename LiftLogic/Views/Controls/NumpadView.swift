@@ -34,19 +34,25 @@ struct NumpadKeyView: View {
     let key: String
     let action: () -> Void
 
+    private var isDelete: Bool { key == "⌫" }
+
     var body: some View {
         Button(action: action) {
             ZStack {
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(Color(white: 0.13))
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(Color(white: 0.16))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 16)
+                            .strokeBorder(Color(white: 0.30).opacity(0.5), lineWidth: 0.5)
+                    )
                 Text(key)
                     .font(ThemeTokens.numpadFont)
-                    .foregroundStyle(ThemeTokens.textPrimary)
+                    .foregroundStyle(isDelete ? ThemeTokens.warningAmber : ThemeTokens.textPrimary)
             }
         }
         .buttonStyle(NumpadButtonStyle())
         .frame(maxWidth: .infinity)
-        .frame(height: 60)
+        .frame(height: 62)
     }
 }
 
