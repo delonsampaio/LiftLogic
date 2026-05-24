@@ -18,7 +18,3 @@ struct ProPaywallView: View {
     let settings: AppSettings
     var body: some View { Text("Pro Paywall").foregroundStyle(.white) }
 }
-struct SettingsView: View {
-    let settings: AppSettings; let vm: CalculatorViewModel
-    var body: some View { Text("Settings").foregroundStyle(.white) }
-}
