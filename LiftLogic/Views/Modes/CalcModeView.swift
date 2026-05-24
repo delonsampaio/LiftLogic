@@ -42,6 +42,13 @@ struct CalcModeView: View {
             }
             .padding(.horizontal, 24)
 
+            // Plate breakdown — shown before numpad so it's immediately visible
+            if !vm.plateResult.platesPerSide.isEmpty {
+                plateBreakdownView
+                    .padding(.horizontal)
+                    .transition(.opacity)
+            }
+
             // Recent weights chips
             if !settings.recentWeights.isEmpty {
                 ScrollView(.horizontal, showsIndicators: false) {
@@ -57,12 +64,6 @@ struct CalcModeView: View {
             // Numpad
             NumpadView(vm: vm)
                 .padding(.horizontal)
-
-            // Plate breakdown summary
-            if !vm.plateResult.platesPerSide.isEmpty {
-                plateBreakdownView
-                    .padding(.horizontal)
-            }
         }
         .onChange(of: vm.targetWeight) { _, new in
             if new > 0 { vm.commitWeight() }
@@ -120,11 +121,12 @@ struct CalcModeView: View {
     private var plateBreakdownView: some View {
         let grouped = vm.plateResult.grouped
         let parts = grouped.map { "\($0.count)× \(formatPlateWeight($0.weight))" }
-        return Text(parts.joined(separator: " · "))
-            .font(.system(size: 15, weight: .medium, design: .monospaced))
-            .foregroundStyle(ThemeTokens.textSecondary)
+        return Text(parts.joined(separator: "  ·  "))
+            .font(.system(size: 17, weight: .semibold, design: .monospaced))
+            .foregroundStyle(ThemeTokens.textPrimary.opacity(0.75))
             .lineLimit(1)
-            .minimumScaleFactor(0.7)
+            .minimumScaleFactor(0.6)
+            .frame(maxWidth: .infinity, alignment: .center)
     }
 
     private func formatPlateWeight(_ w: Double) -> String {
