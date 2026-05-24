@@ -6,6 +6,7 @@ struct MainView: View {
     @State private var showPaywall = false
     @State private var showSettings = false
     @State private var showSavedSetups = false
+    @State private var showTimer = false
 
     init() {
         let s = AppSettings()
@@ -40,6 +41,15 @@ struct MainView: View {
                         ShareService.share(vm: vm, settings: settings)
                     } label: {
                         Image(systemName: "square.and.arrow.up")
+                            .font(.system(size: 20))
+                            .foregroundStyle(ThemeTokens.textMuted)
+                    }
+
+                    Button {
+                        guard settings.isPro else { showPaywall = true; return }
+                        showTimer = true
+                    } label: {
+                        Image(systemName: "timer")
                             .font(.system(size: 20))
                             .foregroundStyle(ThemeTokens.textMuted)
                     }
@@ -98,6 +108,13 @@ struct MainView: View {
         }
         .sheet(isPresented: $showSettings) {
             SettingsView(settings: settings, vm: vm)
+        }
+        .sheet(isPresented: $showSavedSetups) {
+            SavedSetupsView(settings: settings, vm: vm)
+        }
+        .sheet(isPresented: $showTimer) {
+            RestTimerView(isPresented: $showTimer)
+                .presentationDetents([.medium])
         }
     }
 
