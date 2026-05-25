@@ -120,21 +120,22 @@ struct CalcModeView: View {
 
     private var plateBreakdownView: some View {
         let grouped = vm.plateResult.grouped
-        return HStack(spacing: 10) {
-            ForEach(grouped, id: \.weight) { group in
-                HStack(spacing: 5) {
-                    Circle()
-                        .fill(ThemeTokens.plateColor(for: group.weight, unit: settings.unit))
-                        .frame(width: 9, height: 9)
-                    Text("\(group.count)× \(formatPlateWeight(group.weight))")
-                        .font(.system(size: 15, weight: .semibold, design: .monospaced))
-                        .foregroundStyle(ThemeTokens.textPrimary.opacity(0.85))
+        return ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 16) {
+                ForEach(grouped, id: \.weight) { group in
+                    HStack(spacing: 6) {
+                        Circle()
+                            .fill(ThemeTokens.plateColor(for: group.weight, unit: settings.unit))
+                            .frame(width: 10, height: 10)
+                        Text("\(group.count)× \(formatPlateWeight(group.weight))")
+                            .font(.system(size: 18, weight: .bold, design: .monospaced))
+                            .foregroundStyle(ThemeTokens.textPrimary)
+                    }
                 }
             }
+            .frame(maxWidth: .infinity, alignment: .center)
+            .padding(.horizontal)
         }
-        .lineLimit(1)
-        .minimumScaleFactor(0.6)
-        .frame(maxWidth: .infinity, alignment: .center)
     }
 
     private func formatPlateWeight(_ w: Double) -> String {
