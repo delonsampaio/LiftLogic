@@ -109,7 +109,12 @@ struct HelpView: View {
             )
             FAQRow(
                 question: "How do I set my plate inventory?",
-                answer: "Go to Settings → Plate Inventory and enable or disable the plates your gym has. Disabled plates are skipped by the calculator.",
+                answer: "Go to Settings → Plate Inventory and enable or disable the plates your gym has. Disabled plates are skipped by the calculator. Standard plates (45 lb down to 2.5 lb) are enabled by default.",
+                isProFeature: false, userIsPro: isPro
+            )
+            FAQRow(
+                question: "What are micro-loading (fractional) plates?",
+                answer: "Ultra-small plates for tiny weight jumps — great for breaking through plateaus on bench press or overhead press. They appear in Settings → Plate Inventory as disabled by default. Toggle them on to include them in calculations. Lbs sizes: 0.25, 0.50, 0.75, 1.00, and 1.25 lb. Kg sizes: 0.25, 0.50, 1.00, 1.50, and 2.00 kg.",
                 isProFeature: false, userIsPro: isPro
             )
             FAQRow(
@@ -194,7 +199,7 @@ struct HelpView: View {
             )
             FAQRow(
                 question: "What are saved setups?",
-                answer: "Bookmark any bar configuration — weight, bar type, collar, unit — for one-tap recall. Tap the history icon in the top toolbar to save or load a setup.",
+                answer: "Bookmark any bar configuration — weight, bar type, collar, unit — for one-tap recall. Tap the bookmark icon in the top toolbar to save or load a setup.",
                 isProFeature: true, userIsPro: isPro
             )
         }
@@ -211,7 +216,8 @@ struct HelpView: View {
         .init(section: "Plates & Bar", question: "How do I change the bar weight?", answer: "Tap the bar picker in the quick toggle strip below the barbell. Choose Olympic (45 lb), Women's (33 lb), EZ Curl (18 lb), Safety Squat (65 lb), or enter a custom weight."),
         .init(section: "Plates & Bar", question: "What is Single Side mode?", answer: "When enabled, the calculator treats your typed weight as the total for one side only — useful for loading a landmine, single-arm attachment, or any non-symmetric setup."),
         .init(section: "Plates & Bar", question: "What is collar weight?", answer: "Toggles a 2.5 lb collar deduction per side. Enable it if your gym uses locking collars that add meaningful weight to the bar."),
-        .init(section: "Plates & Bar", question: "How do I set my plate inventory?", answer: "Go to Settings → Plate Inventory and enable or disable the plates your gym has. Disabled plates are skipped by the calculator."),
+        .init(section: "Plates & Bar", question: "How do I set my plate inventory?", answer: "Go to Settings → Plate Inventory and enable or disable the plates your gym has. Disabled plates are skipped by the calculator. Standard plates (45 lb down to 2.5 lb) are enabled by default."),
+        .init(section: "Plates & Bar", question: "What are micro-loading (fractional) plates?", answer: "Ultra-small plates for tiny weight jumps — great for breaking through plateaus on bench press or overhead press. They appear in Settings → Plate Inventory as disabled by default. Toggle them on to include them in calculations. Lbs sizes: 0.25, 0.50, 0.75, 1.00, and 1.25 lb. Kg sizes: 0.25, 0.50, 1.00, 1.50, and 2.00 kg."),
         .init(section: "Plates & Bar", question: "What are plate quantity limits?", answer: "In Settings → Plate Inventory, use the − button next to any enabled plate to set how many of that plate you own. The calculator will never suggest loading more plates than you have available.", isPro: true),
         .init(section: "Modes", question: "What is CALC mode?", answer: "The main plate calculator. Type a total bar weight and see the exact plates to load per side, with a remainder warning if the weight isn't exactly achievable."),
         .init(section: "Modes", question: "What is WARMUP mode?", answer: "Automatically generates a 5-set warmup ladder at 50%, 60%, 70%, 80%, and 90% of your target weight, rounded to loadable plates. Tap any row to load that weight into CALC.", isPro: true),
@@ -225,7 +231,7 @@ struct HelpView: View {
         .init(section: "Pro", question: "How do I buy Pro?", answer: "Tap the PRO button in the top-right corner of the main screen, or tap any locked mode pill. The price is $1.99 — a one-time purchase with Family Sharing enabled."),
         .init(section: "Pro", question: "Does Pro work on all my devices?", answer: "Yes. Tap \"Restore Purchases\" in Settings → Pro Status to activate Pro on any iPhone signed into the same Apple ID."),
         .init(section: "Pro", question: "How do I set my bodyweight ratio?", answer: "Go to Settings → Pro — Bodyweight and enter your bodyweight. The ratio (e.g. \"1.87× bodyweight\") appears under the main readout and is included in your Share My Lift card.", isPro: true),
-        .init(section: "Pro", question: "What are saved setups?", answer: "Bookmark any bar configuration — weight, bar type, collar, unit — for one-tap recall. Tap the history icon in the top toolbar to save or load a setup.", isPro: true),
+        .init(section: "Pro", question: "What are saved setups?", answer: "Bookmark any bar configuration — weight, bar type, collar, unit — for one-tap recall. Tap the bookmark icon in the top toolbar to save or load a setup.", isPro: true),
     ]
 }
 
