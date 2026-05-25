@@ -3,6 +3,7 @@ import SwiftUI
 struct PlateInventoryView: View {
     @Binding var inventory: [PlateInventoryItem]
     let unit: WeightUnit
+    let isPro: Bool
 
     var body: some View {
         List {
@@ -16,7 +17,13 @@ struct PlateInventoryView: View {
                     .tint(ThemeTokens.accent)
 
                     if item.isEnabled {
-                        quantityControl(item: $item)
+                        if isPro {
+                            quantityControl(item: $item)
+                        } else {
+                            Image(systemName: "lock.fill")
+                                .font(.system(size: 14))
+                                .foregroundStyle(ThemeTokens.textMuted)
+                        }
                     }
                 }
             }

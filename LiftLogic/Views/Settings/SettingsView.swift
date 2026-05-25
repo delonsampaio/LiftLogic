@@ -56,7 +56,8 @@ struct SettingsView: View {
                                 get: { settings.lbsInventory },
                                 set: { settings.lbsInventory = $0 }
                             ),
-                            unit: .lbs
+                            unit: .lbs,
+                            isPro: settings.isPro
                         )
                     }
                     NavigationLink("Kilograms (kg)") {
@@ -65,7 +66,8 @@ struct SettingsView: View {
                                 get: { settings.kgInventory },
                                 set: { settings.kgInventory = $0 }
                             ),
-                            unit: .kg
+                            unit: .kg,
+                            isPro: settings.isPro
                         )
                     }
                 }
