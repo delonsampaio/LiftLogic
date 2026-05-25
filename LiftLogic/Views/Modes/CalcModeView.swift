@@ -120,13 +120,21 @@ struct CalcModeView: View {
 
     private var plateBreakdownView: some View {
         let grouped = vm.plateResult.grouped
-        let parts = grouped.map { "\($0.count)× \(formatPlateWeight($0.weight))" }
-        return Text(parts.joined(separator: "  ·  "))
-            .font(.system(size: 17, weight: .semibold, design: .monospaced))
-            .foregroundStyle(ThemeTokens.textPrimary.opacity(0.75))
-            .lineLimit(1)
-            .minimumScaleFactor(0.6)
-            .frame(maxWidth: .infinity, alignment: .center)
+        return HStack(spacing: 10) {
+            ForEach(grouped, id: \.weight) { group in
+                HStack(spacing: 5) {
+                    Circle()
+                        .fill(ThemeTokens.plateColor(for: group.weight, unit: settings.unit))
+                        .frame(width: 9, height: 9)
+                    Text("\(group.count)× \(formatPlateWeight(group.weight))")
+                        .font(.system(size: 15, weight: .semibold, design: .monospaced))
+                        .foregroundStyle(ThemeTokens.textPrimary.opacity(0.85))
+                }
+            }
+        }
+        .lineLimit(1)
+        .minimumScaleFactor(0.6)
+        .frame(maxWidth: .infinity, alignment: .center)
     }
 
     private func formatPlateWeight(_ w: Double) -> String {

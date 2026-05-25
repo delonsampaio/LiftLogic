@@ -40,10 +40,10 @@ struct NumpadKeyView: View {
         Button(action: action) {
             ZStack {
                 RoundedRectangle(cornerRadius: 16)
-                    .fill(Color(white: 0.16))
+                    .fill(Color(white: 0.12))
                     .overlay(
                         RoundedRectangle(cornerRadius: 16)
-                            .strokeBorder(Color(white: 0.30).opacity(0.5), lineWidth: 0.5)
+                            .strokeBorder(Color(white: 0.26).opacity(0.5), lineWidth: 0.5)
                     )
                 Text(key)
                     .font(ThemeTokens.numpadFont)
