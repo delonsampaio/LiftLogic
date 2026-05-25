@@ -5,6 +5,12 @@ struct PlateInventoryView: View {
     let unit: WeightUnit
     let isPro: Bool
 
+    @State private var showResetConfirm = false
+
+    private var defaults: [PlateInventoryItem] {
+        unit == .lbs ? AppSettings.defaultLbs : AppSettings.defaultKg
+    }
+
     var body: some View {
         List {
             ForEach($inventory) { $item in
@@ -32,6 +38,18 @@ struct PlateInventoryView: View {
         .navigationBarTitleDisplayMode(.inline)
         .scrollContentBackground(.hidden)
         .background(ThemeTokens.backgroundPrimary)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button("Reset") { showResetConfirm = true }
+                    .foregroundStyle(ThemeTokens.textSecondary)
+            }
+        }
+        .confirmationDialog("Restore defaults?", isPresented: $showResetConfirm, titleVisibility: .visible) {
+            Button("Restore Defaults", role: .destructive) { inventory = defaults }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("All plate toggles and quantity limits will be reset.")
+        }
     }
 
     @ViewBuilder
