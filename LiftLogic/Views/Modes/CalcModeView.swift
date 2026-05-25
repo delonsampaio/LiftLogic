@@ -45,20 +45,23 @@ struct CalcModeView: View {
             // Plate breakdown — shown before numpad so it's immediately visible
             if !vm.plateResult.platesPerSide.isEmpty {
                 plateBreakdownView
-                    .padding(.horizontal)
                     .transition(.opacity)
             }
 
             // Recent weights chips
             if !settings.recentWeights.isEmpty {
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 8) {
-                        ForEach(settings.recentWeights, id: \.self) { weight in
-                            recentWeightChip(weight)
+                GeometryReader { proxy in
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 8) {
+                            ForEach(settings.recentWeights, id: \.self) { weight in
+                                recentWeightChip(weight)
+                            }
                         }
+                        .frame(minWidth: proxy.size.width, alignment: .center)
+                        .padding(.horizontal)
                     }
-                    .padding(.horizontal)
                 }
+                .frame(height: 34)
             }
 
             // Numpad
@@ -120,22 +123,25 @@ struct CalcModeView: View {
 
     private var plateBreakdownView: some View {
         let grouped = vm.plateResult.grouped
-        return ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 16) {
-                ForEach(grouped, id: \.weight) { group in
-                    HStack(spacing: 6) {
-                        Circle()
-                            .fill(ThemeTokens.plateColor(for: group.weight, unit: settings.unit))
-                            .frame(width: 10, height: 10)
-                        Text("\(group.count)× \(formatPlateWeight(group.weight))")
-                            .font(.system(size: 18, weight: .bold, design: .monospaced))
-                            .foregroundStyle(ThemeTokens.textPrimary)
+        return GeometryReader { proxy in
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 16) {
+                    ForEach(grouped, id: \.weight) { group in
+                        HStack(spacing: 6) {
+                            Circle()
+                                .fill(ThemeTokens.plateColor(for: group.weight, unit: settings.unit))
+                                .frame(width: 10, height: 10)
+                            Text("\(group.count)× \(formatPlateWeight(group.weight))")
+                                .font(.system(size: 18, weight: .bold, design: .monospaced))
+                                .foregroundStyle(ThemeTokens.textPrimary)
+                        }
                     }
                 }
+                .frame(minWidth: proxy.size.width, alignment: .center)
+                .padding(.horizontal)
             }
-            .frame(maxWidth: .infinity, alignment: .center)
-            .padding(.horizontal)
         }
+        .frame(height: 30)
     }
 
     private func formatPlateWeight(_ w: Double) -> String {
