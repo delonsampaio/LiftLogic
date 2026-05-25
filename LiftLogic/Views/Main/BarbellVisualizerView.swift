@@ -135,7 +135,7 @@ struct BarbellVisualizerView: View {
             .fill(ThemeTokens.plateColor(for: plate.weight, unit: settings.unit))
             .shadow(color: .black.opacity(0.5), radius: 2, x: 1, y: 2)
             .overlay {
-                if height >= 40 {
+                if height >= 28 {
                     Text(formatPlateLabel(plate.weight))
                         .font(.system(size: plateLabelSize(lbsWeight), weight: .black, design: .rounded))
                         .foregroundStyle(plateLabelColor(lbsWeight))
