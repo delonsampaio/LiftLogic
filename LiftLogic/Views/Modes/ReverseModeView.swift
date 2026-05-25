@@ -62,7 +62,7 @@ struct ReverseModeView: View {
         }
     }
 
-    // Matches CalcModeView's plateBreakdownView — colored dot + "n× weight", centered
+    // 3-column grid — wraps to row 2 for 4–6 plate types, no scrolling needed
     private var plateSummaryPill: some View {
         let grouped = vm.reversePlateStack
             .reduce(into: [(Double, Int)]()) { acc, plate in
@@ -74,25 +74,25 @@ struct ReverseModeView: View {
             }
             .sorted { $0.0 > $1.0 }   // heaviest first
 
-        return GeometryReader { proxy in
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 16) {
-                    ForEach(grouped, id: \.0) { weight, count in
-                        HStack(spacing: 6) {
-                            Circle()
-                                .fill(ThemeTokens.plateColor(for: weight, unit: settings.unit))
-                                .frame(width: 10, height: 10)
-                            Text("\(count)× \(formatWeight(weight))")
-                                .font(.system(size: 18, weight: .bold, design: .monospaced))
-                                .foregroundStyle(ThemeTokens.textPrimary)
-                        }
-                    }
+        let columns = [
+            GridItem(.flexible(), alignment: .center),
+            GridItem(.flexible(), alignment: .center),
+            GridItem(.flexible(), alignment: .center)
+        ]
+
+        return LazyVGrid(columns: columns, spacing: 8) {
+            ForEach(grouped, id: \.0) { weight, count in
+                HStack(spacing: 5) {
+                    Circle()
+                        .fill(ThemeTokens.plateColor(for: weight, unit: settings.unit))
+                        .frame(width: 9, height: 9)
+                    Text("\(count)×\(formatWeight(weight))")
+                        .font(.system(size: 16, weight: .bold, design: .monospaced))
+                        .foregroundStyle(ThemeTokens.textPrimary)
                 }
-                .frame(minWidth: proxy.size.width, alignment: .center)
-                .padding(.horizontal)
             }
         }
-        .frame(height: 30)
+        .padding(.horizontal)
     }
 
     private func formatWeight(_ w: Double) -> String {

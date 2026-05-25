@@ -56,27 +56,25 @@ private struct PlateButton: View {
                 )
                 .padding(4)
 
-            // Weight label + hub stacked as a centered unit — number above, hub below
-            VStack(spacing: 4) {
-                // Stamped weight text
-                Text(formatWeight(weight))
-                    .font(.system(size: 16, weight: .black, design: .rounded))
-                    .foregroundStyle(.white)
-                    .shadow(color: .black.opacity(0.65), radius: 1, x: 0, y: 1)
+            // Weight label — upper portion (independent layer, not in VStack)
+            Text(formatWeight(weight))
+                .font(.system(size: 16, weight: .black, design: .rounded))
+                .foregroundStyle(.white)
+                .shadow(color: .black.opacity(0.65), radius: 1, x: 0, y: 1)
+                .offset(y: -24)
 
-                // Metallic hub — radial gradient simulates light from upper-left
-                Circle()
-                    .fill(
-                        RadialGradient(
-                            colors: [Color(white: 0.78), Color(white: 0.36)],
-                            center: .topLeading,
-                            startRadius: 0,
-                            endRadius: 12
-                        )
+            // Metallic hub — dead center (independent layer)
+            Circle()
+                .fill(
+                    RadialGradient(
+                        colors: [Color(white: 0.78), Color(white: 0.36)],
+                        center: .topLeading,
+                        startRadius: 0,
+                        endRadius: 13
                     )
-                    .frame(width: 20, height: 20)
-                    .overlay(Circle().strokeBorder(Color(white: 0.18), lineWidth: 0.75))
-            }
+                )
+                .frame(width: 22, height: 22)
+                .overlay(Circle().strokeBorder(Color(white: 0.18), lineWidth: 0.75))
 
             // Top-left specular arc — matte anodized surface reflection
             Circle()
