@@ -130,42 +130,11 @@ struct BarbellVisualizerView: View {
     private func plateView(_ plate: LoadedPlate) -> some View {
         let height = plateHeight(plate.weight)
         let width = plateWidth(plate.weight)
-        let lbsWeight = settings.unit == .lbs ? plate.weight : WeightUnit.kg.convert(plate.weight, to: .lbs)
         RoundedRectangle(cornerRadius: 3)
             .fill(ThemeTokens.plateColor(for: plate.weight, unit: settings.unit))
             .shadow(color: .black.opacity(0.5), radius: 2, x: 1, y: 2)
-            .overlay {
-                if height >= 28 {
-                    Text(formatPlateLabel(plate.weight))
-                        .font(.system(size: plateLabelSize(lbsWeight), weight: .black, design: .rounded))
-                        .foregroundStyle(plateLabelColor(lbsWeight))
-                        .rotationEffect(.degrees(-90))
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.6)
-                }
-            }
             .frame(width: width, height: height)
             .transition(.scale(scale: 0.8).combined(with: .opacity))
-    }
-
-    private func plateLabelSize(_ lbs: Double) -> CGFloat {
-        switch lbs {
-        case 44...:   return 12
-        case 33..<44: return 10
-        default:      return 9
-        }
-    }
-
-    private func plateLabelColor(_ lbs: Double) -> Color {
-        switch lbs {
-        case 44...:   return .white                          // red plate
-        case 33..<44: return .white                          // blue plate
-        default:      return Color(white: 0.15)              // yellow/white/green — dark for contrast
-        }
-    }
-
-    private func formatPlateLabel(_ weight: Double) -> String {
-        weight.truncatingRemainder(dividingBy: 1) == 0 ? "\(Int(weight))" : "\(weight)"
     }
 
     private func plateHeight(_ weight: Double) -> CGFloat {

@@ -31,26 +31,25 @@ enum ThemeTokens {
         }
     }
 
-    // Micro / small plate colors — branched by unit system.
-    // Slightly lighter/more vibrant than the standard equivalents so
-    // a 1.0 lb plate reads as "red family" but is visually distinct from a 45.
+    // Micro / small plate colors — IWF color cycle (red→blue→yellow→white→green)
+    // applied to micro sizes so they read as a family with standard plates.
     private static func microPlateColor(weight: Double, unit: WeightUnit) -> Color {
         if unit == .lbs {
             switch weight {
-            case 2..<4:   return Color(white: 0.50)                          // 2.5 lb   — gray (standard)
-            case ..<0.40: return Color(red: 0.20, green: 0.78, blue: 0.28)  // 0.25 lb  — bright green
-            case ..<0.65: return Color(red: 0.97, green: 0.86, blue: 0.22)  // 0.50 lb  — bright yellow
-            case ..<0.90: return Color(red: 0.22, green: 0.48, blue: 0.94)  // 0.75 lb  — bright blue
-            case ..<1.15: return Color(red: 0.94, green: 0.22, blue: 0.22)  // 1.00 lb  — bright red
-            default:      return Color(red: 0.54, green: 0.12, blue: 0.74)  // 1.25 lb  — purple (unique)
+            case 2..<4:   return Color(white: 0.50)                          // 2.5 lb   — gray (standard chrome)
+            case 1.15...: return Color(red: 0.80, green: 0.10, blue: 0.10)  // 1.25 lb  — red  (matches 45 lb)
+            case ..<0.40: return Color(red: 0.10, green: 0.60, blue: 0.15)  // 0.25 lb  — green (matches 5 lb)
+            case ..<0.65: return Color(white: 0.88)                          // 0.50 lb  — white (matches 10 lb)
+            case ..<0.90: return Color(red: 0.90, green: 0.75, blue: 0.10)  // 0.75 lb  — yellow (matches 25 lb)
+            default:      return Color(red: 0.10, green: 0.30, blue: 0.80)  // 1.00 lb  — blue  (matches 35 lb)
             }
         } else {
             // weight here is the original kg value
             switch weight {
-            case 1.15...: return Color(white: 0.50)                          // 1.25 kg  — gray (standard)
-            case ..<0.65: return Color(white: 0.86)                          // 0.25/0.50 kg — silver
-            case ..<1.15: return Color(red: 0.20, green: 0.78, blue: 0.28)  // 1.00 kg  — bright green
-            default:      return Color(red: 0.97, green: 0.86, blue: 0.22)  // 1.50 kg  — bright yellow
+            case 1.15...: return Color(white: 0.50)                          // 1.25 kg  — gray (standard chrome)
+            case ..<0.65: return Color(white: 0.88)                          // 0.25/0.50 kg — white
+            case ..<1.15: return Color(red: 0.10, green: 0.60, blue: 0.15)  // 1.00 kg  — green (matches 5 lb)
+            default:      return Color(red: 0.90, green: 0.75, blue: 0.10)  // 1.50 kg  — yellow (matches 15 kg)
             }
         }
     }

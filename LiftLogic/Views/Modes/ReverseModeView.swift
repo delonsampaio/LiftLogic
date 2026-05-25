@@ -22,44 +22,50 @@ struct ReverseModeView: View {
                     .transition(.opacity.combined(with: .scale(scale: 0.95)))
             }
 
-            // Undo — circular disc, matches the plate-tool aesthetic
+            // Undo — tap to remove last plate; long-press to clear all
             HStack {
                 Spacer()
-                Button {
-                    vm.undoLastPlate()
-                    HapticManager.shared.plateUndo()
-                } label: {
-                    ZStack {
-                        Circle()
-                            .fill(vm.reversePlateStack.isEmpty
-                                  ? Color(white: 0.10)
-                                  : ThemeTokens.accent.opacity(0.10))
-                        Circle()
-                            .strokeBorder(
-                                vm.reversePlateStack.isEmpty
-                                    ? Color(white: 0.20)
-                                    : ThemeTokens.accent.opacity(0.45),
-                                lineWidth: 1.5
-                            )
-                        VStack(spacing: 3) {
-                            Image(systemName: "arrow.uturn.backward")
-                                .font(.system(size: 15, weight: .semibold))
-                            Text("Undo")
-                                .font(.system(size: 10, weight: .semibold))
-                        }
-                        .foregroundStyle(vm.reversePlateStack.isEmpty
-                                         ? ThemeTokens.textMuted
-                                         : ThemeTokens.accent)
-                    }
-                    .frame(width: 68, height: 68)
-                }
-                .buttonStyle(NumpadButtonStyle())
-                .disabled(vm.reversePlateStack.isEmpty)
-                .animation(.easeInOut(duration: 0.2), value: vm.reversePlateStack.isEmpty)
+                undoButton
                 Spacer()
             }
             .padding(.bottom, 4)
         }
+    }
+
+    private var undoButton: some View {
+        let isEmpty = vm.reversePlateStack.isEmpty
+        return ZStack {
+            Circle()
+                .fill(isEmpty ? Color(white: 0.10) : ThemeTokens.accent.opacity(0.10))
+            Circle()
+                .strokeBorder(
+                    isEmpty ? Color(white: 0.20) : ThemeTokens.accent.opacity(0.45),
+                    lineWidth: 1.5
+                )
+            VStack(spacing: 3) {
+                Image(systemName: "arrow.uturn.backward")
+                    .font(.system(size: 15, weight: .semibold))
+                Text("Undo")
+                    .font(.system(size: 10, weight: .semibold))
+            }
+            .foregroundStyle(isEmpty ? ThemeTokens.textMuted : ThemeTokens.accent)
+        }
+        .frame(width: 68, height: 68)
+        .contentShape(Circle())
+        .onTapGesture {
+            guard !isEmpty else { return }
+            vm.undoLastPlate()
+            HapticManager.shared.plateUndo()
+        }
+        .onLongPressGesture(minimumDuration: 0.55) {
+            guard !isEmpty else { return }
+            HapticManager.shared.swipeReset()
+            withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                vm.clearReverseStack()
+            }
+        }
+        .disabled(isEmpty)
+        .animation(.easeInOut(duration: 0.2), value: isEmpty)
     }
 
     // ≤3 types: single centered row. >3: 3-column grid (wraps to row 2).

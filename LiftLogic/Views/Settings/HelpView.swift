@@ -154,7 +154,7 @@ struct HelpView: View {
         Section("Gestures & Controls") {
             FAQRow(
                 question: "How do I clear the bar with a gesture?",
-                answer: "Long-press the barbell to animate all plates flying off. Double-tap to reset instantly. Swiping left or right also resets.",
+                answer: "In CALC mode: long-press the barbell to animate plates flying off, double-tap to reset instantly, or swipe left/right. In REV mode: long-press the Undo button to clear all plates at once, or tap it repeatedly to remove one at a time.",
                 isProFeature: false, userIsPro: isPro
             )
             FAQRow(
@@ -223,7 +223,7 @@ struct HelpView: View {
         .init(section: "Modes", question: "What is WARMUP mode?", answer: "Automatically generates a 5-set warmup ladder at 50%, 60%, 70%, 80%, and 90% of your target weight, rounded to loadable plates. Tap any row to load that weight into CALC.", isPro: true),
         .init(section: "Modes", question: "What is 1RM mode?", answer: "Enter a weight and rep count to estimate your one-rep max using the Epley and Brzycki formulas. The average of both is shown. Tap the result to load it into CALC.", isPro: true),
         .init(section: "Modes", question: "What is REV (Reverse) mode?", answer: "Build a bar weight by tapping plates one at a time — useful when you're standing at the rack and want to add up what's already loaded. Tap UNDO to remove the last plate added.", isPro: true),
-        .init(section: "Gestures & Controls", question: "How do I clear the bar with a gesture?", answer: "Long-press the barbell to animate all plates flying off. Double-tap to reset instantly. Swiping left or right also resets."),
+        .init(section: "Gestures & Controls", question: "How do I clear the bar with a gesture?", answer: "In CALC mode: long-press the barbell to animate plates flying off, double-tap to reset instantly, or swipe left/right. In REV mode: long-press the Undo button to clear all plates at once, or tap it repeatedly to remove one at a time."),
         .init(section: "Gestures & Controls", question: "What do the + and − buttons next to the weight do?", answer: "They increment or decrement the weight by the smallest enabled plate × 2 (one increment per side). Useful for fine-tuning without retyping the full number."),
         .init(section: "Gestures & Controls", question: "How do I share my lift?", answer: "Tap the share icon in the top toolbar. LiftLogic generates a summary card showing your weight, plate breakdown, and unit — ready to share to Messages, Instagram, or anywhere."),
         .init(section: "Gestures & Controls", question: "How do I use the rest timer?", answer: "Tap the timer icon in the top toolbar. Choose a preset (90 s, 2 min, 3 min, 5 min) or let it count up. The timer keeps running in the background and fires three heavy haptic pulses at zero.", isPro: true),

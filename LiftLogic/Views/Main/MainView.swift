@@ -97,6 +97,18 @@ struct MainView: View {
                 BarbellVisualizerView(vm: vm, settings: settings)
                     .padding(.vertical, 4)
 
+                // Sleeve space warning — shown when many plates are loaded
+                let visiblePlateCount = vm.currentMode == .reverse
+                    ? vm.reversePlateStack.count
+                    : vm.plateResult.platesPerSide.count
+                if visiblePlateCount >= 8 {
+                    Label("Check sleeve space", systemImage: "exclamationmark.triangle")
+                        .font(.caption.weight(.medium))
+                        .foregroundStyle(ThemeTokens.warningAmber)
+                        .transition(.opacity.combined(with: .scale(scale: 0.95)))
+                        .animation(.easeInOut(duration: 0.25), value: visiblePlateCount >= 8)
+                }
+
                 // Quick toggle strip
                 QuickToggleStripView(vm: vm, settings: settings)
                     .padding(.vertical, 6)
