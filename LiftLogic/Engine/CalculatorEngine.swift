@@ -12,17 +12,21 @@ struct CalculatorEngine {
 
         let sorted = inventory
             .filter(\.isEnabled)
-            .map(\.weight)
-            .sorted(by: >)
+            .sorted { $0.weight > $1.weight }
 
         var remaining = perSide
         var loaded: [LoadedPlate] = []
 
-        for w in sorted {
-            // epsilon prevents float drift (e.g. 2.5 kg × 4 from 10.0 kg)
-            while remaining >= w - 0.001 {
-                loaded.append(LoadedPlate(weight: w))
-                remaining -= w
+        for plate in sorted {
+            // Quantity is stored as total plates owned; divide by 2 for each side (two-sided loading)
+            let maxPerSide = plate.quantity == Int.max
+                ? Int.max
+                : (isSingleSided ? plate.quantity : plate.quantity / 2)
+            var used = 0
+            while remaining >= plate.weight - 0.001 && used < maxPerSide {
+                loaded.append(LoadedPlate(weight: plate.weight))
+                remaining -= plate.weight
+                used += 1
             }
         }
 
