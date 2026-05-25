@@ -51,29 +51,29 @@ private struct PlateButton: View {
                         ],
                         center: .center,
                         startRadius: 0,
-                        endRadius: 40
+                        endRadius: 44
                     )
                 )
                 .padding(4)
 
-            // Weight label — upper portion (independent layer, not in VStack)
+            // Weight label — upper portion, independent ZStack layer
             Text(formatWeight(weight))
-                .font(.system(size: 16, weight: .black, design: .rounded))
+                .font(.system(size: 18, weight: .black, design: .rounded))
                 .foregroundStyle(.white)
                 .shadow(color: .black.opacity(0.65), radius: 1, x: 0, y: 1)
-                .offset(y: -24)
+                .offset(y: -26)
 
-            // Metallic hub — dead center (independent layer)
+            // Metallic hub — dead center, smaller bore for clarity
             Circle()
                 .fill(
                     RadialGradient(
                         colors: [Color(white: 0.78), Color(white: 0.36)],
                         center: .topLeading,
                         startRadius: 0,
-                        endRadius: 13
+                        endRadius: 9
                     )
                 )
-                .frame(width: 22, height: 22)
+                .frame(width: 16, height: 16)
                 .overlay(Circle().strokeBorder(Color(white: 0.18), lineWidth: 0.75))
 
             // Top-left specular arc — matte anodized surface reflection
@@ -95,7 +95,7 @@ private struct PlateButton: View {
                 )
                 .padding(4)
         }
-        .frame(width: 82, height: 82)
+        .frame(width: 88, height: 88)
     }
 
     private func formatWeight(_ w: Double) -> String {

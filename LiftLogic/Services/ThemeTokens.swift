@@ -27,7 +27,8 @@ enum ThemeTokens {
         case 22..<33: return Color(red: 0.9, green: 0.75, blue: 0.1)  // yellow — 25 lb / 10 kg
         case 9..<22:  return Color(white: 0.88)                        // white  — 10 lb / 5 kg
         case 4..<9:   return Color(red: 0.1, green: 0.6, blue: 0.15)  // green  — 5 lb / 2.5 kg
-        default:      return Color(white: 0.5)                         // gray   — 2.5 lb / 1.25 kg
+        case 2..<4:   return Color(white: 0.50)                        // gray   — 2.5 lb / 1.25 kg
+        default:      return Color(white: 0.72)                        // chrome — micro plates (< 2 lb)
         }
     }
 

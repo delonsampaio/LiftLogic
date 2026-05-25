@@ -62,7 +62,7 @@ struct ReverseModeView: View {
         }
     }
 
-    // 3-column grid — wraps to row 2 for 4–6 plate types, no scrolling needed
+    // ≤3 types: single centered row. >3: 3-column grid (wraps to row 2).
     private var plateSummaryPill: some View {
         let grouped = vm.reversePlateStack
             .reduce(into: [(Double, Int)]()) { acc, plate in
@@ -74,25 +74,40 @@ struct ReverseModeView: View {
             }
             .sorted { $0.0 > $1.0 }   // heaviest first
 
-        let columns = [
-            GridItem(.flexible(), alignment: .center),
-            GridItem(.flexible(), alignment: .center),
-            GridItem(.flexible(), alignment: .center)
-        ]
-
-        return LazyVGrid(columns: columns, spacing: 8) {
-            ForEach(grouped, id: \.0) { weight, count in
-                HStack(spacing: 5) {
-                    Circle()
-                        .fill(ThemeTokens.plateColor(for: weight, unit: settings.unit))
-                        .frame(width: 9, height: 9)
-                    Text("\(count)×\(formatWeight(weight))")
-                        .font(.system(size: 16, weight: .bold, design: .monospaced))
-                        .foregroundStyle(ThemeTokens.textPrimary)
+        return Group {
+            if grouped.count <= 3 {
+                HStack(spacing: 16) {
+                    ForEach(grouped, id: \.0) { weight, count in
+                        plateCountCell(weight: weight, count: count)
+                    }
                 }
+                .frame(maxWidth: .infinity, alignment: .center)
+                .padding(.horizontal)
+            } else {
+                let columns = [
+                    GridItem(.flexible(), alignment: .center),
+                    GridItem(.flexible(), alignment: .center),
+                    GridItem(.flexible(), alignment: .center)
+                ]
+                LazyVGrid(columns: columns, spacing: 8) {
+                    ForEach(grouped, id: \.0) { weight, count in
+                        plateCountCell(weight: weight, count: count)
+                    }
+                }
+                .padding(.horizontal)
             }
         }
-        .padding(.horizontal)
+    }
+
+    private func plateCountCell(weight: Double, count: Int) -> some View {
+        HStack(spacing: 5) {
+            Circle()
+                .fill(ThemeTokens.plateColor(for: weight, unit: settings.unit))
+                .frame(width: 9, height: 9)
+            Text("\(count)×\(formatWeight(weight))")
+                .font(.system(size: 16, weight: .bold, design: .monospaced))
+                .foregroundStyle(ThemeTokens.textPrimary)
+        }
     }
 
     private func formatWeight(_ w: Double) -> String {

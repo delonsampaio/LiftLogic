@@ -121,27 +121,43 @@ struct CalcModeView: View {
         }
     }
 
-    // 3-column grid — centers when ≤3 groups, wraps cleanly for 4–6
+    // ≤3 types: single centered row. >3: 3-column grid (wraps to row 2).
     private var plateBreakdownView: some View {
         let grouped = vm.plateResult.grouped
-        let columns = [
-            GridItem(.flexible(), alignment: .center),
-            GridItem(.flexible(), alignment: .center),
-            GridItem(.flexible(), alignment: .center)
-        ]
-        return LazyVGrid(columns: columns, spacing: 8) {
-            ForEach(grouped, id: \.weight) { group in
-                HStack(spacing: 6) {
-                    Circle()
-                        .fill(ThemeTokens.plateColor(for: group.weight, unit: settings.unit))
-                        .frame(width: 10, height: 10)
-                    Text("\(group.count)×\(formatPlateWeight(group.weight))")
-                        .font(.system(size: 18, weight: .bold, design: .monospaced))
-                        .foregroundStyle(ThemeTokens.textPrimary)
+        return Group {
+            if grouped.count <= 3 {
+                HStack(spacing: 16) {
+                    ForEach(grouped, id: \.weight) { group in
+                        plateCell(group)
+                    }
                 }
+                .frame(maxWidth: .infinity, alignment: .center)
+                .padding(.horizontal)
+            } else {
+                let columns = [
+                    GridItem(.flexible(), alignment: .center),
+                    GridItem(.flexible(), alignment: .center),
+                    GridItem(.flexible(), alignment: .center)
+                ]
+                LazyVGrid(columns: columns, spacing: 8) {
+                    ForEach(grouped, id: \.weight) { group in
+                        plateCell(group)
+                    }
+                }
+                .padding(.horizontal)
             }
         }
-        .padding(.horizontal)
+    }
+
+    private func plateCell(_ group: (weight: Double, count: Int)) -> some View {
+        HStack(spacing: 6) {
+            Circle()
+                .fill(ThemeTokens.plateColor(for: group.weight, unit: settings.unit))
+                .frame(width: 10, height: 10)
+            Text("\(group.count)×\(formatPlateWeight(group.weight))")
+                .font(.system(size: 18, weight: .bold, design: .monospaced))
+                .foregroundStyle(ThemeTokens.textPrimary)
+        }
     }
 
     private func formatPlateWeight(_ w: Double) -> String {

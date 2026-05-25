@@ -176,7 +176,8 @@ struct BarbellVisualizerView: View {
         case 22..<33: return 54
         case 9..<22:  return 40
         case 4..<9:   return 30
-        default:      return 22
+        case 2..<4:   return 22   // 2.5 lb / 1.25 kg
+        default:      return 12   // micro plates (< 2 lb)
         }
     }
 
@@ -185,7 +186,8 @@ struct BarbellVisualizerView: View {
         switch lbs {
         case 44...:   return 16
         case 22..<44: return 13
-        default:      return 10
+        case 2...:    return 10
+        default:      return 7    // micro plates (< 2 lb) — very thin
         }
     }
 }
