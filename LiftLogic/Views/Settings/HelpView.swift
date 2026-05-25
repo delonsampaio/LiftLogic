@@ -122,6 +122,11 @@ struct HelpView: View {
                 answer: "In Settings → Plate Inventory, use the − button next to any enabled plate to set how many of that plate you own. The calculator will never suggest loading more plates than you have available.",
                 isProFeature: true, userIsPro: isPro
             )
+            FAQRow(
+                question: "What does \"Check sleeve space\" mean?",
+                answer: "An amber warning that appears below the barbell when 9 or more plates are loaded per side. Most Olympic bar sleeves hold around 8 standard plates before running out of room. It's a heads-up, not a hard limit — if you're using thinner calibrated plates you may be fine.",
+                isProFeature: false, userIsPro: isPro
+            )
         }
     }
 
@@ -219,6 +224,7 @@ struct HelpView: View {
         .init(section: "Plates & Bar", question: "How do I set my plate inventory?", answer: "Go to Settings → Plate Inventory and enable or disable the plates your gym has. Disabled plates are skipped by the calculator. Standard plates (45 lb down to 2.5 lb) are enabled by default."),
         .init(section: "Plates & Bar", question: "What are micro-loading (fractional) plates?", answer: "Ultra-small plates for tiny weight jumps — great for breaking through plateaus on bench press or overhead press. They appear in Settings → Plate Inventory as disabled by default. Toggle them on to include them in calculations. Lbs sizes: 0.25, 0.50, 0.75, 1.00, and 1.25 lb. Kg sizes: 0.25, 0.50, 1.00, 1.50, and 2.00 kg."),
         .init(section: "Plates & Bar", question: "What are plate quantity limits?", answer: "In Settings → Plate Inventory, use the − button next to any enabled plate to set how many of that plate you own. The calculator will never suggest loading more plates than you have available.", isPro: true),
+        .init(section: "Plates & Bar", question: "What does \"Check sleeve space\" mean?", answer: "An amber warning that appears below the barbell when 9 or more plates are loaded per side. Most Olympic bar sleeves hold around 8 standard plates before running out of room. It's a heads-up, not a hard limit — if you're using thinner calibrated plates you may be fine."),
         .init(section: "Modes", question: "What is CALC mode?", answer: "The main plate calculator. Type a total bar weight and see the exact plates to load per side, with a remainder warning if the weight isn't exactly achievable."),
         .init(section: "Modes", question: "What is WARMUP mode?", answer: "Automatically generates a 5-set warmup ladder at 50%, 60%, 70%, 80%, and 90% of your target weight, rounded to loadable plates. Tap any row to load that weight into CALC.", isPro: true),
         .init(section: "Modes", question: "What is 1RM mode?", answer: "Enter a weight and rep count to estimate your one-rep max using the Epley and Brzycki formulas. The average of both is shown. Tap the result to load it into CALC.", isPro: true),
