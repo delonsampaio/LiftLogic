@@ -11,7 +11,7 @@ struct PlateRackView: View {
 
     var body: some View {
         let columns = [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())]
-        LazyVGrid(columns: columns, spacing: 14) {
+        LazyVGrid(columns: columns, spacing: 16) {
             ForEach(enabledPlates) { plate in
                 Button {
                     onTap(plate)
@@ -36,47 +36,68 @@ private struct PlateButton: View {
 
     var body: some View {
         ZStack {
-            // Outer ring — darkened plate rim
+            // Outer rim — dark rolled-steel edge
             Circle()
-                .fill(plateColor.opacity(0.70))
+                .fill(plateColor.opacity(0.52))
 
-            // Main plate face — radial gradient for subtle depth
+            // Plate face — domed: full color at center, dark at rim
             Circle()
                 .fill(
                     RadialGradient(
-                        colors: [plateColor, plateColor.opacity(0.82)],
+                        colors: [
+                            plateColor,
+                            plateColor.opacity(0.80),
+                            plateColor.opacity(0.48)
+                        ],
                         center: .center,
                         startRadius: 0,
-                        endRadius: 28
+                        endRadius: 32
                     )
                 )
                 .padding(4)
 
-            // Weight label — upper half of plate, clear of the bore
-            Text(formatWeight(weight))
-                .font(.system(size: 16, weight: .black, design: .rounded))
-                .foregroundStyle(.white)
-                .shadow(color: .black.opacity(0.55), radius: 1, x: 0, y: 1)
-                .offset(y: -12)
+            // Weight label + steel hub stacked as a centered unit
+            VStack(spacing: 3) {
+                // Stamped weight text
+                Text(formatWeight(weight))
+                    .font(.system(size: 15, weight: .black, design: .rounded))
+                    .foregroundStyle(.white)
+                    .shadow(color: .black.opacity(0.65), radius: 1, x: 0, y: 1)
 
-            // Center bore — WHITE, like competition/IWF plates
-            Circle()
-                .fill(Color(white: 0.88))
-                .frame(width: 16, height: 16)
-                .overlay(Circle().strokeBorder(Color(white: 0.55), lineWidth: 0.5))
+                // Metallic hub — radial gradient simulates light from upper-left
+                Circle()
+                    .fill(
+                        RadialGradient(
+                            colors: [Color(white: 0.78), Color(white: 0.36)],
+                            center: .topLeading,
+                            startRadius: 0,
+                            endRadius: 10
+                        )
+                    )
+                    .frame(width: 17, height: 17)
+                    .overlay(Circle().strokeBorder(Color(white: 0.18), lineWidth: 0.75))
+            }
 
-            // Top-edge elevation highlight (consistent with numpad keys)
+            // Top-left specular arc — matte anodized surface reflection
             Circle()
                 .strokeBorder(
-                    LinearGradient(
-                        colors: [Color.white.opacity(0.30), Color.white.opacity(0.04)],
-                        startPoint: .top,
-                        endPoint: .bottom
+                    AngularGradient(
+                        gradient: Gradient(stops: [
+                            .init(color: .clear,                    location: 0.00),
+                            .init(color: .clear,                    location: 0.70),
+                            .init(color: .white.opacity(0.25),      location: 0.82),
+                            .init(color: .white.opacity(0.18),      location: 0.92),
+                            .init(color: .clear,                    location: 1.00),
+                        ]),
+                        center: .center,
+                        startAngle: .degrees(-90),
+                        endAngle:   .degrees(270)
                     ),
-                    lineWidth: 1
+                    lineWidth: 2
                 )
+                .padding(3)
         }
-        .frame(width: 64, height: 64)
+        .frame(width: 70, height: 70)
     }
 
     private func formatWeight(_ w: Double) -> String {

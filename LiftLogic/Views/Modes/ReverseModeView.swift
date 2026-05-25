@@ -39,39 +39,43 @@ struct ReverseModeView: View {
                     .transition(.opacity.combined(with: .scale(scale: 0.95)))
             }
 
-            // Undo — bordered "action" button, visually distinct from plate "data" buttons
-            Button {
-                vm.undoLastPlate()
-                HapticManager.shared.plateUndo()
-            } label: {
-                HStack(spacing: 8) {
-                    Image(systemName: "arrow.uturn.backward")
-                    Text("Undo Last Plate")
+            // Undo — circular disc, matches the plate-tool aesthetic
+            HStack {
+                Spacer()
+                Button {
+                    vm.undoLastPlate()
+                    HapticManager.shared.plateUndo()
+                } label: {
+                    ZStack {
+                        Circle()
+                            .fill(vm.reversePlateStack.isEmpty
+                                  ? Color(white: 0.10)
+                                  : ThemeTokens.accent.opacity(0.10))
+                        Circle()
+                            .strokeBorder(
+                                vm.reversePlateStack.isEmpty
+                                    ? Color(white: 0.20)
+                                    : ThemeTokens.accent.opacity(0.45),
+                                lineWidth: 1.5
+                            )
+                        VStack(spacing: 3) {
+                            Image(systemName: "arrow.uturn.backward")
+                                .font(.system(size: 15, weight: .semibold))
+                            Text("Undo")
+                                .font(.system(size: 10, weight: .semibold))
+                        }
+                        .foregroundStyle(vm.reversePlateStack.isEmpty
+                                         ? ThemeTokens.textMuted
+                                         : ThemeTokens.accent)
+                    }
+                    .frame(width: 68, height: 68)
                 }
-                .font(.system(size: 15, weight: .semibold))
-                .foregroundStyle(vm.reversePlateStack.isEmpty ? ThemeTokens.textMuted : ThemeTokens.accent)
-                .frame(maxWidth: .infinity)
-                .frame(height: 44)
-                .background(
-                    RoundedRectangle(cornerRadius: 10)
-                        .fill(vm.reversePlateStack.isEmpty
-                              ? Color.clear
-                              : ThemeTokens.accent.opacity(0.08))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 10)
-                                .strokeBorder(
-                                    vm.reversePlateStack.isEmpty
-                                        ? Color(white: 0.22)
-                                        : ThemeTokens.accent.opacity(0.5),
-                                    lineWidth: 1
-                                )
-                        )
-                )
+                .buttonStyle(NumpadButtonStyle())
+                .disabled(vm.reversePlateStack.isEmpty)
+                .animation(.easeInOut(duration: 0.2), value: vm.reversePlateStack.isEmpty)
+                Spacer()
             }
-            .buttonStyle(.plain)
-            .disabled(vm.reversePlateStack.isEmpty)
-            .padding(.horizontal)
-            .animation(.easeInOut(duration: 0.2), value: vm.reversePlateStack.isEmpty)
+            .padding(.bottom, 4)
         }
     }
 
