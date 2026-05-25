@@ -50,8 +50,10 @@ final class AppSettings {
         unit = WeightUnit(rawValue: ud.string(forKey: "unit") ?? "") ?? .lbs
         defaultBar = BarType(rawValue: ud.string(forKey: "defaultBar") ?? "") ?? .olympic45lb
         customBarWeight = ud.double(forKey: "customBarWeight").nonZero ?? 45.0
-        lbsInventory = loadInventory(key: "lbsInventoryJSON") ?? AppSettings.defaultLbs
-        kgInventory = loadInventory(key: "kgInventoryJSON") ?? AppSettings.defaultKg
+        lbsInventory = AppSettings.mergedInventory(saved: loadInventory(key: "lbsInventoryJSON"),
+                                                   defaults: AppSettings.defaultLbs)
+        kgInventory  = AppSettings.mergedInventory(saved: loadInventory(key: "kgInventoryJSON"),
+                                                   defaults: AppSettings.defaultKg)
         isPro = ud.bool(forKey: "isPro")
         successfulCalculationCount = ud.integer(forKey: "successfulCalculationCount")
         bodyWeight = ud.double(forKey: "bodyWeight")
@@ -85,6 +87,19 @@ final class AppSettings {
 
     func deleteSetup(id: UUID) {
         savedSetups.removeAll { $0.id == id }
+    }
+
+    // MARK: — Inventory migration
+
+    /// Keeps the user's saved inventory (preserving enabled/quantity state) and
+    /// appends any plates from `defaults` whose weight isn't already present.
+    /// This ensures new plate weights added in future builds appear for existing users.
+    static func mergedInventory(saved: [PlateInventoryItem]?,
+                                defaults: [PlateInventoryItem]) -> [PlateInventoryItem] {
+        guard let saved else { return defaults }
+        let savedWeights = Set(saved.map(\.weight))
+        let newPlates = defaults.filter { !savedWeights.contains($0.weight) }
+        return saved + newPlates
     }
 
     // MARK: — Defaults
