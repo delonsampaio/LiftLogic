@@ -51,16 +51,16 @@ private struct PlateButton: View {
                         ],
                         center: .center,
                         startRadius: 0,
-                        endRadius: 32
+                        endRadius: 40
                     )
                 )
                 .padding(4)
 
-            // Weight label + steel hub stacked as a centered unit
-            VStack(spacing: 3) {
+            // Weight label + hub stacked as a centered unit — number above, hub below
+            VStack(spacing: 4) {
                 // Stamped weight text
                 Text(formatWeight(weight))
-                    .font(.system(size: 15, weight: .black, design: .rounded))
+                    .font(.system(size: 16, weight: .black, design: .rounded))
                     .foregroundStyle(.white)
                     .shadow(color: .black.opacity(0.65), radius: 1, x: 0, y: 1)
 
@@ -71,10 +71,10 @@ private struct PlateButton: View {
                             colors: [Color(white: 0.78), Color(white: 0.36)],
                             center: .topLeading,
                             startRadius: 0,
-                            endRadius: 10
+                            endRadius: 12
                         )
                     )
-                    .frame(width: 17, height: 17)
+                    .frame(width: 20, height: 20)
                     .overlay(Circle().strokeBorder(Color(white: 0.18), lineWidth: 0.75))
             }
 
@@ -95,9 +95,9 @@ private struct PlateButton: View {
                     ),
                     lineWidth: 2
                 )
-                .padding(3)
+                .padding(4)
         }
-        .frame(width: 70, height: 70)
+        .frame(width: 82, height: 82)
     }
 
     private func formatWeight(_ w: Double) -> String {

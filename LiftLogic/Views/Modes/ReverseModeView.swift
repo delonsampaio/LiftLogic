@@ -6,22 +6,6 @@ struct ReverseModeView: View {
 
     var body: some View {
         VStack(spacing: 12) {
-            // Total — clean, no cramped summary text
-            HStack {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("Total")
-                        .font(.caption)
-                        .foregroundStyle(ThemeTokens.textMuted)
-                    Text("\(formatWeight(vm.reverseTotal)) \(settings.unit.symbol)")
-                        .font(.system(size: 22, weight: .black, design: .rounded))
-                        .foregroundStyle(ThemeTokens.textPrimary)
-                        .contentTransition(.numericText())
-                        .animation(.spring(response: 0.3), value: vm.reverseTotal)
-                }
-                Spacer()
-            }
-            .padding(.horizontal)
-
             // Plate rack grid
             PlateRackView(
                 inventory: settings.activeInventory,
@@ -32,10 +16,9 @@ struct ReverseModeView: View {
                 isHeavy ? HapticManager.shared.plateLarge() : HapticManager.shared.plateMedium()
             }
 
-            // Plate summary pill — sits between rack and Undo, only shows when plates are added
+            // Plate breakdown — same style as CalcModeView, only shows when plates are added
             if !vm.reversePlateStack.isEmpty {
                 plateSummaryPill
-                    .padding(.horizontal)
                     .transition(.opacity.combined(with: .scale(scale: 0.95)))
             }
 
@@ -79,30 +62,37 @@ struct ReverseModeView: View {
         }
     }
 
+    // Matches CalcModeView's plateBreakdownView — colored dot + "n× weight", centered
     private var plateSummaryPill: some View {
-        let grouped = vm.reversePlateStack.reduce(into: [(Double, Int)]()) { acc, plate in
-            if let idx = acc.firstIndex(where: { $0.0 == plate.weight }) {
-                acc[idx].1 += 1
-            } else {
-                acc.append((plate.weight, 1))
+        let grouped = vm.reversePlateStack
+            .reduce(into: [(Double, Int)]()) { acc, plate in
+                if let idx = acc.firstIndex(where: { $0.0 == plate.weight }) {
+                    acc[idx].1 += 1
+                } else {
+                    acc.append((plate.weight, 1))
+                }
+            }
+            .sorted { $0.0 > $1.0 }   // heaviest first
+
+        return GeometryReader { proxy in
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 16) {
+                    ForEach(grouped, id: \.0) { weight, count in
+                        HStack(spacing: 6) {
+                            Circle()
+                                .fill(ThemeTokens.plateColor(for: weight, unit: settings.unit))
+                                .frame(width: 10, height: 10)
+                            Text("\(count)× \(formatWeight(weight))")
+                                .font(.system(size: 18, weight: .bold, design: .monospaced))
+                                .foregroundStyle(ThemeTokens.textPrimary)
+                        }
+                    }
+                }
+                .frame(minWidth: proxy.size.width, alignment: .center)
+                .padding(.horizontal)
             }
         }
-        let summary = grouped.map { "\($0.1)×\(formatWeight($0.0))" }.joined(separator: "  ·  ")
-
-        return ScrollView(.horizontal, showsIndicators: false) {
-            Text(summary)
-                .font(.system(size: 13, weight: .semibold, design: .monospaced))
-                .foregroundStyle(ThemeTokens.textSecondary)
-                .lineLimit(1)
-                .padding(.horizontal, 14)
-                .padding(.vertical, 6)
-                .background(
-                    Capsule()
-                        .fill(Color(white: 0.14))
-                        .overlay(Capsule().strokeBorder(Color(white: 0.28), lineWidth: 0.5))
-                )
-                .padding(.horizontal)
-        }
+        .frame(height: 30)
     }
 
     private func formatWeight(_ w: Double) -> String {
