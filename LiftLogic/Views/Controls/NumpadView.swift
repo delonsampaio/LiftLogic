@@ -39,11 +39,18 @@ struct NumpadKeyView: View {
     var body: some View {
         Button(action: action) {
             ZStack {
+                // Slightly darker fill — sets the numpad below the app surface
                 RoundedRectangle(cornerRadius: 16)
-                    .fill(Color(white: 0.12))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 16)
-                            .strokeBorder(Color(white: 0.26).opacity(0.5), lineWidth: 0.5)
+                    .fill(Color(white: 0.10))
+                // Top-edge highlight simulates elevation (lighter at top, fades out)
+                RoundedRectangle(cornerRadius: 16)
+                    .strokeBorder(
+                        LinearGradient(
+                            colors: [Color.white.opacity(0.12), Color.white.opacity(0.03)],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        ),
+                        lineWidth: 1
                     )
                 Text(key)
                     .font(ThemeTokens.numpadFont)

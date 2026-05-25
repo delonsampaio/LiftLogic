@@ -37,7 +37,7 @@ struct ReadoutView: View {
     }
 
     var body: some View {
-        VStack(spacing: 4) {
+        VStack(spacing: 2) {
             HStack(alignment: .firstTextBaseline, spacing: 8) {
                 Text(displayWeight == 0 ? "0" : formatWeight(displayWeight))
                     .font(ThemeTokens.readoutFont)
@@ -60,7 +60,7 @@ struct ReadoutView: View {
             } else if let text = bodyweightRatioText {
                 Text(text)
                     .font(ThemeTokens.readoutSubFont)
-                    .foregroundStyle(ThemeTokens.accentPro)
+                    .foregroundStyle(Color(white: 0.4))
             } else if let text = secondaryUnitText {
                 Text(text)
                     .font(.system(size: 15, weight: .medium, design: .monospaced))
