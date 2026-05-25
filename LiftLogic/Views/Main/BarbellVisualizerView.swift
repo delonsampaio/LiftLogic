@@ -119,6 +119,7 @@ struct BarbellVisualizerView: View {
                 }
             }
         }
+        .animation(.spring(response: 0.22, dampingFraction: 0.52), value: plates.map(\.id))
     }
 
     @ViewBuilder
@@ -140,7 +141,7 @@ struct BarbellVisualizerView: View {
                 }
             }
             .frame(width: width, height: height)
-            .animation(.spring(response: 0.3, dampingFraction: 0.75), value: plates.count)
+            .transition(.scale(scale: 0.8).combined(with: .opacity))
     }
 
     private func plateLabelSize(_ lbs: Double) -> CGFloat {
