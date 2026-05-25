@@ -85,21 +85,19 @@ struct ReverseModeView: View {
         }
         let summary = grouped.map { "\($0.1)×\(formatWeight($0.0))" }.joined(separator: "  ·  ")
 
-        return HStack {
-            Spacer()
+        return ScrollView(.horizontal, showsIndicators: false) {
             Text(summary)
-                .font(.system(size: 12, weight: .medium, design: .monospaced))
-                .foregroundStyle(ThemeTokens.textMuted)
+                .font(.system(size: 13, weight: .semibold, design: .monospaced))
+                .foregroundStyle(ThemeTokens.textSecondary)
                 .lineLimit(1)
-                .minimumScaleFactor(0.7)
                 .padding(.horizontal, 14)
                 .padding(.vertical, 6)
                 .background(
                     Capsule()
-                        .fill(Color(white: 0.12))
-                        .overlay(Capsule().strokeBorder(Color(white: 0.22), lineWidth: 0.5))
+                        .fill(Color(white: 0.14))
+                        .overlay(Capsule().strokeBorder(Color(white: 0.28), lineWidth: 0.5))
                 )
-            Spacer()
+                .padding(.horizontal)
         }
     }
 

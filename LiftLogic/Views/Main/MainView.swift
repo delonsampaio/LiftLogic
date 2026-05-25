@@ -21,59 +21,68 @@ struct MainView: View {
             ThemeTokens.backgroundPrimary.ignoresSafeArea()
 
             VStack(spacing: 0) {
-                // Top bar
-                HStack {
-                    Button {
-                        showSettings = true
-                    } label: {
-                        Image(systemName: "gearshape")
-                            .font(.system(size: 20))
-                            .foregroundStyle(ThemeTokens.textMuted)
-                    }
-
-                    Spacer()
-
+                // Top bar — ZStack so title is always geometrically centered
+                // regardless of how many icons are on each side
+                ZStack {
+                    // Center layer: title
                     Text("LiftLogic")
                         .font(.system(size: 16, weight: .semibold))
                         .foregroundStyle(ThemeTokens.textMuted)
+                        .frame(maxWidth: .infinity)
 
-                    Spacer()
-
-                    Button {
-                        ShareService.share(vm: vm, settings: settings)
-                    } label: {
-                        Image(systemName: "square.and.arrow.up")
-                            .font(.system(size: 20))
-                            .foregroundStyle(ThemeTokens.textMuted)
-                    }
-
-                    Button {
-                        guard settings.isPro else { showPaywall = true; return }
-                        showTimer = true
-                    } label: {
-                        Image(systemName: "timer")
-                            .font(.system(size: 20))
-                            .foregroundStyle(ThemeTokens.textMuted)
-                    }
-
-                    if settings.isPro {
+                    // Left side: settings
+                    HStack {
                         Button {
-                            showSavedSetups = true
+                            showSettings = true
                         } label: {
-                            Image(systemName: "bookmark")
+                            Image(systemName: "gearshape")
                                 .font(.system(size: 20))
                                 .foregroundStyle(ThemeTokens.textMuted)
                         }
-                    } else {
-                        Button {
-                            showPaywall = true
-                        } label: {
-                            Text("PRO")
-                                .font(.system(size: 11, weight: .bold))
-                                .foregroundStyle(ThemeTokens.accentPro)
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 3)
-                                .background(Capsule().fill(ThemeTokens.accentPro.opacity(0.15)))
+                        Spacer()
+                    }
+
+                    // Right side: evenly spaced action icons
+                    HStack {
+                        Spacer()
+                        HStack(spacing: 20) {
+                            Button {
+                                ShareService.share(vm: vm, settings: settings)
+                            } label: {
+                                Image(systemName: "square.and.arrow.up")
+                                    .font(.system(size: 20))
+                                    .foregroundStyle(ThemeTokens.textMuted)
+                            }
+
+                            Button {
+                                guard settings.isPro else { showPaywall = true; return }
+                                showTimer = true
+                            } label: {
+                                Image(systemName: "timer")
+                                    .font(.system(size: 20))
+                                    .foregroundStyle(ThemeTokens.textMuted)
+                            }
+
+                            if settings.isPro {
+                                Button {
+                                    showSavedSetups = true
+                                } label: {
+                                    Image(systemName: "bookmark")
+                                        .font(.system(size: 20))
+                                        .foregroundStyle(ThemeTokens.textMuted)
+                                }
+                            } else {
+                                Button {
+                                    showPaywall = true
+                                } label: {
+                                    Text("PRO")
+                                        .font(.system(size: 11, weight: .bold))
+                                        .foregroundStyle(ThemeTokens.accentPro)
+                                        .padding(.horizontal, 8)
+                                        .padding(.vertical, 3)
+                                        .background(Capsule().fill(ThemeTokens.accentPro.opacity(0.15)))
+                                }
+                            }
                         }
                     }
                 }

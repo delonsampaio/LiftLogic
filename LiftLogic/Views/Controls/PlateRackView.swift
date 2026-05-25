@@ -36,11 +36,11 @@ private struct PlateButton: View {
 
     var body: some View {
         ZStack {
-            // Outer ring — darkened rim of the plate
+            // Outer ring — darkened plate rim
             Circle()
-                .fill(plateColor.opacity(0.75))
+                .fill(plateColor.opacity(0.70))
 
-            // Main plate face — slightly inset with radial gradient for depth
+            // Main plate face — radial gradient for subtle depth
             Circle()
                 .fill(
                     RadialGradient(
@@ -52,20 +52,20 @@ private struct PlateButton: View {
                 )
                 .padding(4)
 
-            // Center hub — the hole/boss of a real plate
-            Circle()
-                .fill(Color(white: 0.08))
-                .frame(width: 14, height: 14)
-                .overlay(Circle().strokeBorder(Color(white: 0.25), lineWidth: 0.5))
-
-            // Weight label — sits above hub, slightly offset upward
+            // Weight label — upper half of plate, clear of the bore
             Text(formatWeight(weight))
-                .font(.system(size: 15, weight: .black, design: .rounded))
+                .font(.system(size: 16, weight: .black, design: .rounded))
                 .foregroundStyle(.white)
-                .shadow(color: .black.opacity(0.5), radius: 1, x: 0, y: 1)
-                .offset(y: -1)
+                .shadow(color: .black.opacity(0.55), radius: 1, x: 0, y: 1)
+                .offset(y: -12)
 
-            // Top-edge highlight for elevation (consistent with numpad)
+            // Center bore — WHITE, like competition/IWF plates
+            Circle()
+                .fill(Color(white: 0.88))
+                .frame(width: 16, height: 16)
+                .overlay(Circle().strokeBorder(Color(white: 0.55), lineWidth: 0.5))
+
+            // Top-edge elevation highlight (consistent with numpad keys)
             Circle()
                 .strokeBorder(
                     LinearGradient(

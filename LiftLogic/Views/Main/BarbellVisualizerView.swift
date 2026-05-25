@@ -8,7 +8,11 @@ struct BarbellVisualizerView: View {
     @State private var pulseScale: CGFloat = 1.0
 
     private var plates: [LoadedPlate] {
-        vm.currentMode == .reverse ? vm.reversePlateStack : vm.plateResult.platesPerSide
+        if vm.currentMode == .reverse {
+            // Heaviest plates innermost (closest to collar), lightest outermost
+            return vm.reversePlateStack.sorted { $0.weight > $1.weight }
+        }
+        return vm.plateResult.platesPerSide
     }
 
     var body: some View {
