@@ -61,7 +61,7 @@ private struct PlateButton: View {
                 .font(.system(size: 18, weight: .black, design: .rounded))
                 .foregroundStyle(.white)
                 .shadow(color: .black.opacity(0.65), radius: 1, x: 0, y: 1)
-                .offset(y: -26)
+                .offset(y: -20)
 
             // Metallic hub — dead center, smaller bore for clarity
             Circle()
