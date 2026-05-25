@@ -54,15 +54,19 @@ struct PlateInventoryView: View {
 
             Button {
                 let q = item.wrappedValue.quantity
-                guard q != Int.max else { return }
-                item.wrappedValue.quantity = q >= 20 ? Int.max : q + 2
+                if q == Int.max {
+                    item.wrappedValue.quantity = 4
+                } else if q >= 20 {
+                    item.wrappedValue.quantity = Int.max
+                } else {
+                    item.wrappedValue.quantity = q + 2
+                }
             } label: {
                 Image(systemName: "plus.circle")
                     .font(.system(size: 18))
-                    .foregroundStyle(item.wrappedValue.quantity == Int.max ? ThemeTokens.textMuted : ThemeTokens.textSecondary)
+                    .foregroundStyle(ThemeTokens.textSecondary)
             }
             .buttonStyle(.plain)
-            .disabled(item.wrappedValue.quantity == Int.max)
         }
     }
 
