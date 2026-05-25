@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LiftLogic – Support</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #f5f5f7;
+      color: #1d1d1f;
+      line-height: 1.6;
+    }
+    header {
+      background: #fff;
+      border-bottom: 1px solid #e0e0e0;
+      padding: 24px 24px;
+      text-align: center;
+    }
+    header h1 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #1d1d1f;
+    }
+    header p {
+      color: #6e6e73;
+      margin-top: 4px;
+      font-size: 0.95rem;
+    }
+    main {
+      max-width: 720px;
+      margin: 40px auto;
+      padding: 0 24px;
+    }
+    section {
+      background: #fff;
+      border-radius: 16px;
+      padding: 28px;
+      margin-bottom: 24px;
+    }
+    h2 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 16px;
+      color: #1d1d1f;
+    }
+    details {
+      border-bottom: 1px solid #f0f0f0;
+      padding: 12px 0;
+    }
+    details:last-child { border-bottom: none; }
+    summary {
+      font-weight: 500;
+      cursor: pointer;
+      list-style: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    summary::-webkit-details-marker { display: none; }
+    summary::after {
+      content: "+";
+      font-size: 1.2rem;
+      color: #6e6e73;
+      flex-shrink: 0;
+      margin-left: 12px;
+    }
+    details[open] summary::after { content: "−"; }
+    details p {
+      margin-top: 10px;
+      color: #6e6e73;
+      font-size: 0.95rem;
+    }
+    .pro {
+      display: inline-block;
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: #fff;
+      background: #FF6B35;
+      border-radius: 4px;
+      padding: 1px 6px;
+      margin-left: 7px;
+      vertical-align: middle;
+      line-height: 1.6;
+      flex-shrink: 0;
+    }
+    .contact a {
+      color: #FF6B35;
+      text-decoration: none;
+    }
+    .contact a:hover { text-decoration: underline; }
+    footer {
+      text-align: center;
+      padding: 32px 24px;
+      color: #6e6e73;
+      font-size: 0.85rem;
+    }
+    footer a { color: #6e6e73; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>LiftLogic</h1>
+  <p>Barbell Calculator — Support &amp; Help</p>
+</header>
+
+<main>
+
+  <section>
+    <h2>Getting Started</h2>
+    <details>
+      <summary>How do I calculate my plate setup?</summary>
+      <p>Type your total bar weight on the numpad. LiftLogic instantly calculates which plates go on each side and shows them on the barbell graphic.</p>
+    </details>
+    <details>
+      <summary>What is the barbell graphic?</summary>
+      <p>A real-time 2D visualizer showing exactly which plates are loaded on each side. Plate colors match the international standard — red for 45 lb, blue for 35 lb, yellow for 25 lb, and so on. It updates live as you type.</p>
+    </details>
+    <details>
+      <summary>How do I reset the weight?</summary>
+      <p>Three ways: swipe the barbell left or right, double-tap it, or delete all digits on the numpad. Long-press the barbell to play a fly-off animation where the plates slide off the ends.</p>
+    </details>
+    <details>
+      <summary>What is the "Add per side" banner?</summary>
+      <p>When you change an existing weight, the banner shows exactly which plates to add or remove per side compared to what was last loaded — so you don't have to strip the bar and start over.</p>
+    </details>
+    <details>
+      <summary>What are the recent weight chips?</summary>
+      <p>The last 5 weights you calculated appear as quick-tap chips above the numpad. Tap one to reload that weight instantly. Long-press a chip to remove it.</p>
+    </details>
+  </section>
+
+  <section>
+    <h2>Plates &amp; Bar</h2>
+    <details>
+      <summary>How do I change the bar weight?</summary>
+      <p>Tap the bar picker in the quick toggle strip below the barbell. Choose Olympic (45 lb), Women's (33 lb), EZ Curl (18 lb), Safety Squat (65 lb), or enter a custom weight.</p>
+    </details>
+    <details>
+      <summary>What is Single Side mode?</summary>
+      <p>When enabled, the calculator treats your typed weight as the total for one side only — useful for loading a landmine, single-arm attachment, or any non-symmetric setup.</p>
+    </details>
+    <details>
+      <summary>What is collar weight?</summary>
+      <p>Toggles a 2.5 lb collar deduction per side. Enable it if your gym uses locking collars that add meaningful weight to the bar.</p>
+    </details>
+    <details>
+      <summary>How do I set my plate inventory?</summary>
+      <p>Go to Settings → Plate Inventory and enable or disable the plates your gym has available. Disabled plates are skipped entirely by the calculator.</p>
+    </details>
+    <details>
+      <summary>What are plate quantity limits? <span class="pro">PRO</span></summary>
+      <p>In Settings → Plate Inventory, use the − button next to any enabled plate to set how many of that plate you own. The calculator will never suggest loading more plates than you have available.</p>
+    </details>
+  </section>
+
+  <section>
+    <h2>Modes</h2>
+    <details>
+      <summary>What is CALC mode?</summary>
+      <p>The main plate calculator. Type a total bar weight and see the exact plates to load per side. If the exact weight isn't achievable with your inventory, an amber warning shows the closest loadable weight and the shortfall.</p>
+    </details>
+    <details>
+      <summary>What is WARMUP mode? <span class="pro">PRO</span></summary>
+      <p>Automatically generates a 5-set warmup ladder at 50%, 60%, 70%, 80%, and 90% of your target weight, rounded to loadable plates. Tap any row to load that weight into CALC.</p>
+    </details>
+    <details>
+      <summary>What is 1RM mode? <span class="pro">PRO</span></summary>
+      <p>Enter a weight and rep count to estimate your one-rep max using the Epley and Brzycki formulas. The average of both is shown. Tap the result to load it into CALC.</p>
+    </details>
+    <details>
+      <summary>What is REV (Reverse) mode? <span class="pro">PRO</span></summary>
+      <p>Build a bar weight by tapping plates one at a time — useful when you're standing at the rack and want to add up what's already loaded. Tap UNDO to remove the last plate added.</p>
+    </details>
+  </section>
+
+  <section>
+    <h2>Gestures &amp; Controls</h2>
+    <details>
+      <summary>How do I clear the bar with a gesture?</summary>
+      <p>Long-press the barbell to animate all plates flying off the ends. Double-tap to reset instantly without animation. Swiping left or right also resets the weight.</p>
+    </details>
+    <details>
+      <summary>What do the + and − buttons next to the weight do?</summary>
+      <p>They increment or decrement the total bar weight by the smallest enabled plate × 2 (one plate per side). Useful for fine-tuning without retyping the full number.</p>
+    </details>
+    <details>
+      <summary>How do I share my lift?</summary>
+      <p>Tap the share icon in the top toolbar. LiftLogic generates a summary card showing your weight, plate breakdown, and unit — ready to share to Messages, Instagram, or anywhere.</p>
+    </details>
+    <details>
+      <summary>How do I use the rest timer? <span class="pro">PRO</span></summary>
+      <p>Tap the timer icon in the top toolbar. Choose a preset (90 s, 2 min, 3 min, 5 min) or let it count up. The timer keeps running in the background and fires three heavy haptic pulses at zero.</p>
+    </details>
+  </section>
+
+  <section>
+    <h2>Pro</h2>
+    <details>
+      <summary>What is included in Pro?</summary>
+      <p>Warmup mode, 1RM estimator, Reverse mode, bodyweight ratio in the readout, saved setups, rest timer, and plate quantity limits. $1.99 one-time purchase — no subscription, ever.</p>
+    </details>
+    <details>
+      <summary>How do I buy Pro?</summary>
+      <p>Tap the PRO button in the top-right corner of the main screen, or tap any locked mode pill. The price is $1.99 with Family Sharing enabled.</p>
+    </details>
+    <details>
+      <summary>Does Pro work on all my devices?</summary>
+      <p>Yes. Tap "Restore Purchases" in Settings → Pro Status to activate Pro on any iPhone signed into the same Apple ID.</p>
+    </details>
+    <details>
+      <summary>How do I set my bodyweight ratio? <span class="pro">PRO</span></summary>
+      <p>Go to Settings → Pro — Bodyweight and enter your bodyweight. The ratio (e.g. "1.87× bodyweight") appears under the main readout and is included in your Share My Lift card.</p>
+    </details>
+    <details>
+      <summary>What are saved setups? <span class="pro">PRO</span></summary>
+      <p>Bookmark any bar configuration — weight, bar type, collar, unit — for one-tap recall. Tap the history icon in the top toolbar to save or load a setup.</p>
+    </details>
+  </section>
+
+  <section class="contact">
+    <h2>Still need help?</h2>
+    <p>Send us an email and we'll get back to you as soon as possible.</p>
+    <p style="margin-top: 12px;"><a href="mailto:delon.sampaio+liftlogic@gmail.com">delon.sampaio+liftlogic@gmail.com</a></p>
+  </section>
+
+</main>
+
+<footer>
+  <p><a href="privacy.html">Privacy Policy</a> &nbsp;·&nbsp; &copy; 2026 Delon Sampaio</p>
+</footer>
+
+</body>
+</html>

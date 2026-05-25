@@ -90,6 +90,12 @@ struct SettingsView: View {
                     }
                 }
 
+                Section("Support") {
+                    NavigationLink("Help & FAQ") {
+                        HelpView(isPro: settings.isPro)
+                    }
+                }
+
                 Section("Pro Status") {
                     HStack {
                         Text(settings.isPro ? "Pro — Unlocked" : "Free")
