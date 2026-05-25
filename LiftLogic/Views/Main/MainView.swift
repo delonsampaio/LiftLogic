@@ -101,12 +101,12 @@ struct MainView: View {
                 let visiblePlateCount = vm.currentMode == .reverse
                     ? vm.reversePlateStack.count
                     : vm.plateResult.platesPerSide.count
-                if visiblePlateCount >= 8 {
+                if visiblePlateCount >= 9 {
                     Label("Check sleeve space", systemImage: "exclamationmark.triangle")
                         .font(.caption.weight(.medium))
                         .foregroundStyle(ThemeTokens.warningAmber)
                         .transition(.opacity.combined(with: .scale(scale: 0.95)))
-                        .animation(.easeInOut(duration: 0.25), value: visiblePlateCount >= 8)
+                        .animation(.easeInOut(duration: 0.25), value: visiblePlateCount >= 9)
                 }
 
                 // Quick toggle strip
