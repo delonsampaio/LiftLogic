@@ -30,8 +30,12 @@ struct CalcModeView: View {
             .frame(minHeight: 52)
             .animation(.easeInOut(duration: 0.2), value: vm.targetWeight > 0)
 
-            // ── Quick increment row ──────────────────────────────────────
-            HStack(spacing: 16) {
+            // ── Increment row + recent weights ───────────────────────────
+            // Recent weight chips live between the − and + buttons so they
+            // occupy a slot that already exists rather than adding a new row.
+            // The row height is defined by the button icons — chips just fill
+            // the available space in the middle.
+            HStack(spacing: 12) {
                 Button {
                     vm.decrement()
                     HapticManager.shared.quickIncrement()
@@ -42,7 +46,18 @@ struct CalcModeView: View {
                 }
                 .accessibilityLabel("Decrease weight")
 
-                Spacer()
+                // Chips scroll horizontally between the two buttons.
+                // When there are no chips the space is simply empty.
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 8) {
+                        ForEach(settings.recentWeights, id: \.self) { weight in
+                            recentWeightChip(weight)
+                        }
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.horizontal, 4)
+                }
+                .scrollBounceBehavior(.basedOnSize, axes: .horizontal)
 
                 Button {
                     vm.increment()
@@ -55,28 +70,6 @@ struct CalcModeView: View {
                 .accessibilityLabel("Increase weight")
             }
             .padding(.horizontal, 24)
-
-            // ── Recent weights ───────────────────────────────────────────
-            // Always rendered; height animates 0→44 on first chip so the
-            // numpad slides in smoothly instead of jumping.
-            GeometryReader { proxy in
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 8) {
-                        ForEach(settings.recentWeights, id: \.self) { weight in
-                            recentWeightChip(weight)
-                        }
-                    }
-                    // Subtract content margins from minWidth so chips centre
-                    // correctly on wide screens (same fix as toggle strip).
-                    .frame(minWidth: proxy.size.width - 32, alignment: .center)
-                }
-                .contentMargins(.horizontal, 16, for: .scrollContent)
-                .scrollBounceBehavior(.basedOnSize, axes: .horizontal)
-            }
-            .frame(height: settings.recentWeights.isEmpty ? 0 : 44 * scale)
-            .clipped()
-            .animation(.spring(response: 0.35, dampingFraction: 0.8),
-                       value: settings.recentWeights.isEmpty)
 
             // ── Numpad ───────────────────────────────────────────────────
             NumpadView(vm: vm)
