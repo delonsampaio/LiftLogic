@@ -185,6 +185,11 @@ final class CalculatorViewModel {
         reversePlateStack.removeLast()
     }
 
+    func removePlate(id: UUID) {
+        guard let idx = reversePlateStack.lastIndex(where: { $0.id == id }) else { return }
+        reversePlateStack.remove(at: idx)
+    }
+
     func clearReverseStack() {
         reversePlateStack.removeAll()
     }

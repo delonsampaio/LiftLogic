@@ -87,15 +87,21 @@ struct BarbellVisualizerView: View {
                 .onChanged { swipeOffset = $0.translation.width * 0.3 }
                 .onEnded { _ in
                     withAnimation(.spring(response: 0.4, dampingFraction: 0.6)) { swipeOffset = 0 }
-                    vm.resetWeight()
+                    if vm.currentMode == .reverse {
+                        withAnimation { vm.clearReverseStack() }
+                    } else {
+                        vm.resetWeight()
+                    }
                     HapticManager.shared.swipeReset()
                 }
         )
         .simultaneousGesture(
             TapGesture(count: 2)
                 .onEnded {
-                    vm.resetWeight()
-                    HapticManager.shared.swipeReset()
+                    if vm.currentMode != .reverse {
+                        vm.resetWeight()
+                        HapticManager.shared.swipeReset()
+                    }
                 }
         )
         .simultaneousGesture(
@@ -103,7 +109,13 @@ struct BarbellVisualizerView: View {
                 .onEnded { _ in
                     HapticManager.shared.swipeReset()
                     withAnimation(.spring(response: 0.3, dampingFraction: 0.85)) { swipeOffset = 440 }
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.22) { vm.resetWeight() }
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.22) {
+                        if vm.currentMode == .reverse {
+                            vm.clearReverseStack()
+                        } else {
+                            vm.resetWeight()
+                        }
+                    }
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.28) {
                         swipeOffset = -18
                         withAnimation(.spring(response: 0.5, dampingFraction: 0.7)) { swipeOffset = 0 }
@@ -137,6 +149,13 @@ struct BarbellVisualizerView: View {
             .shadow(color: .black.opacity(0.5), radius: 2, x: 1, y: 2)
             .frame(width: width, height: height)
             .transition(.scale(scale: 0.8).combined(with: .opacity))
+            .onTapGesture {
+                guard vm.currentMode == .reverse else { return }
+                withAnimation(.spring(response: 0.22, dampingFraction: 0.6)) {
+                    vm.removePlate(id: plate.id)
+                }
+                HapticManager.shared.plateUndo()
+            }
     }
 
     private func plateHeight(_ weight: Double) -> CGFloat {
