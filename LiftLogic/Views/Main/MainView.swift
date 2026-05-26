@@ -10,6 +10,7 @@ struct MainView: View {
     @State private var showSavedSetups = false
     @State private var showTimer = false
     @Environment(\.requestReview) private var requestReview
+    @Environment(\.scenePhase) private var scenePhase
 
     init() {
         let s = AppSettings()
@@ -177,6 +178,9 @@ struct MainView: View {
         .onAppear {
             UIApplication.shared.isIdleTimerDisabled = true
             timer.reattachIfNeeded()
+        }
+        .onChange(of: scenePhase) { _, newPhase in
+            if newPhase == .active { timer.syncFromActivity() }
         }
         .onDisappear {
             UIApplication.shared.isIdleTimerDisabled = false

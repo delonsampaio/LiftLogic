@@ -50,6 +50,27 @@ final class TimerService {
         }
     }
 
+    /// Re-syncs the in-process countdown to wall-clock time. Call when the app
+    /// returns to the foreground — our background-suspended Task will be behind
+    /// by however long the app was inactive.
+    func syncFromActivity() {
+        guard state == .running, let endDate = activity?.content.state.endDate else { return }
+        let remaining = Int(endDate.timeIntervalSinceNow.rounded())
+        if remaining <= 0 {
+            // Should have finished while backgrounded
+            task?.cancel()
+            task = nil
+            remainingSeconds = 0
+            state = .finished
+            endLiveActivity()
+        } else {
+            remainingSeconds = remaining
+            // Restart the ticker — the previous Task is suspended/behind
+            task?.cancel()
+            startCountdown()
+        }
+    }
+
     func stop() {
         task?.cancel()
         task = nil
