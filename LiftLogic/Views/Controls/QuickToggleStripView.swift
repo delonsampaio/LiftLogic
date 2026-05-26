@@ -4,6 +4,9 @@ struct QuickToggleStripView: View {
     let vm: CalculatorViewModel
     let settings: AppSettings
 
+    @Environment(\.horizontalSizeClass) private var sizeClass
+    private var scale: CGFloat { sizeClass == .regular ? 1.4 : 1.0 }
+
     var body: some View {
         GeometryReader { proxy in
             ScrollView(.horizontal, showsIndicators: false) {
@@ -16,7 +19,7 @@ struct QuickToggleStripView: View {
                         settings.unit = settings.unit == .lbs ? .kg : .lbs
                     }
 
-                    Divider().frame(height: 20).opacity(0.3)
+                    Divider().frame(height: 20 * scale).opacity(0.3)
 
                     // Bar picker
                     Menu {
@@ -37,7 +40,7 @@ struct QuickToggleStripView: View {
                         ) {}
                     }
 
-                    Divider().frame(height: 20).opacity(0.3)
+                    Divider().frame(height: 20 * scale).opacity(0.3)
 
                     // Collar toggle
                     toggleChip(title: collarLabel, isActive: vm.collarType != .none) {
@@ -53,7 +56,7 @@ struct QuickToggleStripView: View {
                 .padding(.horizontal)
             }
         }
-        .frame(height: 40)
+        .frame(height: 40 * scale)
     }
 
     @ViewBuilder
@@ -66,15 +69,15 @@ struct QuickToggleStripView: View {
         Button(action: action) {
             HStack(spacing: 4) {
                 Text(title)
-                    .font(.caption.weight(.medium))
+                    .font(sizeClass == .regular ? .subheadline.weight(.medium) : .caption.weight(.medium))
                 if showChevron {
                     Image(systemName: "chevron.down")
-                        .font(.caption2.weight(.semibold))
+                        .font(sizeClass == .regular ? .caption.weight(.semibold) : .caption2.weight(.semibold))
                 }
             }
             .foregroundStyle(isActive ? ThemeTokens.accent : ThemeTokens.textSecondary)
-            .padding(.horizontal, 12)
-            .padding(.vertical, 7)
+            .padding(.horizontal, 12 * scale)
+            .padding(.vertical, 7 * scale)
             .background(
                 Capsule()
                     .fill(isActive ? ThemeTokens.accent.opacity(0.15) : Color(white: 0.12))

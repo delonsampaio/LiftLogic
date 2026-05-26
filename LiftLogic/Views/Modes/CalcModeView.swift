@@ -4,6 +4,9 @@ struct CalcModeView: View {
     let vm: CalculatorViewModel
     let settings: AppSettings
 
+    @Environment(\.horizontalSizeClass) private var sizeClass
+    private var scale: CGFloat { sizeClass == .regular ? 1.4 : 1.0 }
+
     @State private var commitTask: Task<Void, Never>?
 
     var body: some View {
@@ -65,7 +68,7 @@ struct CalcModeView: View {
                         .padding(.horizontal)
                     }
                 }
-                .frame(height: 34)
+                .frame(height: 34 * scale)
             }
 
             // Numpad
@@ -108,11 +111,11 @@ struct CalcModeView: View {
             HapticManager.shared.numpadKey()
         } label: {
             Text(label)
-                .font(.footnote.weight(.medium))
+                .font(sizeClass == .regular ? .subheadline.weight(.medium) : .footnote.weight(.medium))
                 .monospaced()
                 .foregroundStyle(ThemeTokens.textSecondary)
-                .padding(.horizontal, 12)
-                .padding(.vertical, 6)
+                .padding(.horizontal, 12 * scale)
+                .padding(.vertical, 6 * scale)
                 .background(
                     Capsule()
                         .fill(Color(white: 0.12))

@@ -34,7 +34,10 @@ struct NumpadKeyView: View {
     let key: String
     let action: () -> Void
 
+    @Environment(\.horizontalSizeClass) private var sizeClass
     private var isDelete: Bool { key == "⌫" }
+    private var keyHeight: CGFloat { sizeClass == .regular ? 88 : 62 }
+    private var fontSize: CGFloat { sizeClass == .regular ? 38 : 28 }
 
     var body: some View {
         Button(action: action) {
@@ -53,13 +56,13 @@ struct NumpadKeyView: View {
                         lineWidth: 1
                     )
                 Text(key)
-                    .font(ThemeTokens.numpadFont)
+                    .font(.system(size: fontSize, weight: .semibold, design: .rounded))
                     .foregroundStyle(isDelete ? ThemeTokens.warningAmber : ThemeTokens.textPrimary)
             }
         }
         .buttonStyle(NumpadButtonStyle())
         .frame(maxWidth: .infinity)
-        .frame(height: 62)
+        .frame(height: keyHeight)
         .accessibilityLabel(isDelete ? "Delete" : key == "." ? "Decimal point" : key)
     }
 }

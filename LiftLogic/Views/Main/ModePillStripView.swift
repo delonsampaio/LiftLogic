@@ -5,21 +5,24 @@ struct ModePillStripView: View {
     let settings: AppSettings
     @Binding var showPaywall: Bool
 
+    @Environment(\.horizontalSizeClass) private var sizeClass
+    private var scale: CGFloat { sizeClass == .regular ? 1.4 : 1.0 }
+
     var body: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: 8 * scale) {
             ForEach(AppMode.allCases, id: \.self) { mode in
                 Button {
                     onPillTap(mode)
                 } label: {
-                    HStack(spacing: 4) {
+                    HStack(spacing: 4 * scale) {
                         Image(systemName: mode.iconName)
-                            .font(.caption2.weight(.semibold))
+                            .font(sizeClass == .regular ? .caption.weight(.semibold) : .caption2.weight(.semibold))
                         Text(mode.displayName)
-                            .font(.caption.weight(.semibold))
+                            .font(sizeClass == .regular ? .subheadline.weight(.semibold) : .caption.weight(.semibold))
                     }
                     .foregroundStyle(vm.currentMode == mode ? ThemeTokens.accent : ThemeTokens.textMuted)
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 8)
+                    .padding(.horizontal, 12 * scale)
+                    .padding(.vertical, 8 * scale)
                     .background {
                         if vm.currentMode == mode {
                             Capsule()

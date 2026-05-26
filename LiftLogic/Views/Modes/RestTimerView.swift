@@ -5,13 +5,16 @@ struct RestTimerView: View {
     let settings: AppSettings
     @Binding var isPresented: Bool
 
+    @Environment(\.horizontalSizeClass) private var sizeClass
+    private var scale: CGFloat { sizeClass == .regular ? 1.4 : 1.0 }
+
     @State private var showCustomPicker = false
 
     var body: some View {
         VStack(spacing: 20) {
             // Timer display
             Text(timer.state == .idle ? "Rest Timer" : timer.formattedTime)
-                .font(.system(size: 48, weight: .black, design: .monospaced))
+                .font(.system(size: 48 * scale, weight: .black, design: .monospaced))
                 .foregroundStyle(timer.state == .finished ? ThemeTokens.accent : ThemeTokens.textPrimary)
                 .contentTransition(.numericText())
                 .animation(.spring(response: 0.3), value: timer.remainingSeconds)
@@ -86,10 +89,10 @@ struct RestTimerView: View {
             }
         } label: {
             Text(label)
-                .font(.footnote.weight(.semibold))
+                .font(sizeClass == .regular ? .subheadline.weight(.semibold) : .footnote.weight(.semibold))
                 .foregroundStyle(isActive ? ThemeTokens.accent : ThemeTokens.textMuted)
-                .padding(.horizontal, 12)
-                .padding(.vertical, 8)
+                .padding(.horizontal, 12 * scale)
+                .padding(.vertical, 8 * scale)
                 .background(
                     Capsule()
                         .fill(isActive ? ThemeTokens.accent.opacity(0.15) : Color(white: 0.12))
@@ -112,9 +115,9 @@ struct RestTimerView: View {
     @ViewBuilder
     private func controlButton(systemImage: String, color: Color) -> some View {
         Image(systemName: systemImage)
-            .font(.title2)
+            .font(sizeClass == .regular ? .largeTitle : .title2)
             .foregroundStyle(color)
-            .frame(width: 52, height: 52)
+            .frame(width: 52 * scale, height: 52 * scale)
             .background(Circle().fill(Color(white: 0.15)))
     }
 

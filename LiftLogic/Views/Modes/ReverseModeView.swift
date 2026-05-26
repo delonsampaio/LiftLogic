@@ -4,6 +4,9 @@ struct ReverseModeView: View {
     let vm: CalculatorViewModel
     let settings: AppSettings
 
+    @Environment(\.horizontalSizeClass) private var sizeClass
+    private var scale: CGFloat { sizeClass == .regular ? 1.4 : 1.0 }
+
     var body: some View {
         VStack(spacing: 12) {
             // Inventory limit warning — only shows if user has configured quantities
@@ -62,7 +65,7 @@ struct ReverseModeView: View {
             }
             .foregroundStyle(isEmpty ? ThemeTokens.textMuted : ThemeTokens.accent)
         }
-        .frame(width: 68, height: 68)
+        .frame(width: 68 * scale, height: 68 * scale)
         .contentShape(Circle())
         .onTapGesture {
             guard !isEmpty else { return }
@@ -122,7 +125,7 @@ struct ReverseModeView: View {
         return HStack(spacing: 5) {
             Circle()
                 .fill(ThemeTokens.plateColor(for: weight, unit: settings.unit))
-                .frame(width: 9, height: 9)
+                .frame(width: 9 * scale, height: 9 * scale)
             Text("\(totalCount)×\(weight.weightString)")
                 .font(.callout.weight(.bold))
                 .monospaced()
