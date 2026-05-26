@@ -11,13 +11,26 @@ struct CalcModeView: View {
 
     var body: some View {
         VStack(spacing: 12) {
-            // Empty state
-            if vm.targetWeight == 0 {
-                EmptyStateView()
-                    .transition(.opacity)
-            }
 
-            // Quick increment row
+            // ── Info zone ────────────────────────────────────────────────
+            // EmptyState and plate breakdown share this slot so the +/−
+            // row and numpad never move when content switches.
+            // minHeight matches a typical single-row breakdown so there is
+            // no height change for the most common case.
+            ZStack {
+                if vm.targetWeight == 0 {
+                    EmptyStateView()
+                        .transition(.opacity)
+                }
+                if vm.targetWeight > 0 && !vm.plateResult.platesPerSide.isEmpty {
+                    plateBreakdownView
+                        .transition(.opacity)
+                }
+            }
+            .frame(minHeight: 52)
+            .animation(.easeInOut(duration: 0.2), value: vm.targetWeight > 0)
+
+            // ── Quick increment row ──────────────────────────────────────
             HStack(spacing: 16) {
                 Button {
                     vm.decrement()
@@ -43,29 +56,29 @@ struct CalcModeView: View {
             }
             .padding(.horizontal, 24)
 
-            // Plate breakdown — shown before numpad so it's immediately visible
-            if !vm.plateResult.platesPerSide.isEmpty {
-                plateBreakdownView
-                    .transition(.opacity)
-            }
-
-            // Recent weights chips
-            if !settings.recentWeights.isEmpty {
-                GeometryReader { proxy in
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 8) {
-                            ForEach(settings.recentWeights, id: \.self) { weight in
-                                recentWeightChip(weight)
-                            }
+            // ── Recent weights ───────────────────────────────────────────
+            // Always rendered; height animates 0→44 on first chip so the
+            // numpad slides in smoothly instead of jumping.
+            GeometryReader { proxy in
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 8) {
+                        ForEach(settings.recentWeights, id: \.self) { weight in
+                            recentWeightChip(weight)
                         }
-                        .frame(minWidth: proxy.size.width, alignment: .center)
-                        .padding(.horizontal)
                     }
+                    // Subtract content margins from minWidth so chips centre
+                    // correctly on wide screens (same fix as toggle strip).
+                    .frame(minWidth: proxy.size.width - 32, alignment: .center)
                 }
-                .frame(height: 44 * scale)
+                .contentMargins(.horizontal, 16, for: .scrollContent)
+                .scrollBounceBehavior(.basedOnSize, axes: .horizontal)
             }
+            .frame(height: settings.recentWeights.isEmpty ? 0 : 44 * scale)
+            .clipped()
+            .animation(.spring(response: 0.35, dampingFraction: 0.8),
+                       value: settings.recentWeights.isEmpty)
 
-            // Numpad
+            // ── Numpad ───────────────────────────────────────────────────
             NumpadView(vm: vm)
                 .padding(.horizontal)
         }
@@ -78,15 +91,15 @@ struct CalcModeView: View {
         }
     }
 
+    // MARK: - Recent weight chip
+
     @ViewBuilder
     private func recentWeightChip(_ weight: Double) -> some View {
-        let label = weight.weightStringPrecise
-
         Button {
             vm.loadWeight(weight)
             HapticManager.shared.numpadKey()
         } label: {
-            Text(label)
+            Text(weight.weightStringPrecise)
                 .font(sizeClass == .regular ? .subheadline.weight(.medium) : .footnote.weight(.medium))
                 .monospaced()
                 .foregroundStyle(ThemeTokens.textSecondary)
@@ -108,7 +121,9 @@ struct CalcModeView: View {
         }
     }
 
-    // ≤3 types: single centered row. >3: 3-column grid (wraps to row 2).
+    // MARK: - Plate breakdown
+
+    // ≤3 types → single centred row.  >3 types → 3-column grid (wraps to row 2).
     private var plateBreakdownView: some View {
         let grouped = vm.plateResult.grouped
         return Group {
