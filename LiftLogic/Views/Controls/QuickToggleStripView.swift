@@ -10,7 +10,7 @@ struct QuickToggleStripView: View {
 
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 10) {
+            HStack(spacing: 8) {
                 // Unit toggle
                 toggleChip(
                     title: settings.unit == .lbs ? "lbs" : "kg",
@@ -21,7 +21,8 @@ struct QuickToggleStripView: View {
 
                 Divider().frame(height: 20 * scale).opacity(0.3)
 
-                // Bar picker
+                // Bar picker — stripLabel omits weight to keep chip compact on small screens.
+                // Full displayName is shown in the menu options below.
                 Menu {
                     ForEach(BarType.allCases) { bar in
                         Button(bar == .custom
@@ -33,8 +34,8 @@ struct QuickToggleStripView: View {
                 } label: {
                     toggleChip(
                         title: vm.selectedBar == .custom
-                            ? "Custom bar"
-                            : vm.selectedBar.displayName,
+                            ? "Custom"
+                            : vm.selectedBar.stripLabel,
                         isActive: false,
                         showChevron: true
                     ) {}
@@ -52,9 +53,15 @@ struct QuickToggleStripView: View {
                     vm.isSingleSided.toggle()
                 }
             }
-            .padding(.horizontal)
-            .frame(minWidth: containerWidth, alignment: .center)
+            // Centre the strip when it fits; let it scroll when it doesn't.
+            // contentMargins (below) adds 16 pt insets inside the scroll region, so we
+            // subtract 32 pt here so the logical centre is still the screen centre.
+            .frame(minWidth: containerWidth - 32, alignment: .center)
         }
+        // contentMargins extends the scrollable area at each edge without widening the frame,
+        // which is why .padding(.horizontal) on the HStack was causing clipping.
+        .contentMargins(.horizontal, 16, for: .scrollContent)
+        .scrollBounceBehavior(.basedOnSize, axes: .horizontal)
         .frame(height: 40 * scale)
         .background {
             GeometryReader { geo in

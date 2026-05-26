@@ -23,6 +23,20 @@ enum BarType: String, Codable, CaseIterable, Identifiable {
         }
     }
 
+    /// Compact label for the quick-toggle strip — omits weight so it fits on small screens.
+    var stripLabel: String {
+        switch self {
+        case .olympic45lb:   return "Olympic"
+        case .olympic35lb:   return "Women's"
+        case .olympic20kg:   return "Olympic"
+        case .olympic15kg:   return "Women's"
+        case .trapHex:       return "Trap/Hex"
+        case .safetySquat:   return "Safety Squat"
+        case .ezCurl:        return "EZ Curl"
+        case .custom:        return "Custom"
+        }
+    }
+
     var isSpecialty: Bool {
         switch self {
         case .olympic45lb, .olympic35lb, .olympic20kg, .olympic15kg: return false
