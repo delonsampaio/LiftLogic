@@ -118,11 +118,12 @@ struct ReverseModeView: View {
     }
 
     private func plateCountCell(weight: Double, count: Int) -> some View {
-        HStack(spacing: 5) {
+        let totalCount = count * (vm.isSingleSided ? 1 : 2)
+        return HStack(spacing: 5) {
             Circle()
                 .fill(ThemeTokens.plateColor(for: weight, unit: settings.unit))
                 .frame(width: 9, height: 9)
-            Text("\(count)×\(weight.weightString)")
+            Text("\(totalCount)×\(weight.weightString)")
                 .font(.callout.weight(.bold))
                 .monospaced()
                 .foregroundStyle(ThemeTokens.textPrimary)

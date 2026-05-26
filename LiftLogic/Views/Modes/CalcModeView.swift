@@ -158,11 +158,12 @@ struct CalcModeView: View {
     }
 
     private func plateCell(_ group: (weight: Double, count: Int)) -> some View {
-        HStack(spacing: 6) {
+        let totalCount = group.count * (vm.isSingleSided ? 1 : 2)
+        return HStack(spacing: 6) {
             Circle()
                 .fill(ThemeTokens.plateColor(for: group.weight, unit: settings.unit))
                 .frame(width: 10, height: 10)
-            Text("\(group.count)×\(group.weight.weightString)")
+            Text("\(totalCount)×\(group.weight.weightString)")
                 .font(.body.weight(.bold))
                 .monospaced()
                 .foregroundStyle(ThemeTokens.textPrimary)
