@@ -5,58 +5,64 @@ struct QuickToggleStripView: View {
     let settings: AppSettings
 
     @Environment(\.horizontalSizeClass) private var sizeClass
+    @State private var containerWidth: CGFloat = 390
     private var scale: CGFloat { sizeClass == .regular ? 1.4 : 1.0 }
 
     var body: some View {
-        GeometryReader { proxy in
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 10) {
-                    // Unit toggle
-                    toggleChip(
-                        title: settings.unit == .lbs ? "lbs" : "kg",
-                        isActive: false
-                    ) {
-                        settings.unit = settings.unit == .lbs ? .kg : .lbs
-                    }
-
-                    Divider().frame(height: 20 * scale).opacity(0.3)
-
-                    // Bar picker
-                    Menu {
-                        ForEach(BarType.allCases) { bar in
-                            Button(bar == .custom
-                                   ? "Custom (\(String(format: "%.1f", settings.customBarWeight)) \(settings.unit.symbol))"
-                                   : bar.displayName) {
-                                vm.selectedBar = bar
-                            }
-                        }
-                    } label: {
-                        toggleChip(
-                            title: vm.selectedBar == .custom
-                                ? "Custom bar"
-                                : vm.selectedBar.displayName,
-                            isActive: false,
-                            showChevron: true
-                        ) {}
-                    }
-
-                    Divider().frame(height: 20 * scale).opacity(0.3)
-
-                    // Collar toggle
-                    toggleChip(title: collarLabel, isActive: vm.collarType != .none) {
-                        vm.collarType = vm.collarType.next()
-                    }
-
-                    // Single-sided toggle
-                    toggleChip(title: "Single Side", isActive: vm.isSingleSided) {
-                        vm.isSingleSided.toggle()
-                    }
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 10) {
+                // Unit toggle
+                toggleChip(
+                    title: settings.unit == .lbs ? "lbs" : "kg",
+                    isActive: false
+                ) {
+                    settings.unit = settings.unit == .lbs ? .kg : .lbs
                 }
-                .frame(minWidth: proxy.size.width, alignment: .center)
-                .padding(.horizontal)
+
+                Divider().frame(height: 20 * scale).opacity(0.3)
+
+                // Bar picker
+                Menu {
+                    ForEach(BarType.allCases) { bar in
+                        Button(bar == .custom
+                               ? "Custom (\(String(format: "%.1f", settings.customBarWeight)) \(settings.unit.symbol))"
+                               : bar.displayName) {
+                            vm.selectedBar = bar
+                        }
+                    }
+                } label: {
+                    toggleChip(
+                        title: vm.selectedBar == .custom
+                            ? "Custom bar"
+                            : vm.selectedBar.displayName,
+                        isActive: false,
+                        showChevron: true
+                    ) {}
+                }
+
+                Divider().frame(height: 20 * scale).opacity(0.3)
+
+                // Collar toggle
+                toggleChip(title: collarLabel, isActive: vm.collarType != .none) {
+                    vm.collarType = vm.collarType.next()
+                }
+
+                // Single-sided toggle
+                toggleChip(title: "Single Side", isActive: vm.isSingleSided) {
+                    vm.isSingleSided.toggle()
+                }
             }
+            .padding(.horizontal)
+            .frame(minWidth: containerWidth, alignment: .center)
         }
         .frame(height: 40 * scale)
+        .background {
+            GeometryReader { geo in
+                Color.clear
+                    .onAppear { containerWidth = geo.size.width }
+                    .onChange(of: geo.size.width) { _, w in containerWidth = w }
+            }
+        }
     }
 
     @ViewBuilder
