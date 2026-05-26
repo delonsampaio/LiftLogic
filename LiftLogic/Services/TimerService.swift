@@ -19,20 +19,11 @@ final class TimerService {
 
     func start(seconds: Int) {
         stop()
-        Task { await endAllOrphanedActivities() }
         selectedPreset = seconds
         remainingSeconds = seconds
         state = .running
         startCountdown()
-        startLiveActivity(totalSeconds: seconds)
-    }
-
-    /// Kills any leftover Live Activities of our type — e.g. one started by a
-    /// previous TimerService instance that no longer has a reference to it.
-    private func endAllOrphanedActivities() async {
-        for orphan in Activity<RestTimerAttributes>.activities {
-            await orphan.end(nil, dismissalPolicy: .immediate)
-        }
+        Task { await startLiveActivity(totalSeconds: seconds) }
     }
 
     /// Reattaches to an existing Live Activity if one survived from a previous
@@ -98,7 +89,13 @@ final class TimerService {
 
     // MARK: — Live Activity
 
-    private func startLiveActivity(totalSeconds: Int) {
+    private func startLiveActivity(totalSeconds: Int) async {
+        // Sweep any leftover activities first — order matters: must complete
+        // before we request the new one, otherwise the sweep would kill it.
+        for orphan in Activity<RestTimerAttributes>.activities {
+            await orphan.end(nil, dismissalPolicy: .immediate)
+        }
+
         guard ActivityAuthorizationInfo().areActivitiesEnabled else {
             Logger.timer.info("Live Activities disabled by user")
             return
