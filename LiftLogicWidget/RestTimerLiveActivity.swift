@@ -18,8 +18,12 @@ struct RestTimerLiveActivity: Widget {
                         .font(.caption.weight(.semibold))
                         .foregroundStyle(.secondary)
                     timerText(context: context)
-                        .font(.system(size: 28, weight: .black, design: .monospaced))
+                        .font(.system(size: 26, weight: .bold, design: .monospaced))
+                        .monospacedDigit()
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.6)
                         .foregroundStyle(.primary)
+                        .frame(minWidth: 110, alignment: .leading)
                 }
                 Spacer()
             }
@@ -37,7 +41,11 @@ struct RestTimerLiveActivity: Widget {
                 DynamicIslandExpandedRegion(.trailing) {
                     timerText(context: context)
                         .font(.system(size: 24, weight: .bold, design: .monospaced))
+                        .monospacedDigit()
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.7)
                         .foregroundStyle(.primary)
+                        .frame(minWidth: 90, alignment: .trailing)
                 }
                 DynamicIslandExpandedRegion(.bottom) {
                     Text(context.state.isPaused ? "Paused" : "Rest")
