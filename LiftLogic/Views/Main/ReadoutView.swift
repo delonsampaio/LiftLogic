@@ -15,13 +15,14 @@ struct ReadoutView: View {
     private var remainderText: String? {
         guard isAmber else { return nil }
         let result = vm.plateResult
+        let r = result.remainder
+        let closest = String(format: "Closest: %.1f %@ (%.1f short)",
+                             displayWeight - r, settings.unit.symbol, r)
         switch result.shortageReason {
         case .outOfPlates:
-            return "Not enough plates in inventory — increase quantity in Settings"
+            return "\(closest) · Out of Plates"
         case .unsupportedIncrement, .none:
-            let r = result.remainder
-            return String(format: "Closest: %.1f %@ (%.1f short)",
-                          displayWeight - r, settings.unit.symbol, r)
+            return closest
         }
     }
 
