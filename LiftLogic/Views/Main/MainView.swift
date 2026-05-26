@@ -172,7 +172,7 @@ struct MainView: View {
             SavedSetupsView(settings: settings, vm: vm)
         }
         .sheet(isPresented: $showTimer) {
-            RestTimerView(timer: timer, isPresented: $showTimer)
+            RestTimerView(timer: timer, settings: settings, isPresented: $showTimer)
                 .presentationDetents([.medium])
         }
         .onAppear {

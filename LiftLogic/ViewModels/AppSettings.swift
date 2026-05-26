@@ -38,6 +38,10 @@ final class AppSettings {
     var bodyWeight: Double {
         didSet { UserDefaults.standard.set(bodyWeight, forKey: "bodyWeight") }
     }
+    /// User's preferred custom rest timer duration in seconds. 0 = not yet set.
+    var customTimerSeconds: Int {
+        didSet { UserDefaults.standard.set(customTimerSeconds, forKey: "customTimerSeconds") }
+    }
     var recentWeights: [Double] {
         didSet { saveDoubleArray(recentWeights, key: "recentWeights") }
     }
@@ -57,6 +61,7 @@ final class AppSettings {
         isPro = ud.bool(forKey: "isPro")
         successfulCalculationCount = ud.integer(forKey: "successfulCalculationCount")
         bodyWeight = ud.double(forKey: "bodyWeight")
+        customTimerSeconds = ud.integer(forKey: "customTimerSeconds")
         recentWeights = loadDoubleArray(key: "recentWeights") ?? []
         savedSetups = loadCodable([SavedSetup].self, key: "savedSetupsJSON") ?? []
     }
