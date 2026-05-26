@@ -20,7 +20,7 @@ struct WarmupModeView: View {
                             Text("Target").frame(maxWidth: .infinity, alignment: .leading)
                             Text("Per Side").frame(maxWidth: .infinity, alignment: .trailing)
                         }
-                        .font(.system(size: 11, weight: .semibold))
+                        .font(.caption2.weight(.semibold))
                         .foregroundStyle(ThemeTokens.textMuted)
                         .padding(.horizontal, 16)
                         .padding(.vertical, 8)
@@ -45,19 +45,21 @@ struct WarmupModeView: View {
         } label: {
             HStack {
                 Text("\(set.percentage)%")
-                    .font(.system(size: 13, weight: .bold, design: .monospaced))
+                    .font(.footnote.weight(.bold))
+                    .monospaced()
                     .foregroundStyle(ThemeTokens.accent)
                     .frame(width: 44, alignment: .center)
 
                 Text("\(set.targetWeight.weightString) \(settings.unit.symbol)")
-                    .font(.system(size: 15, weight: .semibold))
+                    .font(.subheadline.weight(.semibold))
                     .foregroundStyle(ThemeTokens.textPrimary)
                     .frame(maxWidth: .infinity, alignment: .leading)
 
                 let grouped = PlateResult(platesPerSide: set.platesPerSide, totalWeight: set.targetWeight, remainder: 0).grouped
                 let parts = grouped.prefix(3).map { "\($0.count)×\($0.weight.weightString)" }
                 Text(parts.joined(separator: " "))
-                    .font(.system(size: 12, weight: .medium, design: .monospaced))
+                    .font(.caption.weight(.medium))
+                    .monospaced()
                     .foregroundStyle(ThemeTokens.textMuted)
                     .frame(maxWidth: .infinity, alignment: .trailing)
             }

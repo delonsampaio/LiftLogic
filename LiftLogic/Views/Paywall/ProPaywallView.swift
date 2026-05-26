@@ -14,7 +14,7 @@ struct ProPaywallView: View {
                 // Header
                 VStack(spacing: 8) {
                     Text("LiftLogic Pro")
-                        .font(.system(size: 32, weight: .black, design: .rounded))
+                        .font(.largeTitle.weight(.black))
                         .foregroundStyle(ThemeTokens.accentPro)
                     Text("One-time purchase. No subscription.")
                         .font(.subheadline)
@@ -44,7 +44,7 @@ struct ProPaywallView: View {
                             ProgressView().tint(.white)
                         } else {
                             Text(store.product.map { "Unlock Pro — \($0.displayPrice)" } ?? "Unlock Pro — $1.99")
-                                .font(.system(size: 18, weight: .bold))
+                                .font(.headline)
                         }
                     }
                     .foregroundStyle(.white)
@@ -81,13 +81,13 @@ struct ProPaywallView: View {
         HStack(alignment: .top, spacing: 12) {
             Image(systemName: "checkmark.circle.fill")
                 .foregroundStyle(ThemeTokens.accentPro)
-                .font(.system(size: 18))
+                .font(.body)
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
-                    .font(.system(size: 14, weight: .semibold))
+                    .font(.subheadline.weight(.semibold))
                     .foregroundStyle(ThemeTokens.textPrimary)
                 Text(description)
-                    .font(.system(size: 12))
+                    .font(.caption)
                     .foregroundStyle(ThemeTokens.textMuted)
             }
         }

@@ -13,9 +13,9 @@ struct ModePillStripView: View {
                 } label: {
                     HStack(spacing: 4) {
                         Image(systemName: mode.iconName)
-                            .font(.system(size: 10, weight: .semibold))
+                            .font(.caption2.weight(.semibold))
                         Text(mode.displayName)
-                            .font(.system(size: 12, weight: .semibold))
+                            .font(.caption.weight(.semibold))
                     }
                     .foregroundStyle(vm.currentMode == mode ? ThemeTokens.accent : ThemeTokens.textMuted)
                     .padding(.horizontal, 12)

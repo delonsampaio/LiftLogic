@@ -86,7 +86,7 @@ struct RestTimerView: View {
             }
         } label: {
             Text(label)
-                .font(.system(size: 13, weight: .semibold))
+                .font(.footnote.weight(.semibold))
                 .foregroundStyle(isActive ? ThemeTokens.accent : ThemeTokens.textMuted)
                 .padding(.horizontal, 12)
                 .padding(.vertical, 8)
@@ -112,7 +112,7 @@ struct RestTimerView: View {
     @ViewBuilder
     private func controlButton(systemImage: String, color: Color) -> some View {
         Image(systemName: systemImage)
-            .font(.system(size: 22))
+            .font(.title2)
             .foregroundStyle(color)
             .frame(width: 52, height: 52)
             .background(Circle().fill(Color(white: 0.15)))

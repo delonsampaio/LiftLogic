@@ -28,7 +28,7 @@ struct MainView: View {
                 ZStack {
                     // Center layer: title
                     Text("LiftLogic")
-                        .font(.system(size: 16, weight: .semibold))
+                        .font(.callout.weight(.semibold))
                         .foregroundStyle(ThemeTokens.textMuted)
                         .frame(maxWidth: .infinity)
 
@@ -38,7 +38,7 @@ struct MainView: View {
                             showSettings = true
                         } label: {
                             Image(systemName: "gearshape")
-                                .font(.system(size: 20))
+                                .font(.title3)
                                 .foregroundStyle(ThemeTokens.textMuted)
                         }
                         .accessibilityLabel("Settings")
@@ -65,9 +65,10 @@ struct MainView: View {
                                 if timer.state == .running || timer.state == .paused {
                                     HStack(spacing: 4) {
                                         Image(systemName: "timer")
-                                            .font(.system(size: 12, weight: .semibold))
+                                            .font(.caption.weight(.semibold))
                                         Text(timer.formattedTime)
-                                            .font(.system(size: 13, weight: .bold, design: .monospaced))
+                                            .font(.footnote.weight(.bold))
+                                            .monospacedDigit()
                                             .contentTransition(.numericText())
                                             .animation(.spring(response: 0.3), value: timer.remainingSeconds)
                                     }
@@ -78,7 +79,7 @@ struct MainView: View {
                                     .overlay(Capsule().strokeBorder(ThemeTokens.accent.opacity(0.35), lineWidth: 1))
                                 } else {
                                     Image(systemName: "timer")
-                                        .font(.system(size: 20))
+                                        .font(.title3)
                                         .foregroundStyle(ThemeTokens.textMuted)
                                 }
                             }
@@ -98,7 +99,7 @@ struct MainView: View {
                                     showPaywall = true
                                 } label: {
                                     Text("PRO")
-                                        .font(.system(size: 11, weight: .bold))
+                                        .font(.caption2.weight(.bold))
                                         .foregroundStyle(ThemeTokens.accentPro)
                                         .padding(.horizontal, 8)
                                         .padding(.vertical, 3)

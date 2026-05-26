@@ -16,7 +16,7 @@ struct OneRMModeView: View {
                 HStack(spacing: 16) {
                     Text("Reps lifted:")
                         .foregroundStyle(ThemeTokens.textSecondary)
-                        .font(.system(size: 15, weight: .medium))
+                        .font(.subheadline.weight(.medium))
 
                     Stepper("\(vm.oneRMReps)", value: Binding(
                         get: { vm.oneRMReps },
@@ -53,7 +53,7 @@ struct OneRMModeView: View {
                         HStack {
                             VStack(alignment: .leading, spacing: 2) {
                                 Text("Average (Est. 1RM)")
-                                    .font(.system(size: 12, weight: .semibold))
+                                    .font(.caption.weight(.semibold))
                                     .foregroundStyle(ThemeTokens.accentPro)
                                 Text("Tap to load into CALC")
                                     .font(.caption2)
@@ -61,7 +61,7 @@ struct OneRMModeView: View {
                             }
                             Spacer()
                             Text("\(Int(result.average.rounded())) \(settings.unit.symbol)")
-                                .font(.system(size: 22, weight: .black, design: .rounded))
+                                .font(.title2.weight(.black))
                                 .foregroundStyle(ThemeTokens.accentPro)
                         }
                         .padding()
@@ -79,11 +79,12 @@ struct OneRMModeView: View {
     private func oneRMRow(label: String, value: Double, unit: String) -> some View {
         HStack {
             Text(label)
-                .font(.system(size: 14, weight: .medium))
+                .font(.subheadline.weight(.medium))
                 .foregroundStyle(ThemeTokens.textSecondary)
             Spacer()
             Text("\(Int(value.rounded())) \(unit)")
-                .font(.system(size: 16, weight: .semibold, design: .monospaced))
+                .font(.callout.weight(.semibold))
+                .monospaced()
                 .foregroundStyle(ThemeTokens.textPrimary)
         }
         .padding(.horizontal)

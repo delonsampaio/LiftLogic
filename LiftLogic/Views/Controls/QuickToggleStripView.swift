@@ -62,10 +62,10 @@ struct QuickToggleStripView: View {
         Button(action: action) {
             HStack(spacing: 4) {
                 Text(title)
-                    .font(.system(size: 12, weight: .medium))
+                    .font(.caption.weight(.medium))
                 if showChevron {
                     Image(systemName: "chevron.down")
-                        .font(.system(size: 9, weight: .semibold))
+                        .font(.caption2.weight(.semibold))
                 }
             }
             .foregroundStyle(isActive ? ThemeTokens.accent : ThemeTokens.textSecondary)

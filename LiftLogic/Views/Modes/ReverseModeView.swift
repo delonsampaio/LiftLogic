@@ -44,9 +44,9 @@ struct ReverseModeView: View {
                 )
             VStack(spacing: 3) {
                 Image(systemName: "arrow.uturn.backward")
-                    .font(.system(size: 15, weight: .semibold))
+                    .font(.subheadline.weight(.semibold))
                 Text("Undo")
-                    .font(.system(size: 10, weight: .semibold))
+                    .font(.caption2.weight(.semibold))
             }
             .foregroundStyle(isEmpty ? ThemeTokens.textMuted : ThemeTokens.accent)
         }
@@ -111,7 +111,8 @@ struct ReverseModeView: View {
                 .fill(ThemeTokens.plateColor(for: weight, unit: settings.unit))
                 .frame(width: 9, height: 9)
             Text("\(count)×\(weight.weightString)")
-                .font(.system(size: 16, weight: .bold, design: .monospaced))
+                .font(.callout.weight(.bold))
+                .monospaced()
                 .foregroundStyle(ThemeTokens.textPrimary)
         }
     }

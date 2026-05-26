@@ -14,9 +14,15 @@ struct ReadoutView: View {
 
     private var remainderText: String? {
         guard isAmber else { return nil }
-        let r = vm.plateResult.remainder
-        return String(format: "Closest: %.1f %@ (%.1f short)",
-                      displayWeight - r, settings.unit.symbol, r)
+        let result = vm.plateResult
+        switch result.shortageReason {
+        case .outOfPlates:
+            return "Not enough plates in inventory — increase quantity in Settings"
+        case .unsupportedIncrement, .none:
+            let r = result.remainder
+            return String(format: "Closest: %.1f %@ (%.1f short)",
+                          displayWeight - r, settings.unit.symbol, r)
+        }
     }
 
     private var bodyweightRatioText: String? {
@@ -44,14 +50,14 @@ struct ReadoutView: View {
                     .lineLimit(1)
 
                 Text(settings.unit.symbol)
-                    .font(.system(size: 24, weight: .semibold))
+                    .font(.title2.weight(.semibold))
                     .foregroundStyle(ThemeTokens.textMuted)
                     .padding(.bottom, 8)
             }
 
             if let text = remainderText {
                 Text(text)
-                    .font(.system(size: 13, weight: .medium))
+                    .font(.footnote.weight(.medium))
                     .foregroundStyle(ThemeTokens.warningAmber)
             } else if let text = bodyweightRatioText {
                 Text(text)
@@ -59,7 +65,8 @@ struct ReadoutView: View {
                     .foregroundStyle(Color(white: 0.4))
             } else if let text = secondaryUnitText {
                 Text(text)
-                    .font(.system(size: 15, weight: .medium, design: .monospaced))
+                    .font(.subheadline.weight(.medium))
+                    .monospaced()
                     .foregroundStyle(ThemeTokens.textMuted)
                     .contentTransition(.numericText())
                     .animation(.spring(response: 0.3, dampingFraction: 0.8), value: displayWeight)

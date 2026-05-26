@@ -138,7 +138,8 @@ struct SettingsView: View {
                 HStack {
                     TextField("45", text: $customBarInput)
                         .keyboardType(.decimalPad)
-                        .font(.system(size: 32, weight: .bold, design: .monospaced))
+                        .font(.largeTitle.weight(.bold))
+                        .monospaced()
                         .foregroundStyle(ThemeTokens.textPrimary)
                         .multilineTextAlignment(.center)
                     Text(settings.unit.symbol)

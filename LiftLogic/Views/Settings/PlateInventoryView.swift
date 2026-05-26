@@ -60,13 +60,14 @@ struct PlateInventoryView: View {
                 item.wrappedValue.quantity = q == Int.max ? 4 : max(2, q - 2)
             } label: {
                 Image(systemName: "minus.circle")
-                    .font(.system(size: 18))
+                    .font(.body)
                     .foregroundStyle(ThemeTokens.textSecondary)
             }
             .buttonStyle(.plain)
 
             Text(item.wrappedValue.quantity == Int.max ? "∞" : "×\(item.wrappedValue.quantity)")
-                .font(.system(size: 14, weight: .medium, design: .monospaced))
+                .font(.subheadline.weight(.medium))
+                .monospaced()
                 .foregroundStyle(item.wrappedValue.quantity == Int.max ? ThemeTokens.textMuted : ThemeTokens.textSecondary)
                 .frame(minWidth: 30, alignment: .center)
 
@@ -81,7 +82,7 @@ struct PlateInventoryView: View {
                 }
             } label: {
                 Image(systemName: "plus.circle")
-                    .font(.system(size: 18))
+                    .font(.body)
                     .foregroundStyle(ThemeTokens.textSecondary)
             }
             .buttonStyle(.plain)

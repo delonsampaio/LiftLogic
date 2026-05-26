@@ -6,6 +6,7 @@ struct LiftLogicApp: App {
         WindowGroup {
             ContentView()
                 .preferredColorScheme(.dark)
+                .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
         }
     }
 }

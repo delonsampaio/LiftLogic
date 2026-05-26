@@ -61,7 +61,7 @@ struct SavedSetupsView: View {
             HStack {
                 VStack(alignment: .leading, spacing: 3) {
                     Text(setup.name)
-                        .font(.system(size: 15, weight: .semibold))
+                        .font(.subheadline.weight(.semibold))
                         .foregroundStyle(ThemeTokens.textPrimary)
                     Text("\(setup.weight.weightString) \(setup.unit.symbol) · \(setup.barType.displayName)")
                         .font(.caption)

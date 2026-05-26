@@ -27,7 +27,7 @@ struct CalcModeView: View {
                     HapticManager.shared.quickIncrement()
                 } label: {
                     Image(systemName: "minus.circle.fill")
-                        .font(.system(size: 28))
+                        .font(.largeTitle)
                         .foregroundStyle(ThemeTokens.textSecondary)
                 }
                 .accessibilityLabel("Decrease weight")
@@ -39,7 +39,7 @@ struct CalcModeView: View {
                     HapticManager.shared.quickIncrement()
                 } label: {
                     Image(systemName: "plus.circle.fill")
-                        .font(.system(size: 28))
+                        .font(.largeTitle)
                         .foregroundStyle(ThemeTokens.accent)
                 }
                 .accessibilityLabel("Increase weight")
@@ -88,10 +88,11 @@ struct CalcModeView: View {
         let color = isAdding ? ThemeTokens.accent : ThemeTokens.warningAmber
         return HStack(spacing: 6) {
             Image(systemName: isAdding ? "plus.circle.fill" : "minus.circle.fill")
-                .font(.system(size: 13))
+                .font(.footnote)
                 .foregroundStyle(color)
             Text("\(isAdding ? "Add" : "Remove") per side: \(parts.joined(separator: " + "))")
-                .font(.system(size: 13, weight: .medium, design: .monospaced))
+                .font(.footnote.weight(.medium))
+                .monospaced()
                 .foregroundStyle(color)
             Spacer()
         }
@@ -107,7 +108,8 @@ struct CalcModeView: View {
             HapticManager.shared.numpadKey()
         } label: {
             Text(label)
-                .font(.system(size: 13, weight: .medium, design: .monospaced))
+                .font(.footnote.weight(.medium))
+                .monospaced()
                 .foregroundStyle(ThemeTokens.textSecondary)
                 .padding(.horizontal, 12)
                 .padding(.vertical, 6)
@@ -161,7 +163,8 @@ struct CalcModeView: View {
                 .fill(ThemeTokens.plateColor(for: group.weight, unit: settings.unit))
                 .frame(width: 10, height: 10)
             Text("\(group.count)×\(group.weight.weightString)")
-                .font(.system(size: 18, weight: .bold, design: .monospaced))
+                .font(.body.weight(.bold))
+                .monospaced()
                 .foregroundStyle(ThemeTokens.textPrimary)
         }
     }
