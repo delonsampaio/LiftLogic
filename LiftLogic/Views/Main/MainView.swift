@@ -61,11 +61,27 @@ struct MainView: View {
                                 guard settings.isPro else { showPaywall = true; return }
                                 showTimer = true
                             } label: {
-                                Image(systemName: "timer")
-                                    .font(.system(size: 20))
-                                    .foregroundStyle(ThemeTokens.textMuted)
+                                if timer.state == .running || timer.state == .paused {
+                                    HStack(spacing: 4) {
+                                        Image(systemName: "timer")
+                                            .font(.system(size: 12, weight: .semibold))
+                                        Text(timer.formattedTime)
+                                            .font(.system(size: 13, weight: .bold, design: .monospaced))
+                                            .contentTransition(.numericText())
+                                            .animation(.spring(response: 0.3), value: timer.remainingSeconds)
+                                    }
+                                    .foregroundStyle(ThemeTokens.accent)
+                                    .padding(.horizontal, 8)
+                                    .padding(.vertical, 3)
+                                    .background(Capsule().fill(ThemeTokens.accent.opacity(0.15)))
+                                    .overlay(Capsule().strokeBorder(ThemeTokens.accent.opacity(0.35), lineWidth: 1))
+                                } else {
+                                    Image(systemName: "timer")
+                                        .font(.system(size: 20))
+                                        .foregroundStyle(ThemeTokens.textMuted)
+                                }
                             }
-                            .accessibilityLabel("Rest timer")
+                            .accessibilityLabel(timer.state == .running ? "Rest timer running, \(timer.formattedTime) remaining" : "Rest timer")
 
                             if settings.isPro {
                                 Button {
