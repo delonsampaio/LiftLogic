@@ -98,12 +98,24 @@ final class TimerService {
         task = Task { [weak self] in
             while let self, self.remainingSeconds > 0, !Task.isCancelled {
                 try? await Task.sleep(for: .seconds(1))
-                self.remainingSeconds -= 1
+                if Task.isCancelled { return }
+                // Re-check after sleep — syncFromActivity or another path may
+                // have already taken remainingSeconds to 0 while we slept.
+                if self.remainingSeconds > 0 {
+                    self.remainingSeconds -= 1
+                }
             }
             if let self, !Task.isCancelled {
                 self.state = .finished
                 HapticManager.shared.timerComplete()
                 self.endLiveActivity()
+                // Auto-reset to .idle after a couple seconds so the UI is ready
+                // for the next timer without requiring a manual stop tap.
+                try? await Task.sleep(for: .seconds(2))
+                if !Task.isCancelled, self.state == .finished {
+                    self.state = .idle
+                    self.remainingSeconds = 0
+                }
             }
         }
     }
@@ -164,8 +176,9 @@ final class TimerService {
     }
 
     var formattedTime: String {
-        let m = remainingSeconds / 60
-        let s = remainingSeconds % 60
+        let safe = max(0, remainingSeconds)
+        let m = safe / 60
+        let s = safe % 60
         return String(format: "%d:%02d", m, s)
     }
 }
