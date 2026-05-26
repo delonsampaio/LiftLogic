@@ -5,51 +5,55 @@ struct QuickToggleStripView: View {
     let settings: AppSettings
 
     var body: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 10) {
-                // Unit toggle
-                toggleChip(
-                    title: settings.unit == .lbs ? "lbs" : "kg",
-                    isActive: false
-                ) {
-                    settings.unit = settings.unit == .lbs ? .kg : .lbs
-                }
-
-                Divider().frame(height: 20).opacity(0.3)
-
-                // Bar picker
-                Menu {
-                    ForEach(BarType.allCases) { bar in
-                        Button(bar == .custom
-                               ? "Custom (\(String(format: "%.1f", settings.customBarWeight)) \(settings.unit.symbol))"
-                               : bar.displayName) {
-                            vm.selectedBar = bar
-                        }
-                    }
-                } label: {
+        GeometryReader { proxy in
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 10) {
+                    // Unit toggle
                     toggleChip(
-                        title: vm.selectedBar == .custom
-                            ? "Custom bar"
-                            : vm.selectedBar.displayName,
-                        isActive: false,
-                        showChevron: true
-                    ) {}
-                }
+                        title: settings.unit == .lbs ? "lbs" : "kg",
+                        isActive: false
+                    ) {
+                        settings.unit = settings.unit == .lbs ? .kg : .lbs
+                    }
 
-                Divider().frame(height: 20).opacity(0.3)
+                    Divider().frame(height: 20).opacity(0.3)
 
-                // Collar toggle
-                toggleChip(title: collarLabel, isActive: vm.collarType != .none) {
-                    vm.collarType = vm.collarType.next()
-                }
+                    // Bar picker
+                    Menu {
+                        ForEach(BarType.allCases) { bar in
+                            Button(bar == .custom
+                                   ? "Custom (\(String(format: "%.1f", settings.customBarWeight)) \(settings.unit.symbol))"
+                                   : bar.displayName) {
+                                vm.selectedBar = bar
+                            }
+                        }
+                    } label: {
+                        toggleChip(
+                            title: vm.selectedBar == .custom
+                                ? "Custom bar"
+                                : vm.selectedBar.displayName,
+                            isActive: false,
+                            showChevron: true
+                        ) {}
+                    }
 
-                // Single-sided toggle
-                toggleChip(title: "Single Side", isActive: vm.isSingleSided) {
-                    vm.isSingleSided.toggle()
+                    Divider().frame(height: 20).opacity(0.3)
+
+                    // Collar toggle
+                    toggleChip(title: collarLabel, isActive: vm.collarType != .none) {
+                        vm.collarType = vm.collarType.next()
+                    }
+
+                    // Single-sided toggle
+                    toggleChip(title: "Single Side", isActive: vm.isSingleSided) {
+                        vm.isSingleSided.toggle()
+                    }
                 }
+                .frame(minWidth: proxy.size.width, alignment: .center)
+                .padding(.horizontal)
             }
-            .padding(.horizontal)
         }
+        .frame(height: 40)
     }
 
     @ViewBuilder

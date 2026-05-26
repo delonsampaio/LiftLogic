@@ -6,10 +6,19 @@ struct ReverseModeView: View {
 
     var body: some View {
         VStack(spacing: 12) {
+            // Inventory limit warning — only shows if user has configured quantities
+            if vm.reverseHitInventoryLimit {
+                Label("Some plates are at your inventory limit", systemImage: "exclamationmark.triangle")
+                    .font(.caption.weight(.medium))
+                    .foregroundStyle(ThemeTokens.warningAmber)
+                    .transition(.opacity)
+            }
+
             // Plate rack grid
             PlateRackView(
                 inventory: settings.activeInventory,
-                unit: settings.unit
+                unit: settings.unit,
+                isAvailable: { vm.canAddPlate($0) }
             ) { plate in
                 vm.addPlate(plate)
                 let isHeavy = (settings.unit == .lbs ? plate.weight : WeightUnit.kg.convert(plate.weight, to: .lbs)) >= 45

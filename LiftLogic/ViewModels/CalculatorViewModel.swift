@@ -137,7 +137,38 @@ final class CalculatorViewModel {
 
     // MARK: — Reverse mode
 
+    /// Per-side count for a given plate weight in the current REV stack.
+    func reverseCount(for weight: Double) -> Int {
+        reversePlateStack.filter { $0.weight == weight }.count
+    }
+
+    /// Maximum plates of this weight the user can add per side based on inventory.
+    /// Int.max means no limit set.
+    func reverseMaxPerSide(for plate: PlateInventoryItem) -> Int {
+        guard plate.quantity != Int.max else { return Int.max }
+        return isSingleSided ? plate.quantity : plate.quantity / 2
+    }
+
+    func canAddPlate(_ plate: PlateInventoryItem) -> Bool {
+        let max = reverseMaxPerSide(for: plate)
+        return reverseCount(for: plate.weight) < max
+    }
+
+    /// Whether the user has any quantity limit set on any enabled plate.
+    var hasReverseInventoryLimits: Bool {
+        settings.activeInventory.contains { $0.isEnabled && $0.quantity != Int.max }
+    }
+
+    /// True if the user has hit an inventory limit and tried to add more.
+    var reverseHitInventoryLimit: Bool {
+        hasReverseInventoryLimits &&
+        settings.activeInventory.contains { plate in
+            plate.isEnabled && reverseCount(for: plate.weight) >= reverseMaxPerSide(for: plate) && plate.quantity != Int.max
+        }
+    }
+
     func addPlate(_ plate: PlateInventoryItem) {
+        guard canAddPlate(plate) else { return }
         reversePlateStack.append(LoadedPlate(weight: plate.weight))
     }
 

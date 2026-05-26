@@ -163,18 +163,19 @@ struct MainView: View {
                 Spacer(minLength: 0)
             }
         }
-        .sheet(isPresented: $showPaywall) {
+        .fullScreenCover(isPresented: $showPaywall) {
             ProPaywallView(settings: settings)
         }
-        .sheet(isPresented: $showSettings) {
+        .fullScreenCover(isPresented: $showSettings) {
             SettingsView(settings: settings, vm: vm)
         }
-        .sheet(isPresented: $showSavedSetups) {
+        .fullScreenCover(isPresented: $showSavedSetups) {
             SavedSetupsView(settings: settings, vm: vm)
         }
         .sheet(isPresented: $showTimer) {
             RestTimerView(timer: timer, settings: settings, isPresented: $showTimer)
                 .presentationDetents([.medium])
+                .presentationBackgroundInteraction(.enabled)
         }
         .onAppear {
             UIApplication.shared.isIdleTimerDisabled = true

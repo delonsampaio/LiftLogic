@@ -10,18 +10,18 @@ struct CalculatorEngine {
         let result = solve(target: target, barWeight: barWeight, collarWeight: collarWeight,
                            inventory: inventory, isSingleSided: isSingleSided)
 
-        // If there's a remainder, figure out why: out of plates (quantity limits)
-        // or unsupported increment (no plate small enough).
+        // Shortage reason policy:
+        // - Exact: .none
+        // - User has configured inventory (any enabled plate with a finite quantity):
+        //   it's their inventory limits causing the shortfall → .outOfPlates
+        // - User hasn't curated inventory (all unlimited): the target genuinely
+        //   isn't loadable with available plate sizes → .unsupportedIncrement (Closest)
         let reason: ShortageReason
         if result.isExact {
             reason = .none
         } else {
-            let unlimitedInventory = inventory.map { item in
-                PlateInventoryItem(weight: item.weight, isEnabled: item.isEnabled, quantity: Int.max)
-            }
-            let unlimited = solve(target: target, barWeight: barWeight, collarWeight: collarWeight,
-                                  inventory: unlimitedInventory, isSingleSided: isSingleSided)
-            reason = unlimited.isExact ? .outOfPlates : .unsupportedIncrement
+            let userConfiguredInventory = inventory.contains { $0.isEnabled && $0.quantity != Int.max }
+            reason = userConfiguredInventory ? .outOfPlates : .unsupportedIncrement
         }
 
         return PlateResult(
@@ -32,8 +32,7 @@ struct CalculatorEngine {
         )
     }
 
-    /// Pure loading loop, no shortage-reason inference. Used twice in calculate()
-    /// — once with real quantities, once with unlimited — to compare results.
+    /// Pure loading loop, no shortage-reason inference.
     private static func solve(
         target: Double,
         barWeight: Double,

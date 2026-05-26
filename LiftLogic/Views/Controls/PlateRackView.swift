@@ -3,6 +3,7 @@ import SwiftUI
 struct PlateRackView: View {
     let inventory: [PlateInventoryItem]
     let unit: WeightUnit
+    let isAvailable: (PlateInventoryItem) -> Bool
     let onTap: (PlateInventoryItem) -> Void
 
     private var enabledPlates: [PlateInventoryItem] {
@@ -13,12 +14,15 @@ struct PlateRackView: View {
         let columns = [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())]
         LazyVGrid(columns: columns, spacing: 16) {
             ForEach(enabledPlates) { plate in
+                let available = isAvailable(plate)
                 Button {
                     onTap(plate)
                 } label: {
                     PlateButton(weight: plate.weight, unit: unit)
+                        .opacity(available ? 1.0 : 0.35)
                 }
                 .buttonStyle(NumpadButtonStyle())
+                .disabled(!available)
             }
         }
         .padding(.horizontal)
