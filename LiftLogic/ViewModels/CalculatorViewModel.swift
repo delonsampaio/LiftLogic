@@ -10,8 +10,6 @@ final class CalculatorViewModel {
     var isSingleSided: Bool = false
     var reversePlateStack: [LoadedPlate] = []
     var oneRMReps: Int = 5
-    private(set) var capturedWeight: Double = 0
-
     private let settings: AppSettings
 
     init(settings: AppSettings) {
@@ -67,21 +65,6 @@ final class CalculatorViewModel {
         return resolvedBarWeight + resolvedCollarWeight + (platesTotal * sides)
     }
 
-    var deltaResult: PlateResult? {
-        guard capturedWeight > 0, targetWeight > 0,
-              abs(targetWeight - capturedWeight) > 0.001 else { return nil }
-        return CalculatorEngine.calculate(
-            target: abs(targetWeight - capturedWeight),
-            barWeight: 0,
-            collarWeight: 0,
-            inventory: settings.activeInventory,
-            unit: settings.unit,
-            isSingleSided: isSingleSided
-        )
-    }
-
-    var isDeltaAdding: Bool { targetWeight > capturedWeight }
-
     var smallestEnabledPlate: Double {
         settings.activeInventory
             .filter(\.isEnabled)
@@ -103,7 +86,6 @@ final class CalculatorViewModel {
     }
 
     func resetWeight() {
-        if targetWeight > 0 { capturedWeight = targetWeight }
         inputString = ""
     }
 
@@ -122,7 +104,6 @@ final class CalculatorViewModel {
     }
 
     func loadWeight(_ value: Double) {
-        capturedWeight = 0
         inputString = value.weightStringPrecise
         commitWeight()
     }

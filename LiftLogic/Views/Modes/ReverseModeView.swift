@@ -127,7 +127,7 @@ struct ReverseModeView: View {
                 .fill(ThemeTokens.plateColor(for: weight, unit: settings.unit))
                 .frame(width: 9 * scale, height: 9 * scale)
             Text("\(totalCount)×\(weight.weightString)")
-                .font(.callout.weight(.bold))
+                .font(sizeClass == .regular ? .title3.weight(.bold) : .callout.weight(.bold))
                 .monospaced()
                 .foregroundStyle(ThemeTokens.textPrimary)
         }

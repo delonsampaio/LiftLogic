@@ -117,22 +117,4 @@ struct CalculatorViewModelTests {
         #expect(vm.reversePlateStack.isEmpty)
     }
 
-    // MARK: — Delta calculation
-
-    @Test func deltaIsNilWhenWeightsMatch() {
-        let vm = CalculatorViewModel(settings: freshSettings())
-        vm.appendDigit("1"); vm.appendDigit("3"); vm.appendDigit("5")
-        vm.resetWeight()  // captures 135
-        vm.appendDigit("1"); vm.appendDigit("3"); vm.appendDigit("5")
-        #expect(vm.deltaResult == nil)
-    }
-
-    @Test func deltaShowsAddingWhenWeightIncreases() {
-        let vm = CalculatorViewModel(settings: freshSettings())
-        vm.appendDigit("1"); vm.appendDigit("3"); vm.appendDigit("5")
-        vm.resetWeight()
-        vm.appendDigit("1"); vm.appendDigit("5"); vm.appendDigit("5")
-        #expect(vm.isDeltaAdding)
-        #expect(vm.deltaResult != nil)
-    }
 }

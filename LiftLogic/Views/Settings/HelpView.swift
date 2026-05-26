@@ -78,11 +78,6 @@ struct HelpView: View {
                 isProFeature: false, userIsPro: isPro
             )
             FAQRow(
-                question: "What is the \"Add per side\" banner?",
-                answer: "When you change an existing weight, the banner shows exactly which plates to add or remove per side compared to what was last loaded — so you don't have to strip the bar and start over.",
-                isProFeature: false, userIsPro: isPro
-            )
-            FAQRow(
                 question: "What are the recent weight chips?",
                 answer: "The last 5 weights you calculated appear as quick-tap chips above the numpad. Tap one to reload that weight instantly. Long-press a chip to remove it.",
                 isProFeature: false, userIsPro: isPro
@@ -216,7 +211,6 @@ struct HelpView: View {
         .init(section: "Getting Started", question: "How do I calculate my plate setup?", answer: "Type your total bar weight on the numpad. LiftLogic instantly calculates which plates go on each side and shows them on the barbell graphic."),
         .init(section: "Getting Started", question: "What is the barbell graphic?", answer: "A real-time 2D visualizer showing exactly which plates are loaded on each side. Plate colors match the international standard — red for 45 lb, blue for 35 lb, yellow for 25 lb, and so on. It updates live as you type."),
         .init(section: "Getting Started", question: "How do I reset the weight?", answer: "Three ways: swipe the barbell left or right, double-tap it, or delete all digits on the numpad. Long-press the barbell to play a fly-off animation."),
-        .init(section: "Getting Started", question: "What is the \"Add per side\" banner?", answer: "When you change an existing weight, the banner shows exactly which plates to add or remove per side compared to what was last loaded — so you don't have to strip the bar and start over."),
         .init(section: "Getting Started", question: "What are the recent weight chips?", answer: "The last 5 weights you calculated appear as quick-tap chips above the numpad. Tap one to reload that weight instantly. Long-press a chip to remove it."),
         .init(section: "Plates & Bar", question: "How do I change the bar weight?", answer: "Tap the bar picker in the quick toggle strip below the barbell. Choose Olympic (45 lb), Women's (33 lb), EZ Curl (18 lb), Safety Squat (65 lb), or enter a custom weight."),
         .init(section: "Plates & Bar", question: "What is Single Side mode?", answer: "When enabled, the calculator treats your typed weight as the total for one side only — useful for loading a landmine, single-arm attachment, or any non-symmetric setup."),

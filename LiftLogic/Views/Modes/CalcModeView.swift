@@ -17,12 +17,6 @@ struct CalcModeView: View {
                     .transition(.opacity)
             }
 
-            // Smart add delta banner
-            if let delta = vm.deltaResult, !delta.platesPerSide.isEmpty {
-                smartAddBanner(delta: delta)
-                    .transition(.opacity.combined(with: .move(edge: .top)))
-            }
-
             // Quick increment row
             HStack(spacing: 16) {
                 Button {
@@ -68,7 +62,7 @@ struct CalcModeView: View {
                         .padding(.horizontal)
                     }
                 }
-                .frame(height: 34 * scale)
+                .frame(height: 44 * scale)
             }
 
             // Numpad
@@ -82,24 +76,6 @@ struct CalcModeView: View {
                 if !Task.isCancelled { vm.commitWeight() }
             }
         }
-    }
-
-    private func smartAddBanner(delta: PlateResult) -> some View {
-        let grouped = delta.grouped
-        let parts = grouped.map { "\($0.count)× \($0.weight.weightString)" }
-        let isAdding = vm.isDeltaAdding
-        let color = isAdding ? ThemeTokens.accent : ThemeTokens.warningAmber
-        return HStack(spacing: 6) {
-            Image(systemName: isAdding ? "plus.circle.fill" : "minus.circle.fill")
-                .font(.footnote)
-                .foregroundStyle(color)
-            Text("\(isAdding ? "Add" : "Remove") per side: \(parts.joined(separator: " + "))")
-                .font(.footnote.weight(.medium))
-                .monospaced()
-                .foregroundStyle(color)
-            Spacer()
-        }
-        .padding(.horizontal)
     }
 
     @ViewBuilder
@@ -165,9 +141,9 @@ struct CalcModeView: View {
         return HStack(spacing: 6) {
             Circle()
                 .fill(ThemeTokens.plateColor(for: group.weight, unit: settings.unit))
-                .frame(width: 10, height: 10)
+                .frame(width: 10 * scale, height: 10 * scale)
             Text("\(totalCount)×\(group.weight.weightString)")
-                .font(.body.weight(.bold))
+                .font(sizeClass == .regular ? .title3.weight(.bold) : .body.weight(.bold))
                 .monospaced()
                 .foregroundStyle(ThemeTokens.textPrimary)
         }
