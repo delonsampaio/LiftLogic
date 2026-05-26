@@ -39,6 +39,7 @@ struct MainView: View {
                                 .font(.system(size: 20))
                                 .foregroundStyle(ThemeTokens.textMuted)
                         }
+                        .accessibilityLabel("Settings")
                         Spacer()
                     }
 
@@ -53,6 +54,7 @@ struct MainView: View {
                                     .font(.system(size: 20))
                                     .foregroundStyle(ThemeTokens.textMuted)
                             }
+                            .accessibilityLabel("Share lift")
 
                             Button {
                                 guard settings.isPro else { showPaywall = true; return }
@@ -62,6 +64,7 @@ struct MainView: View {
                                     .font(.system(size: 20))
                                     .foregroundStyle(ThemeTokens.textMuted)
                             }
+                            .accessibilityLabel("Rest timer")
 
                             if settings.isPro {
                                 Button {
@@ -71,6 +74,7 @@ struct MainView: View {
                                         .font(.system(size: 20))
                                         .foregroundStyle(ThemeTokens.textMuted)
                                 }
+                                .accessibilityLabel("Saved setups")
                             } else {
                                 Button {
                                     showPaywall = true
@@ -82,6 +86,7 @@ struct MainView: View {
                                         .padding(.vertical, 3)
                                         .background(Capsule().fill(ThemeTokens.accentPro.opacity(0.15)))
                                 }
+                                .accessibilityLabel("Upgrade to Pro")
                             }
                         }
                     }
@@ -92,6 +97,19 @@ struct MainView: View {
                 // Readout
                 ReadoutView(vm: vm, settings: settings)
                     .padding(.vertical, 8)
+
+                // Single Side mode indicator — visible reminder that calculation semantics changed
+                if vm.isSingleSided {
+                    Label("Single Side", systemImage: "arrow.right")
+                        .font(.caption2.weight(.semibold))
+                        .foregroundStyle(ThemeTokens.accent)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 3)
+                        .background(Capsule().fill(ThemeTokens.accent.opacity(0.15)))
+                        .transition(.opacity.combined(with: .scale(scale: 0.9)))
+                        .animation(.easeInOut(duration: 0.2), value: vm.isSingleSided)
+                        .padding(.bottom, 4)
+                }
 
                 // Barbell hero
                 BarbellVisualizerView(vm: vm, settings: settings)

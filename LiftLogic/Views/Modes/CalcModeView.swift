@@ -4,6 +4,8 @@ struct CalcModeView: View {
     let vm: CalculatorViewModel
     let settings: AppSettings
 
+    @State private var commitTask: Task<Void, Never>?
+
     var body: some View {
         VStack(spacing: 12) {
             // Empty state
@@ -28,6 +30,7 @@ struct CalcModeView: View {
                         .font(.system(size: 28))
                         .foregroundStyle(ThemeTokens.textSecondary)
                 }
+                .accessibilityLabel("Decrease weight")
 
                 Spacer()
 
@@ -39,6 +42,7 @@ struct CalcModeView: View {
                         .font(.system(size: 28))
                         .foregroundStyle(ThemeTokens.accent)
                 }
+                .accessibilityLabel("Increase weight")
             }
             .padding(.horizontal, 24)
 
@@ -68,14 +72,18 @@ struct CalcModeView: View {
             NumpadView(vm: vm)
                 .padding(.horizontal)
         }
-        .onChange(of: vm.targetWeight) { _, new in
-            if new > 0 { vm.commitWeight() }
+        .onChange(of: vm.targetWeight) { _, _ in
+            commitTask?.cancel()
+            commitTask = Task {
+                try? await Task.sleep(for: .seconds(1.2))
+                if !Task.isCancelled { vm.commitWeight() }
+            }
         }
     }
 
     private func smartAddBanner(delta: PlateResult) -> some View {
         let grouped = delta.grouped
-        let parts = grouped.map { "\($0.count)× \(formatPlateWeight($0.weight))" }
+        let parts = grouped.map { "\($0.count)× \($0.weight.weightString)" }
         let isAdding = vm.isDeltaAdding
         let color = isAdding ? ThemeTokens.accent : ThemeTokens.warningAmber
         return HStack(spacing: 6) {
@@ -92,9 +100,7 @@ struct CalcModeView: View {
 
     @ViewBuilder
     private func recentWeightChip(_ weight: Double) -> some View {
-        let label = weight.truncatingRemainder(dividingBy: 1) == 0
-            ? "\(Int(weight))"
-            : String(format: "%.2f", weight)
+        let label = weight.weightStringPrecise
 
         Button {
             vm.loadWeight(weight)
@@ -154,13 +160,9 @@ struct CalcModeView: View {
             Circle()
                 .fill(ThemeTokens.plateColor(for: group.weight, unit: settings.unit))
                 .frame(width: 10, height: 10)
-            Text("\(group.count)×\(formatPlateWeight(group.weight))")
+            Text("\(group.count)×\(group.weight.weightString)")
                 .font(.system(size: 18, weight: .bold, design: .monospaced))
                 .foregroundStyle(ThemeTokens.textPrimary)
         }
-    }
-
-    private func formatPlateWeight(_ w: Double) -> String {
-        w.truncatingRemainder(dividingBy: 1) == 0 ? "\(Int(w))" : "\(w)"
     }
 }

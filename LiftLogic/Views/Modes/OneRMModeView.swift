@@ -21,10 +21,17 @@ struct OneRMModeView: View {
                     Stepper("\(vm.oneRMReps)", value: Binding(
                         get: { vm.oneRMReps },
                         set: { vm.oneRMReps = $0 }
-                    ), in: 1...36)
+                    ), in: 1...OneRMEngine.maxReliableReps)
                     .fixedSize()
                 }
                 .padding(.horizontal)
+
+                if vm.oneRMReps > 10 {
+                    Text("Estimates lose accuracy above 10 reps")
+                        .font(.caption2)
+                        .foregroundStyle(ThemeTokens.textMuted)
+                        .padding(.horizontal)
+                }
 
                 // Results
                 let result = vm.oneRMResult

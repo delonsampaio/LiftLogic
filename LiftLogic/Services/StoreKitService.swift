@@ -1,5 +1,6 @@
 import StoreKit
 import Observation
+import OSLog
 
 @Observable
 @MainActor
@@ -15,6 +16,7 @@ final class StoreKitService {
             let products = try await Product.products(for: [Self.proProductID])
             product = products.first
         } catch {
+            Logger.storeKit.error("Failed to fetch products: \(error.localizedDescription)")
             errorMessage = "Could not load product."
         }
     }
@@ -30,7 +32,9 @@ final class StoreKitService {
                 switch verification {
                 case .verified:
                     settings.isPro = true
-                case .unverified:
+                    Logger.storeKit.info("Pro unlocked via purchase")
+                case .unverified(_, let error):
+                    Logger.storeKit.error("Unverified purchase: \(error.localizedDescription)")
                     errorMessage = "Purchase could not be verified."
                 }
             case .userCancelled:
@@ -41,6 +45,7 @@ final class StoreKitService {
                 break
             }
         } catch {
+            Logger.storeKit.error("Purchase failed: \(error.localizedDescription)")
             errorMessage = error.localizedDescription
         }
     }
@@ -50,6 +55,7 @@ final class StoreKitService {
             if case .verified(let transaction) = result,
                transaction.productID == Self.proProductID {
                 settings.isPro = true
+                Logger.storeKit.info("Pro restored from entitlements")
             }
         }
     }

@@ -110,13 +110,9 @@ struct ReverseModeView: View {
             Circle()
                 .fill(ThemeTokens.plateColor(for: weight, unit: settings.unit))
                 .frame(width: 9, height: 9)
-            Text("\(count)×\(formatWeight(weight))")
+            Text("\(count)×\(weight.weightString)")
                 .font(.system(size: 16, weight: .bold, design: .monospaced))
                 .foregroundStyle(ThemeTokens.textPrimary)
         }
-    }
-
-    private func formatWeight(_ w: Double) -> String {
-        w.truncatingRemainder(dividingBy: 1) == 0 ? "\(Int(w))" : "\(w)"
     }
 }

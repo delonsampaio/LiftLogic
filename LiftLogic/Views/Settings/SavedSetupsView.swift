@@ -63,7 +63,7 @@ struct SavedSetupsView: View {
                     Text(setup.name)
                         .font(.system(size: 15, weight: .semibold))
                         .foregroundStyle(ThemeTokens.textPrimary)
-                    Text("\(formatWeight(setup.weight)) \(setup.unit.symbol) · \(setup.barType.displayName)")
+                    Text("\(setup.weight.weightString) \(setup.unit.symbol) · \(setup.barType.displayName)")
                         .font(.caption)
                         .foregroundStyle(ThemeTokens.textMuted)
                 }
@@ -87,7 +87,7 @@ struct SavedSetupsView: View {
                     .background(RoundedRectangle(cornerRadius: 10).fill(ThemeTokens.backgroundCard))
                     .foregroundStyle(ThemeTokens.textPrimary)
                     .padding(.horizontal)
-                Text("\(formatWeight(vm.targetWeight)) \(settings.unit.symbol) · \(vm.selectedBar.displayName)")
+                Text("\(vm.targetWeight.weightString) \(settings.unit.symbol) · \(vm.selectedBar.displayName)")
                     .foregroundStyle(ThemeTokens.textMuted)
                     .font(.subheadline)
                 Spacer()
@@ -121,7 +121,4 @@ struct SavedSetupsView: View {
         }
     }
 
-    private func formatWeight(_ w: Double) -> String {
-        w.truncatingRemainder(dividingBy: 1) == 0 ? "\(Int(w))" : "\(w)"
-    }
 }

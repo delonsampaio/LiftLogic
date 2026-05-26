@@ -5,7 +5,7 @@ import Observation
 final class CalculatorViewModel {
     var inputString: String = ""
     var currentMode: AppMode = .calc
-    var selectedBar: BarType = .olympic45lb
+    var selectedBar: BarType
     var collarType: CollarType = .none
     var isSingleSided: Bool = false
     var reversePlateStack: [LoadedPlate] = []
@@ -16,6 +16,7 @@ final class CalculatorViewModel {
 
     init(settings: AppSettings) {
         self.settings = settings
+        self.selectedBar = settings.defaultBar
     }
 
     // MARK: — Derived
@@ -108,25 +109,28 @@ final class CalculatorViewModel {
 
     func increment() {
         let step = smallestEnabledPlate * 2
-        let current = targetWeight
-        let newValue = current + step
-        inputString = formatWeight(newValue)
+        let newValue = targetWeight + step
+        inputString = newValue.weightStringPrecise
+        commitWeight()
     }
 
     func decrement() {
         let step = smallestEnabledPlate * 2
-        let current = targetWeight
-        let newValue = max(0, current - step)
-        inputString = newValue == 0 ? "" : formatWeight(newValue)
+        let newValue = max(0, targetWeight - step)
+        inputString = newValue == 0 ? "" : newValue.weightStringPrecise
+        commitWeight()
     }
 
     func loadWeight(_ value: Double) {
         capturedWeight = 0
-        inputString = formatWeight(value)
+        inputString = value.weightStringPrecise
+        commitWeight()
     }
 
+    /// Records the current weight to recent history. Ignored if below the bar weight
+    /// (filters out keystroke pollution like "1" while typing "125").
     func commitWeight() {
-        guard targetWeight > 0 else { return }
+        guard targetWeight >= resolvedBarWeight, targetWeight > 0 else { return }
         settings.addRecentWeight(targetWeight)
         settings.successfulCalculationCount += 1
     }
@@ -144,13 +148,5 @@ final class CalculatorViewModel {
 
     func clearReverseStack() {
         reversePlateStack.removeAll()
-    }
-
-    // MARK: — Helpers
-
-    private func formatWeight(_ value: Double) -> String {
-        value.truncatingRemainder(dividingBy: 1) == 0
-            ? String(Int(value))
-            : String(format: "%.2f", value)
     }
 }

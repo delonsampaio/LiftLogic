@@ -57,7 +57,7 @@ private struct PlateButton: View {
                 .padding(4)
 
             // Weight label — upper portion, independent ZStack layer
-            Text(formatWeight(weight))
+            Text(weight.weightString)
                 .font(.system(size: 18, weight: .black, design: .rounded))
                 .foregroundStyle(.white)
                 .shadow(color: .black.opacity(0.65), radius: 1, x: 0, y: 1)
@@ -96,16 +96,5 @@ private struct PlateButton: View {
                 .padding(4)
         }
         .frame(width: 88, height: 88)
-    }
-
-    private func formatWeight(_ w: Double) -> String {
-        w.truncatingRemainder(dividingBy: 1) == 0 ? "\(Int(w))" : "\(w)"
-    }
-}
-
-// Keep formatWeight on PlateRackView for backward compat
-private extension PlateRackView {
-    func formatWeight(_ w: Double) -> String {
-        w.truncatingRemainder(dividingBy: 1) == 0 ? "\(Int(w))" : "\(w)"
     }
 }

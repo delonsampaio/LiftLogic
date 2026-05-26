@@ -27,19 +27,15 @@ struct ReadoutView: View {
 
     private var secondaryUnitText: String? {
         guard displayWeight > 0 else { return nil }
-        if settings.unit == .lbs {
-            let kg = displayWeight / 2.20462
-            return String(format: "%.1f kg", kg)
-        } else {
-            let lbs = displayWeight * 2.20462
-            return String(format: "%.1f lbs", lbs)
-        }
+        let other: WeightUnit = settings.unit == .lbs ? .kg : .lbs
+        let converted = settings.unit.convert(displayWeight, to: other)
+        return String(format: "%.1f %@", converted, other.symbol)
     }
 
     var body: some View {
         VStack(spacing: 2) {
             HStack(alignment: .firstTextBaseline, spacing: 8) {
-                Text(displayWeight == 0 ? "0" : formatWeight(displayWeight))
+                Text(displayWeight == 0 ? "0" : displayWeight.weightStringPrecise)
                     .font(ThemeTokens.readoutFont)
                     .foregroundStyle(isAmber ? ThemeTokens.warningAmber : ThemeTokens.textPrimary)
                     .contentTransition(.numericText())
@@ -70,11 +66,5 @@ struct ReadoutView: View {
             }
         }
         .padding(.horizontal)
-    }
-
-    private func formatWeight(_ value: Double) -> String {
-        value.truncatingRemainder(dividingBy: 1) == 0
-            ? String(Int(value))
-            : String(format: "%.2f", value)
     }
 }

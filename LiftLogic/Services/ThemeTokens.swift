@@ -10,10 +10,10 @@ enum ThemeTokens {
     static let backgroundCard    = Color(white: 0.09)
     static let backgroundInput   = Color(white: 0.11)
 
-    // Text
+    // Text — contrast tuned for WCAG AA against backgroundPrimary
     static let textPrimary   = Color.white
-    static let textSecondary = Color(white: 0.6)
-    static let textMuted     = Color(white: 0.35)
+    static let textSecondary = Color(white: 0.7)
+    static let textMuted     = Color(white: 0.5)
 
     // Warning
     static let warningAmber = Color(red: 0.95, green: 0.61, blue: 0.07)

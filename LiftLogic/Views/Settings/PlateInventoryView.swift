@@ -16,7 +16,7 @@ struct PlateInventoryView: View {
             ForEach($inventory) { $item in
                 HStack {
                     Toggle(isOn: $item.isEnabled) {
-                        Text("\(formatWeight(item.weight)) \(unit.symbol)")
+                        Text("\(item.weight.weightString) \(unit.symbol)")
                             .font(.system(.body, design: .monospaced))
                             .foregroundStyle(item.isEnabled ? ThemeTokens.textPrimary : ThemeTokens.textMuted)
                     }
@@ -88,7 +88,4 @@ struct PlateInventoryView: View {
         }
     }
 
-    private func formatWeight(_ w: Double) -> String {
-        w.truncatingRemainder(dividingBy: 1) == 0 ? "\(Int(w))" : "\(w)"
-    }
 }

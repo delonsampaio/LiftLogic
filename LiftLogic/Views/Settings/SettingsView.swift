@@ -124,6 +124,11 @@ struct SettingsView: View {
         }
     }
 
+    private var customBarInputValue: Double? {
+        guard let value = Double(customBarInput), value > 0 else { return nil }
+        return value
+    }
+
     private var customBarWeightSheet: some View {
         NavigationStack {
             VStack(spacing: 20) {
@@ -143,6 +148,13 @@ struct SettingsView: View {
                 .padding()
                 .background(RoundedRectangle(cornerRadius: 12).fill(ThemeTokens.backgroundCard))
                 .padding(.horizontal)
+
+                if !customBarInput.isEmpty && customBarInputValue == nil {
+                    Text("Enter a number greater than 0")
+                        .font(.caption)
+                        .foregroundStyle(ThemeTokens.warningAmber)
+                }
+
                 Spacer()
             }
             .padding(.top, 32)
@@ -155,13 +167,14 @@ struct SettingsView: View {
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Save") {
-                        if let value = Double(customBarInput), value > 0 {
+                        if let value = customBarInputValue {
                             settings.customBarWeight = value
                             settings.defaultBar = .custom
+                            showCustomBarSheet = false
                         }
-                        showCustomBarSheet = false
                     }
-                    .foregroundStyle(ThemeTokens.accent)
+                    .foregroundStyle(customBarInputValue == nil ? ThemeTokens.textMuted : ThemeTokens.accent)
+                    .disabled(customBarInputValue == nil)
                 }
             }
         }

@@ -49,13 +49,13 @@ struct WarmupModeView: View {
                     .foregroundStyle(ThemeTokens.accent)
                     .frame(width: 44, alignment: .center)
 
-                Text("\(formatWeight(set.targetWeight)) \(settings.unit.symbol)")
+                Text("\(set.targetWeight.weightString) \(settings.unit.symbol)")
                     .font(.system(size: 15, weight: .semibold))
                     .foregroundStyle(ThemeTokens.textPrimary)
                     .frame(maxWidth: .infinity, alignment: .leading)
 
                 let grouped = PlateResult(platesPerSide: set.platesPerSide, totalWeight: set.targetWeight, remainder: 0).grouped
-                let parts = grouped.prefix(3).map { "\($0.count)×\(formatWeight($0.weight))" }
+                let parts = grouped.prefix(3).map { "\($0.count)×\($0.weight.weightString)" }
                 Text(parts.joined(separator: " "))
                     .font(.system(size: 12, weight: .medium, design: .monospaced))
                     .foregroundStyle(ThemeTokens.textMuted)
@@ -67,9 +67,5 @@ struct WarmupModeView: View {
         }
         .buttonStyle(.plain)
         .contentShape(Rectangle())
-    }
-
-    private func formatWeight(_ value: Double) -> String {
-        value.truncatingRemainder(dividingBy: 1) == 0 ? "\(Int(value))" : "\(value)"
     }
 }

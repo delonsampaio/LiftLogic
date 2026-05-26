@@ -60,6 +60,7 @@ struct NumpadKeyView: View {
         .buttonStyle(NumpadButtonStyle())
         .frame(maxWidth: .infinity)
         .frame(height: 62)
+        .accessibilityLabel(isDelete ? "Delete" : key == "." ? "Decimal point" : key)
     }
 }
 
