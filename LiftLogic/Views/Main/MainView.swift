@@ -4,6 +4,7 @@ import StoreKit
 struct MainView: View {
     @State private var settings = AppSettings()
     @State private var vm: CalculatorViewModel
+    @State private var timer = TimerService()
     @State private var showPaywall = false
     @State private var showSettings = false
     @State private var showSavedSetups = false
@@ -154,11 +155,12 @@ struct MainView: View {
             SavedSetupsView(settings: settings, vm: vm)
         }
         .sheet(isPresented: $showTimer) {
-            RestTimerView(isPresented: $showTimer)
+            RestTimerView(timer: timer, isPresented: $showTimer)
                 .presentationDetents([.medium])
         }
         .onAppear {
             UIApplication.shared.isIdleTimerDisabled = true
+            timer.reattachIfNeeded()
         }
         .onDisappear {
             UIApplication.shared.isIdleTimerDisabled = false

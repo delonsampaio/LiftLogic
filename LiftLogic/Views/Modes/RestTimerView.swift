@@ -1,8 +1,8 @@
 import SwiftUI
 
 struct RestTimerView: View {
+    let timer: TimerService
     @Binding var isPresented: Bool
-    @State private var timer = TimerService()
 
     var body: some View {
         VStack(spacing: 20) {
@@ -85,6 +85,9 @@ struct RestTimerView: View {
     }
 
     private func formatPreset(_ seconds: Int) -> String {
-        seconds < 60 ? "\(seconds)s" : "\(seconds/60)m"
+        if seconds < 60 { return "\(seconds)s" }
+        let m = seconds / 60
+        let s = seconds % 60
+        return s == 0 ? "\(m)m" : "\(m):\(String(format: "%02d", s))"
     }
 }

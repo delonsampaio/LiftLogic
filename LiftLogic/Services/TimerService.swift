@@ -19,11 +19,44 @@ final class TimerService {
 
     func start(seconds: Int) {
         stop()
+        Task { await endAllOrphanedActivities() }
         selectedPreset = seconds
         remainingSeconds = seconds
         state = .running
         startCountdown()
         startLiveActivity(totalSeconds: seconds)
+    }
+
+    /// Kills any leftover Live Activities of our type — e.g. one started by a
+    /// previous TimerService instance that no longer has a reference to it.
+    private func endAllOrphanedActivities() async {
+        for orphan in Activity<RestTimerAttributes>.activities {
+            await orphan.end(nil, dismissalPolicy: .immediate)
+        }
+    }
+
+    /// Reattaches to an existing Live Activity if one survived from a previous
+    /// app launch or sheet dismiss. Called on init.
+    func reattachIfNeeded() {
+        guard activity == nil, let existing = Activity<RestTimerAttributes>.activities.first else { return }
+        let remaining = Int(existing.content.state.endDate.timeIntervalSinceNow.rounded())
+        if remaining > 0 && !existing.content.state.isPaused {
+            activity = existing
+            remainingSeconds = remaining
+            selectedPreset = existing.attributes.totalSeconds
+            state = .running
+            startCountdown()
+        } else if existing.content.state.isPaused {
+            activity = existing
+            remainingSeconds = existing.content.state.pausedRemaining
+            selectedPreset = existing.attributes.totalSeconds
+            state = .paused
+        } else {
+            // Expired — clean up
+            Task {
+                await existing.end(nil, dismissalPolicy: .immediate)
+            }
+        }
     }
 
     func stop() {
