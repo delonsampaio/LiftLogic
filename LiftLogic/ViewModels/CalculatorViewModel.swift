@@ -159,11 +159,19 @@ final class CalculatorViewModel {
         settings.activeInventory.contains { $0.isEnabled && $0.quantity != Int.max }
     }
 
-    /// True if the user has hit an inventory limit and tried to add more.
+    /// True if at least one plate has hit its inventory limit.
     var reverseHitInventoryLimit: Bool {
         hasReverseInventoryLimits &&
         settings.activeInventory.contains { plate in
             plate.isEnabled && reverseCount(for: plate.weight) >= reverseMaxPerSide(for: plate) && plate.quantity != Int.max
+        }
+    }
+
+    /// True when every enabled plate with a quantity limit is fully used up (nothing left to add).
+    var reverseAllInventoryExhausted: Bool {
+        hasReverseInventoryLimits &&
+        settings.activeInventory.filter { $0.isEnabled && $0.quantity != Int.max }.allSatisfy { plate in
+            reverseCount(for: plate.weight) >= reverseMaxPerSide(for: plate)
         }
     }
 

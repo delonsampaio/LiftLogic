@@ -8,10 +8,13 @@ struct ReverseModeView: View {
         VStack(spacing: 12) {
             // Inventory limit warning — only shows if user has configured quantities
             if vm.reverseHitInventoryLimit {
-                Label("Some plates are at your inventory limit", systemImage: "exclamationmark.triangle")
-                    .font(.caption.weight(.medium))
-                    .foregroundStyle(ThemeTokens.warningAmber)
-                    .transition(.opacity)
+                Label(
+                    vm.reverseAllInventoryExhausted ? "Out of Plates" : "Some plates are at your inventory limit",
+                    systemImage: "exclamationmark.triangle"
+                )
+                .font(.caption.weight(.medium))
+                .foregroundStyle(ThemeTokens.warningAmber)
+                .transition(.opacity)
             }
 
             // Plate rack grid
