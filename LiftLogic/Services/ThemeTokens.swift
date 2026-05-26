@@ -16,7 +16,11 @@ enum ThemeTokens {
     static let textMuted     = Color(white: 0.5)
 
     // Warning
-    static let warningAmber = Color(red: 0.95, green: 0.61, blue: 0.07)
+    static let warningAmber  = Color(red: 0.95, green: 0.61, blue: 0.07)
+
+    // Delta banner — add (green) / remove (amber-red)
+    static let deltaAdd    = Color(red: 0.25, green: 0.78, blue: 0.35)
+    static let deltaRemove = Color(red: 0.95, green: 0.45, blue: 0.15)
 
     // Standard plate colors — IWF/IPF thresholds in lbs
     static func plateColor(for weight: Double, unit: WeightUnit) -> Color {

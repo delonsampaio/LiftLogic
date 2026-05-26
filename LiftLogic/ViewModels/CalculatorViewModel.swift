@@ -72,6 +72,39 @@ final class CalculatorViewModel {
             .min() ?? 2.5
     }
 
+    // MARK: — Delta (Add / Remove per side)
+
+    /// Snapshot of the plate result the user last confirmed as loaded.
+    /// Used to compute the add/remove delta when the target changes.
+    private(set) var committedResult: PlateResult? = nil
+
+    /// Per-side plate changes between `committedResult` and the current target.
+    /// Positive count = add that plate, negative = remove.
+    /// Empty when there is nothing committed yet or current matches committed.
+    var plateDelta: [(weight: Double, change: Int)] {
+        guard let committed = committedResult else { return [] }
+        let current = plateResult
+        // Only show delta when current weight resolves to a real plate setup.
+        guard !current.platesPerSide.isEmpty else { return [] }
+
+        var committedCounts: [Double: Int] = [:]
+        for plate in committed.platesPerSide {
+            committedCounts[plate.weight, default: 0] += 1
+        }
+        var currentCounts: [Double: Int] = [:]
+        for plate in current.platesPerSide {
+            currentCounts[plate.weight, default: 0] += 1
+        }
+
+        let allWeights = Set(committedCounts.keys).union(currentCounts.keys)
+        return allWeights
+            .compactMap { weight -> (Double, Int)? in
+                let diff = (currentCounts[weight] ?? 0) - (committedCounts[weight] ?? 0)
+                return diff != 0 ? (weight, diff) : nil
+            }
+            .sorted { $0.0 > $1.0 }  // heaviest first
+    }
+
     // MARK: — Actions
 
     func appendDigit(_ digit: String) {
@@ -87,6 +120,7 @@ final class CalculatorViewModel {
 
     func resetWeight() {
         inputString = ""
+        committedResult = nil   // clear delta when bar is wiped
     }
 
     func increment() {
@@ -108,12 +142,14 @@ final class CalculatorViewModel {
         commitWeight()
     }
 
-    /// Records the current weight to recent history. Ignored if below the bar weight
-    /// (filters out keystroke pollution like "1" while typing "125").
+    /// Records the current weight to recent history and snapshots the plate result
+    /// so the delta banner can show what changed on the next edit.
+    /// Ignored if below the bar weight (filters out keystroke pollution).
     func commitWeight() {
         guard targetWeight >= resolvedBarWeight, targetWeight > 0 else { return }
         settings.addRecentWeight(targetWeight)
         settings.successfulCalculationCount += 1
+        committedResult = plateResult   // snapshot for delta comparison
     }
 
     // MARK: — Reverse mode

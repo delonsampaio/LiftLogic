@@ -30,6 +30,15 @@ struct CalcModeView: View {
             .frame(minHeight: 52)
             .animation(.easeInOut(duration: 0.2), value: vm.targetWeight > 0)
 
+            // ── Add / remove delta ───────────────────────────────────────
+            // Appears while the user is editing an already-committed weight,
+            // showing exactly which plates to add or pull per side.
+            let delta = vm.plateDelta
+            if !delta.isEmpty {
+                PlateDeltaBannerView(delta: delta, unit: settings.unit)
+                    .transition(.opacity.combined(with: .scale(scale: 0.97)))
+            }
+
             // ── Increment row + recent weights ───────────────────────────
             // Recent weight chips live between the − and + buttons so they
             // occupy a slot that already exists rather than adding a new row.
@@ -75,6 +84,7 @@ struct CalcModeView: View {
             NumpadView(vm: vm)
                 .padding(.horizontal)
         }
+        .animation(.easeInOut(duration: 0.2), value: vm.plateDelta.isEmpty)
         .onChange(of: vm.targetWeight) { _, _ in
             commitTask?.cancel()
             commitTask = Task {
