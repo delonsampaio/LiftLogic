@@ -174,7 +174,7 @@ struct HelpView: View {
             )
             FAQRow(
                 question: "How do I use the rest timer?",
-                answer: "Tap the timer icon in the top toolbar. Choose a preset (90 s, 2 min, 3 min, 5 min) or let it count up. The timer keeps running in the background and fires three heavy haptic pulses at zero.",
+                answer: "Tap the timer icon in the top toolbar and choose a preset (1:30, 2 min, 3 min, 5 min). The countdown appears as a Live Activity on your Lock Screen and in the Dynamic Island, and the timer icon in LiftLogic becomes a live countdown pill — tap it to reopen the controls. Three heavy haptic pulses fire at zero.",
                 isProFeature: true, userIsPro: isPro
             )
         }
@@ -232,7 +232,7 @@ struct HelpView: View {
         .init(section: "Gestures & Controls", question: "How do I clear the bar with a gesture?", answer: "In CALC mode: long-press the barbell to animate plates flying off, double-tap to reset instantly, or swipe left/right. In REV mode: long-press the Undo button to clear all plates at once, or tap it repeatedly to remove one at a time."),
         .init(section: "Gestures & Controls", question: "What do the + and − buttons next to the weight do?", answer: "They increment or decrement the weight by the smallest enabled plate × 2 (one increment per side). Useful for fine-tuning without retyping the full number."),
         .init(section: "Gestures & Controls", question: "How do I share my lift?", answer: "Tap the share icon in the top toolbar. LiftLogic generates a summary card showing your weight, plate breakdown, and unit — ready to share to Messages, Instagram, or anywhere."),
-        .init(section: "Gestures & Controls", question: "How do I use the rest timer?", answer: "Tap the timer icon in the top toolbar. Choose a preset (90 s, 2 min, 3 min, 5 min) or let it count up. The timer keeps running in the background and fires three heavy haptic pulses at zero.", isPro: true),
+        .init(section: "Gestures & Controls", question: "How do I use the rest timer?", answer: "Tap the timer icon in the top toolbar and choose a preset (1:30, 2 min, 3 min, 5 min). The countdown appears as a Live Activity on your Lock Screen and in the Dynamic Island, and the timer icon in LiftLogic becomes a live countdown pill — tap it to reopen the controls. Three heavy haptic pulses fire at zero.", isPro: true),
         .init(section: "Pro", question: "What is included in Pro?", answer: "Warmup mode, 1RM estimator, Reverse mode, bodyweight ratio in the readout, saved setups, rest timer, and plate quantity limits. One-time purchase, no subscription."),
         .init(section: "Pro", question: "How do I buy Pro?", answer: "Tap the PRO button in the top-right corner of the main screen, or tap any locked mode pill. The price is $1.99 — a one-time purchase with Family Sharing enabled."),
         .init(section: "Pro", question: "Does Pro work on all my devices?", answer: "Yes. Tap \"Restore Purchases\" in Settings → Pro Status to activate Pro on any iPhone signed into the same Apple ID."),
