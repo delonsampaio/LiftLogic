@@ -6,19 +6,24 @@ struct PlateRackView: View {
     let isAvailable: (PlateInventoryItem) -> Bool
     let onTap: (PlateInventoryItem) -> Void
 
+    @Environment(\.horizontalSizeClass) private var sizeClass
+
     private var enabledPlates: [PlateInventoryItem] {
         inventory.filter(\.isEnabled).sorted { $0.weight > $1.weight }
     }
 
+    private var columnCount: Int { sizeClass == .regular ? 4 : 3 }
+    private var plateSize: CGFloat { sizeClass == .regular ? 112 : 88 }
+
     var body: some View {
-        let columns = [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())]
+        let columns = Array(repeating: GridItem(.flexible()), count: columnCount)
         LazyVGrid(columns: columns, spacing: 16) {
             ForEach(enabledPlates) { plate in
                 let available = isAvailable(plate)
                 Button {
                     onTap(plate)
                 } label: {
-                    PlateButton(weight: plate.weight, unit: unit)
+                    PlateButton(weight: plate.weight, unit: unit, size: plateSize)
                         .opacity(available ? 1.0 : 0.35)
                 }
                 .buttonStyle(NumpadButtonStyle())
@@ -33,12 +38,14 @@ struct PlateRackView: View {
 private struct PlateButton: View {
     let weight: Double
     let unit: WeightUnit
+    let size: CGFloat
 
     private var plateColor: Color {
         ThemeTokens.plateColor(for: weight, unit: unit)
     }
 
     var body: some View {
+        let scale = size / 88
         ZStack {
             // Outer rim — dark rolled-steel edge
             Circle()
@@ -55,17 +62,17 @@ private struct PlateButton: View {
                         ],
                         center: .center,
                         startRadius: 0,
-                        endRadius: 44
+                        endRadius: 44 * scale
                     )
                 )
                 .padding(4)
 
             // Weight label — upper portion, independent ZStack layer
             Text(weight.weightString)
-                .font(.system(size: 18, weight: .black, design: .rounded))
+                .font(.system(size: 18 * scale, weight: .black, design: .rounded))
                 .foregroundStyle(.white)
                 .shadow(color: .black.opacity(0.65), radius: 1, x: 0, y: 1)
-                .offset(y: -20)
+                .offset(y: -20 * scale)
 
             // Metallic hub — dead center, smaller bore for clarity
             Circle()
@@ -74,10 +81,10 @@ private struct PlateButton: View {
                         colors: [Color(white: 0.78), Color(white: 0.36)],
                         center: .topLeading,
                         startRadius: 0,
-                        endRadius: 9
+                        endRadius: 9 * scale
                     )
                 )
-                .frame(width: 16, height: 16)
+                .frame(width: 16 * scale, height: 16 * scale)
                 .overlay(Circle().strokeBorder(Color(white: 0.18), lineWidth: 0.75))
 
             // Top-left specular arc — matte anodized surface reflection
@@ -99,6 +106,6 @@ private struct PlateButton: View {
                 )
                 .padding(4)
         }
-        .frame(width: 88, height: 88)
+        .frame(width: size, height: size)
     }
 }

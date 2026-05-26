@@ -4,8 +4,11 @@ struct BarbellVisualizerView: View {
     let vm: CalculatorViewModel
     let settings: AppSettings
 
+    @Environment(\.horizontalSizeClass) private var sizeClass
     @State private var swipeOffset: CGFloat = 0
     @State private var pulseScale: CGFloat = 1.0
+
+    private var scale: CGFloat { sizeClass == .regular ? 1.5 : 1.0 }
 
     private var plates: [LoadedPlate] {
         if vm.currentMode == .reverse {
@@ -28,14 +31,14 @@ struct BarbellVisualizerView: View {
                 // Main bar shaft
                 RoundedRectangle(cornerRadius: 4)
                     .fill(Color(white: 0.55))
-                    .frame(width: geo.size.width * 0.85, height: 10)
+                    .frame(width: geo.size.width * 0.85, height: 10 * scale)
                     .shadow(color: .black.opacity(0.6), radius: 4, x: 0, y: 3)
 
                 // Sleeve end caps — lighter, slightly taller, extend past the plates
                 HStack {
                     RoundedRectangle(cornerRadius: 3)
                         .fill(Color(white: 0.72))
-                        .frame(width: geo.size.width * 0.075, height: 15)
+                        .frame(width: geo.size.width * 0.075, height: 15 * scale)
                         .padding(.leading, geo.size.width * 0.055)
                     Spacer()
                 }
@@ -43,7 +46,7 @@ struct BarbellVisualizerView: View {
                     Spacer()
                     RoundedRectangle(cornerRadius: 3)
                         .fill(Color(white: 0.72))
-                        .frame(width: geo.size.width * 0.075, height: 15)
+                        .frame(width: geo.size.width * 0.075, height: 15 * scale)
                         .padding(.trailing, geo.size.width * 0.055)
                 }
 
@@ -51,10 +54,10 @@ struct BarbellVisualizerView: View {
                 HStack(spacing: geo.size.width * 0.85 - 40) {
                     Rectangle()
                         .fill(Color(white: 0.3))
-                        .frame(width: 6, height: 24)
+                        .frame(width: 6 * scale, height: 24 * scale)
                     Rectangle()
                         .fill(Color(white: 0.3))
-                        .frame(width: 6, height: 24)
+                        .frame(width: 6 * scale, height: 24 * scale)
                 }
 
                 // Plates — right side (inset so sleeve tip stays visible)
@@ -75,7 +78,7 @@ struct BarbellVisualizerView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
-        .frame(height: 110)
+        .frame(height: 110 * scale)
         .scaleEffect(pulseScale)
         .offset(x: swipeOffset)
         .onChange(of: plates.count) { _, _ in
@@ -160,24 +163,28 @@ struct BarbellVisualizerView: View {
 
     private func plateHeight(_ weight: Double) -> CGFloat {
         let lbs = settings.unit == .lbs ? weight : WeightUnit.kg.convert(weight, to: .lbs)
+        let base: CGFloat
         switch lbs {
-        case 44...:   return 76
-        case 33..<44: return 64
-        case 22..<33: return 54
-        case 9..<22:  return 40
-        case 4..<9:   return 30
-        case 2..<4:   return 22   // 2.5 lb / 1.25 kg
-        default:      return 12   // micro plates (< 2 lb)
+        case 44...:   base = 76
+        case 33..<44: base = 64
+        case 22..<33: base = 54
+        case 9..<22:  base = 40
+        case 4..<9:   base = 30
+        case 2..<4:   base = 22   // 2.5 lb / 1.25 kg
+        default:      base = 12   // micro plates (< 2 lb)
         }
+        return base * scale
     }
 
     private func plateWidth(_ weight: Double) -> CGFloat {
         let lbs = settings.unit == .lbs ? weight : WeightUnit.kg.convert(weight, to: .lbs)
+        let base: CGFloat
         switch lbs {
-        case 44...:   return 16
-        case 22..<44: return 13
-        case 2...:    return 10
-        default:      return 7    // micro plates (< 2 lb) — very thin
+        case 44...:   base = 16
+        case 22..<44: base = 13
+        case 2...:    base = 10
+        default:      base = 7   // micro plates (< 2 lb) — very thin
         }
+        return base * scale
     }
 }
