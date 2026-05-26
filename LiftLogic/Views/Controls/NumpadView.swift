@@ -36,7 +36,7 @@ struct NumpadKeyView: View {
 
     @Environment(\.horizontalSizeClass) private var sizeClass
     private var isDelete: Bool { key == "⌫" }
-    private var keyHeight: CGFloat { sizeClass == .regular ? 88 : 62 }
+    private var keyHeight: CGFloat { sizeClass == .regular ? 68 : 62 }
     private var fontSize: CGFloat { sizeClass == .regular ? 38 : 28 }
 
     var body: some View {

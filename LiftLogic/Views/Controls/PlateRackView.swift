@@ -13,7 +13,7 @@ struct PlateRackView: View {
     }
 
     private var columnCount: Int { sizeClass == .regular ? 4 : 3 }
-    private var plateSize: CGFloat { sizeClass == .regular ? 132 : 88 }
+    private var plateSize: CGFloat { sizeClass == .regular ? 110 : 88 }
 
     var body: some View {
         let columns = Array(repeating: GridItem(.flexible()), count: columnCount)
