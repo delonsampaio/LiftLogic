@@ -127,6 +127,7 @@ final class CalculatorViewModel {
         let step = smallestEnabledPlate * 2
         let newValue = targetWeight + step
         inputString = newValue.weightStringPrecise
+        committedResult = plateResult   // advance baseline — user is loading this
         commitWeight()
     }
 
@@ -134,22 +135,27 @@ final class CalculatorViewModel {
         let step = smallestEnabledPlate * 2
         let newValue = max(0, targetWeight - step)
         inputString = newValue == 0 ? "" : newValue.weightStringPrecise
+        committedResult = newValue == 0 ? nil : plateResult
         commitWeight()
     }
 
     func loadWeight(_ value: Double) {
         inputString = value.weightStringPrecise
+        committedResult = plateResult   // chip tap = "this is what I'm loading"
         commitWeight()
     }
 
-    /// Records the current weight to recent history and snapshots the plate result
-    /// so the delta banner can show what changed on the next edit.
-    /// Ignored if below the bar weight (filters out keystroke pollution).
+    /// Records the current weight to recent history.
+    /// Only sets committedResult on first use (when nil) — after that only
+    /// explicit "I'm loading this" actions (increment, decrement, loadWeight)
+    /// advance the baseline so the delta banner stays visible while exploring.
     func commitWeight() {
         guard targetWeight >= resolvedBarWeight, targetWeight > 0 else { return }
         settings.addRecentWeight(targetWeight)
         settings.successfulCalculationCount += 1
-        committedResult = plateResult   // snapshot for delta comparison
+        if committedResult == nil {
+            committedResult = plateResult
+        }
     }
 
     // MARK: — Reverse mode
