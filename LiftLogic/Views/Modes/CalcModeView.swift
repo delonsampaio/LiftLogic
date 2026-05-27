@@ -87,7 +87,7 @@ struct CalcModeView: View {
                 PlateDeltaBannerView(
                     delta: delta,
                     unit: settings.unit,
-                    duration: 30,
+                    duration: Double(settings.deltaAutoDismissSeconds),
                     onDismiss: { toastDismissed = true }
                 )
                 .id(key)             // new key = new view instance = timer resets

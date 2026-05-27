@@ -54,6 +54,11 @@ final class AppSettings {
         didSet { UserDefaults.standard.set(deltaBannerEnabled, forKey: "deltaBannerEnabled") }
     }
 
+    /// Seconds before the delta toast auto-dismisses. 0 = stay until dismissed manually.
+    var deltaAutoDismissSeconds: Int {
+        didSet { UserDefaults.standard.set(deltaAutoDismissSeconds, forKey: "deltaAutoDismissSeconds") }
+    }
+
     init() {
         let ud = UserDefaults.standard
         unit = WeightUnit(rawValue: ud.string(forKey: "unit") ?? "") ?? .lbs
@@ -70,6 +75,7 @@ final class AppSettings {
         recentWeights = loadDoubleArray(key: "recentWeights") ?? []
         savedSetups = loadCodable([SavedSetup].self, key: "savedSetupsJSON") ?? []
         deltaBannerEnabled = ud.object(forKey: "deltaBannerEnabled") as? Bool ?? true
+        deltaAutoDismissSeconds = ud.integer(forKey: "deltaAutoDismissSeconds")  // 0 = off
     }
 
     // MARK: — Derived

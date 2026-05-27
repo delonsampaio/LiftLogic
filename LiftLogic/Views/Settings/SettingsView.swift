@@ -91,6 +91,7 @@ struct SettingsView: View {
                 }
 
                 Section("Calculator") {
+                    // Master on/off
                     Toggle(isOn: Binding(
                         get: { settings.deltaBannerEnabled },
                         set: { settings.deltaBannerEnabled = $0 }
@@ -103,6 +104,34 @@ struct SettingsView: View {
                         }
                     }
                     .tint(ThemeTokens.accent)
+
+                    if settings.deltaBannerEnabled {
+                        // Auto-dismiss toggle
+                        Toggle(isOn: Binding(
+                            get: { settings.deltaAutoDismissSeconds > 0 },
+                            set: { settings.deltaAutoDismissSeconds = $0 ? 30 : 0 }
+                        )) {
+                            Text("Auto-dismiss")
+                        }
+                        .tint(ThemeTokens.accent)
+
+                        // Seconds entry — only visible when auto-dismiss is on
+                        if settings.deltaAutoDismissSeconds > 0 {
+                            HStack {
+                                Text("Dismiss after")
+                                Spacer()
+                                TextField("30", value: Binding(
+                                    get: { settings.deltaAutoDismissSeconds },
+                                    set: { settings.deltaAutoDismissSeconds = max(5, $0) }
+                                ), format: .number)
+                                .keyboardType(.numberPad)
+                                .multilineTextAlignment(.trailing)
+                                .frame(width: 52)
+                                Text("sec")
+                                    .foregroundStyle(ThemeTokens.textMuted)
+                            }
+                        }
+                    }
                 }
 
                 Section("Support") {
