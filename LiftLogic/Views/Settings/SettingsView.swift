@@ -90,6 +90,21 @@ struct SettingsView: View {
                     }
                 }
 
+                Section("Calculator") {
+                    Toggle(isOn: Binding(
+                        get: { settings.deltaBannerEnabled },
+                        set: { settings.deltaBannerEnabled = $0 }
+                    )) {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Add / Remove Banner")
+                            Text("Shows plates to add or remove when you change a weight")
+                                .font(.caption)
+                                .foregroundStyle(ThemeTokens.textMuted)
+                        }
+                    }
+                    .tint(ThemeTokens.accent)
+                }
+
                 Section("Support") {
                     NavigationLink("Help & FAQ") {
                         HelpView(isPro: settings.isPro)

@@ -49,6 +49,11 @@ final class AppSettings {
         didSet { saveCodable(savedSetups, key: "savedSetupsJSON") }
     }
 
+    /// Whether the add/remove per-side toast appears when the target weight changes.
+    var deltaBannerEnabled: Bool {
+        didSet { UserDefaults.standard.set(deltaBannerEnabled, forKey: "deltaBannerEnabled") }
+    }
+
     init() {
         let ud = UserDefaults.standard
         unit = WeightUnit(rawValue: ud.string(forKey: "unit") ?? "") ?? .lbs
@@ -64,6 +69,7 @@ final class AppSettings {
         customTimerSeconds = ud.integer(forKey: "customTimerSeconds")
         recentWeights = loadDoubleArray(key: "recentWeights") ?? []
         savedSetups = loadCodable([SavedSetup].self, key: "savedSetupsJSON") ?? []
+        deltaBannerEnabled = ud.object(forKey: "deltaBannerEnabled") as? Bool ?? true
     }
 
     // MARK: — Derived

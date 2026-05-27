@@ -8,6 +8,9 @@ struct CalcModeView: View {
     private var scale: CGFloat { sizeClass == .regular ? 1.4 : 1.0 }
 
     @State private var commitTask: Task<Void, Never>?
+    /// Key used to reset the toast timer when the delta changes.
+    @State private var toastDismissed = false
+    @State private var lastDeltaKey = ""
 
     var body: some View {
         VStack(spacing: 12) {
@@ -29,15 +32,6 @@ struct CalcModeView: View {
             }
             .frame(minHeight: 52)
             .animation(.easeInOut(duration: 0.2), value: vm.targetWeight > 0)
-
-            // ── Add / remove delta ───────────────────────────────────────
-            // Appears while the user is editing an already-committed weight,
-            // showing exactly which plates to add or pull per side.
-            let delta = vm.plateDelta
-            if !delta.isEmpty {
-                PlateDeltaBannerView(delta: delta, unit: settings.unit)
-                    .transition(.opacity.combined(with: .scale(scale: 0.97)))
-            }
 
             // ── Increment row + recent weights ───────────────────────────
             // Recent weight chips live between the − and + buttons so they
@@ -84,12 +78,37 @@ struct CalcModeView: View {
             NumpadView(vm: vm)
                 .padding(.horizontal)
         }
-        .animation(.easeInOut(duration: 0.2), value: vm.plateDelta.isEmpty)
+        // ── Delta toast overlay ──────────────────────────────────────────
+        // Floats above the numpad so nothing in the layout shifts.
+        .overlay(alignment: .bottom) {
+            let delta = vm.plateDelta
+            let key = delta.map { "\($0.weight)\($0.change)" }.joined()
+            if settings.deltaBannerEnabled && !delta.isEmpty && !toastDismissed {
+                PlateDeltaBannerView(
+                    delta: delta,
+                    unit: settings.unit,
+                    duration: 30,
+                    onDismiss: { toastDismissed = true }
+                )
+                .id(key)             // new key = new view instance = timer resets
+                .padding(.horizontal, 12)
+                .padding(.bottom, 8)
+                .transition(.move(edge: .bottom).combined(with: .opacity))
+            }
+        }
+        .animation(.spring(response: 0.4, dampingFraction: 0.8),
+                   value: vm.plateDelta.isEmpty || toastDismissed)
         .onChange(of: vm.targetWeight) { _, _ in
             commitTask?.cancel()
             commitTask = Task {
                 try? await Task.sleep(for: .seconds(1.2))
                 if !Task.isCancelled { vm.commitWeight() }
+            }
+        }
+        // Re-show the toast whenever the delta changes to a different set of plates.
+        .onChange(of: vm.plateDelta.map { "\($0.weight)\($0.change)" }.joined()) { _, newKey in
+            if !newKey.isEmpty {
+                toastDismissed = false
             }
         }
     }

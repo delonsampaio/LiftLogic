@@ -1,42 +1,90 @@
 import SwiftUI
 
-/// Shows what plates to add or remove per side compared to the last committed weight.
-/// Positive change = add (green), negative change = remove (amber).
+/// Floating toast showing plates to add / remove per side.
+/// Self-dismisses after `duration` seconds; the × button dismisses immediately.
+/// Recreate (change `.id(…)`) when the delta changes to restart the countdown.
 struct PlateDeltaBannerView: View {
-    /// Each element is (plateWeight, netChangePerSide). Sorted heaviest-first by the VM.
     let delta: [(weight: Double, change: Int)]
     let unit: WeightUnit
+    let duration: Double
+    let onDismiss: () -> Void
+
+    @State private var progress: CGFloat = 1.0
 
     var body: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 14) {
-                ForEach(delta, id: \.weight) { weight, change in
-                    HStack(spacing: 5) {
-                        // +/− badge
-                        Text(change > 0 ? "+" : "−")
-                            .font(.caption2.weight(.black))
-                            .foregroundStyle(change > 0 ? ThemeTokens.deltaAdd : ThemeTokens.deltaRemove)
+        VStack(alignment: .leading, spacing: 8) {
 
-                        // Plate colour dot
-                        Circle()
-                            .fill(ThemeTokens.plateColor(for: weight, unit: unit))
-                            .frame(width: 9, height: 9)
-
-                        // Count × weight
-                        Text("\(abs(change))×\(weight.weightString)")
-                            .font(.callout.weight(.bold))
-                            .monospaced()
-                            .foregroundStyle(ThemeTokens.textPrimary)
+            // ── Plate changes + dismiss ───────────────────────────────────
+            HStack(spacing: 0) {
+                // Scrollable in case there are many changes
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 12) {
+                        ForEach(delta, id: \.weight) { weight, change in
+                            HStack(spacing: 5) {
+                                Text(change > 0 ? "+" : "−")
+                                    .font(.caption2.weight(.black))
+                                    .foregroundStyle(
+                                        change > 0 ? ThemeTokens.deltaAdd : ThemeTokens.deltaRemove
+                                    )
+                                Circle()
+                                    .fill(ThemeTokens.plateColor(for: weight, unit: unit))
+                                    .frame(width: 9, height: 9)
+                                Text("\(abs(change))×\(weight.weightString)")
+                                    .font(.callout.weight(.bold))
+                                    .monospaced()
+                                    .foregroundStyle(ThemeTokens.textPrimary)
+                            }
+                        }
+                        Text("per side")
+                            .font(.caption.weight(.medium))
+                            .foregroundStyle(ThemeTokens.textMuted)
                     }
+                    .padding(.trailing, 8)
                 }
+                .scrollBounceBehavior(.basedOnSize, axes: .horizontal)
 
-                Text("per side")
-                    .font(.caption.weight(.medium))
-                    .foregroundStyle(ThemeTokens.textMuted)
+                // Dismiss button
+                Button(action: onDismiss) {
+                    Image(systemName: "xmark")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(ThemeTokens.textMuted)
+                        .padding(6)
+                        .background(Circle().fill(Color(white: 0.2)))
+                }
+                .buttonStyle(.plain)
             }
-            .padding(.horizontal, 16)
+
+            // ── Countdown bar ────────────────────────────────────────────
+            GeometryReader { geo in
+                ZStack(alignment: .leading) {
+                    Capsule().fill(Color(white: 0.2))
+                    Capsule()
+                        .fill(ThemeTokens.accent.opacity(0.7))
+                        .frame(width: geo.size.width * progress)
+                        .animation(.linear(duration: duration), value: progress)
+                }
+            }
+            .frame(height: 3)
         }
-        .scrollBounceBehavior(.basedOnSize, axes: .horizontal)
-        .frame(maxWidth: .infinity)
+        .padding(.horizontal, 14)
+        .padding(.vertical, 12)
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(Color(white: 0.13))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 16)
+                        .strokeBorder(Color(white: 0.22), lineWidth: 1)
+                )
+        )
+        .shadow(color: .black.opacity(0.4), radius: 12, y: 4)
+        .onAppear {
+            // Kick off the progress animation
+            progress = 0
+            // Auto-dismiss when the bar drains
+            Task {
+                try? await Task.sleep(for: .seconds(duration))
+                onDismiss()
+            }
+        }
     }
 }
