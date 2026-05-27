@@ -8,8 +8,9 @@ struct CalcModeView: View {
     private var scale: CGFloat { sizeClass == .regular ? 1.4 : 1.0 }
 
     @State private var commitTask: Task<Void, Never>?
-    /// Key used to reset the toast timer when the delta changes.
-    @State private var toastDismissed = false
+    // Start dismissed so the toast doesn't fire when switching back to CALC mode
+    // with a stale delta. It re-shows only when the delta actually changes.
+    @State private var toastDismissed = true
     @State private var lastDeltaKey = ""
 
     var body: some View {
