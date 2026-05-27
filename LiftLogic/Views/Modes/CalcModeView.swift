@@ -106,9 +106,14 @@ struct CalcModeView: View {
                 if !Task.isCancelled { vm.commitWeight() }
             }
         }
-        // Re-show the toast whenever the delta changes to a different set of plates.
-        .onChange(of: vm.plateDelta.map { "\($0.weight)\($0.change)" }.joined()) { _, newKey in
-            if !newKey.isEmpty {
+        // While the user is actively typing the delta changes on every keystroke —
+        // hide the toast so it doesn't flash mid-edit.
+        .onChange(of: vm.plateDelta.map { "\($0.weight)\($0.change)" }.joined()) { _, _ in
+            toastDismissed = true
+        }
+        // Only reveal the toast once the 1.2 s debounce settles and commitWeight fires.
+        .onChange(of: vm.commitRevision) { _, _ in
+            if !vm.plateDelta.isEmpty {
                 toastDismissed = false
             }
         }

@@ -145,6 +145,10 @@ final class CalculatorViewModel {
         commitWeight()
     }
 
+    /// Increments each time commitWeight() fires — used by CalcModeView to
+    /// show the delta toast only after the debounce settles, not mid-keystroke.
+    private(set) var commitRevision: Int = 0
+
     /// Records the current weight to recent history.
     /// Only sets committedResult on first use (when nil) — after that only
     /// explicit "I'm loading this" actions (increment, decrement, loadWeight)
@@ -156,6 +160,7 @@ final class CalculatorViewModel {
         if committedResult == nil {
             committedResult = plateResult
         }
+        commitRevision += 1
     }
 
     // MARK: — Reverse mode
