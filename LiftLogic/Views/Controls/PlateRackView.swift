@@ -12,12 +12,35 @@ struct PlateRackView: View {
         inventory.filter(\.isEnabled).sorted { $0.weight > $1.weight }
     }
 
-    private var columnCount: Int { sizeClass == .regular ? 4 : 3 }
-    private var plateSize: CGFloat { sizeClass == .regular ? 110 : 88 }
+    // Adapt column count and plate size so the grid always fits on screen
+    // without scrolling, regardless of how many plate types are enabled.
+    //
+    //  ≤ 6 plates  → 3 cols, 88 pt  (~2 rows)
+    //  7–9 plates  → 3 cols, 76 pt  (~3 rows)
+    // 10–12 plates → 4 cols, 72 pt  (~3 rows)
+    // 13+ plates   → 4 cols, 60 pt  (~4 rows)
+    private var columnCount: Int {
+        if sizeClass == .regular { return 4 }
+        return enabledPlates.count >= 10 ? 4 : 3
+    }
+
+    private var plateSize: CGFloat {
+        if sizeClass == .regular { return 110 }
+        switch enabledPlates.count {
+        case ...6:   return 88
+        case 7...9:  return 76
+        case 10...12: return 72
+        default:     return 60
+        }
+    }
+
+    private var gridSpacing: CGFloat {
+        plateSize >= 80 ? 16 : (plateSize >= 68 ? 12 : 10)
+    }
 
     var body: some View {
         let columns = Array(repeating: GridItem(.flexible()), count: columnCount)
-        LazyVGrid(columns: columns, spacing: 16) {
+        LazyVGrid(columns: columns, spacing: gridSpacing) {
             ForEach(enabledPlates) { plate in
                 let available = isAvailable(plate)
                 Button {
