@@ -22,7 +22,7 @@ struct OneRMEngineTests {
     }
     @Test func repsClampedAtMax() {
         let result = OneRMEngine.calculate(weight: 100, reps: 40)
-        #expect(result.reps == 36)
+        #expect(result.reps == 15)
     }
     @Test func repsClampedAtMin() {
         let result = OneRMEngine.calculate(weight: 100, reps: 0)

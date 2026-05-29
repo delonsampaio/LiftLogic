@@ -80,4 +80,131 @@ struct CalculatorEngineTests {
         let totalLoaded = result.platesPerSide.map(\.weight).reduce(0, +)
         #expect(abs(totalLoaded - 42.5) < 0.01)
     }
+
+    // MARK: — 11-plate cap
+
+    @Test func elevenPlateCapEnforced() {
+        // With only 2.5 lb plates and a 2000 lb target, hundreds of plates would be
+        // needed — but the engine must stop at 11 per side.
+        let inv = [PlateInventoryItem(weight: 2.5, isEnabled: true)]
+        let result = CalculatorEngine.calculate(
+            target: 2000, barWeight: 45, collarWeight: 0,
+            inventory: inv, unit: .lbs, isSingleSided: false
+        )
+        #expect(result.platesPerSide.count == 11)
+    }
+
+    @Test func elevenPlateCapExactBoundary() {
+        // Exactly 11 plates worth of weight should load all 11; 12 would need the cap.
+        // 45 bar + 11×45 per side × 2 = 45 + 990 = 1035 lb
+        let result = CalculatorEngine.calculate(
+            target: 1035, barWeight: 45, collarWeight: 0,
+            inventory: lbsInventory, unit: .lbs, isSingleSided: false
+        )
+        #expect(result.platesPerSide.count == 11)
+        #expect(result.isExact)
+    }
+
+    // MARK: — Specific weight breakdowns (mirrors delta-toast test cases)
+
+    @Test func exactBreakdown135Lbs() {
+        let result = CalculatorEngine.calculate(
+            target: 135, barWeight: 45, collarWeight: 0,
+            inventory: lbsInventory, unit: .lbs, isSingleSided: false
+        )
+        #expect(result.isExact)
+        #expect(result.platesPerSide.count == 1)
+        #expect(result.platesPerSide[0].weight == 45)
+    }
+
+    @Test func exactBreakdown225Lbs() {
+        let result = CalculatorEngine.calculate(
+            target: 225, barWeight: 45, collarWeight: 0,
+            inventory: lbsInventory, unit: .lbs, isSingleSided: false
+        )
+        #expect(result.isExact)
+        let weights = result.platesPerSide.map(\.weight)
+        #expect(weights.filter { $0 == 45 }.count == 2)
+    }
+
+    @Test func exactBreakdown350Lbs() {
+        // 350 = 45 bar + 2×(3×45 + 10 + 5 + 2.5)
+        let result = CalculatorEngine.calculate(
+            target: 350, barWeight: 45, collarWeight: 0,
+            inventory: lbsInventory, unit: .lbs, isSingleSided: false
+        )
+        #expect(result.isExact)
+        let weights = result.platesPerSide.map(\.weight)
+        #expect(weights.filter { $0 == 45 }.count == 3)
+        #expect(weights.filter { $0 == 10 }.count == 1)
+        #expect(weights.filter { $0 == 5 }.count == 1)
+        #expect(weights.filter { $0 == 2.5 }.count == 1)
+    }
+
+    @Test func exactBreakdown440Lbs() {
+        // 440 = 45 bar + 2×(4×45 + 10 + 5 + 2.5)
+        let result = CalculatorEngine.calculate(
+            target: 440, barWeight: 45, collarWeight: 0,
+            inventory: lbsInventory, unit: .lbs, isSingleSided: false
+        )
+        #expect(result.isExact)
+        let weights = result.platesPerSide.map(\.weight)
+        #expect(weights.filter { $0 == 45 }.count == 4)
+        #expect(weights.filter { $0 == 10 }.count == 1)
+        #expect(weights.filter { $0 == 5 }.count == 1)
+        #expect(weights.filter { $0 == 2.5 }.count == 1)
+    }
+
+    @Test func exactBreakdown500Lbs() {
+        // 500 = 45 bar + 2×(5×45 + 2.5)
+        let result = CalculatorEngine.calculate(
+            target: 500, barWeight: 45, collarWeight: 0,
+            inventory: lbsInventory, unit: .lbs, isSingleSided: false
+        )
+        #expect(result.isExact)
+        let weights = result.platesPerSide.map(\.weight)
+        #expect(weights.filter { $0 == 45 }.count == 5)
+        #expect(weights.filter { $0 == 2.5 }.count == 1)
+        #expect(result.platesPerSide.count == 6)
+    }
+
+    @Test func exactBreakdown590Lbs() {
+        // 590 = 45 bar + 2×(6×45 + 2.5)
+        let result = CalculatorEngine.calculate(
+            target: 590, barWeight: 45, collarWeight: 0,
+            inventory: lbsInventory, unit: .lbs, isSingleSided: false
+        )
+        #expect(result.isExact)
+        let weights = result.platesPerSide.map(\.weight)
+        #expect(weights.filter { $0 == 45 }.count == 6)
+        #expect(weights.filter { $0 == 2.5 }.count == 1)
+        #expect(result.platesPerSide.count == 7)
+    }
+
+    @Test func exactBreakdown315Lbs() {
+        // 315 = 45 bar + 2×(3×45) — powerlifting milestone
+        let result = CalculatorEngine.calculate(
+            target: 315, barWeight: 45, collarWeight: 0,
+            inventory: lbsInventory, unit: .lbs, isSingleSided: false
+        )
+        #expect(result.isExact)
+        let weights = result.platesPerSide.map(\.weight)
+        #expect(weights.filter { $0 == 45 }.count == 3)
+        #expect(result.platesPerSide.count == 3)
+    }
+
+    @Test func kgBreakdown100kg() {
+        // 100 kg = 20 kg bar + 2×(1×25 + 1×15) per side
+        let inv: [PlateInventoryItem] = [25, 20, 15, 10, 5, 2.5, 1.25].map {
+            PlateInventoryItem(weight: $0, isEnabled: true)
+        }
+        let result = CalculatorEngine.calculate(
+            target: 100, barWeight: 20, collarWeight: 0,
+            inventory: inv, unit: .kg, isSingleSided: false
+        )
+        #expect(result.isExact)
+        let weights = result.platesPerSide.map(\.weight)
+        #expect(weights.filter { $0 == 25 }.count == 1)
+        #expect(weights.filter { $0 == 15 }.count == 1)
+    }
 }

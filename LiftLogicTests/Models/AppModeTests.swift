@@ -15,6 +15,6 @@ struct AppModeTests {
         #expect(AppMode.calc.displayName == "CALC")
         #expect(AppMode.warmup.displayName == "WARMUP")
         #expect(AppMode.oneRM.displayName == "1RM")
-        #expect(AppMode.reverse.displayName == "↔ REV")
+        #expect(AppMode.reverse.displayName == "REV")
     }
 }

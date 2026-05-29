@@ -117,4 +117,193 @@ struct CalculatorViewModelTests {
         #expect(vm.reversePlateStack.isEmpty)
     }
 
+    // MARK: — Weight cap
+
+    @Test func appendDigitClampsAt2000Lbs() {
+        let vm = CalculatorViewModel(settings: freshSettings())
+        vm.appendDigit("2")
+        vm.appendDigit("2")
+        vm.appendDigit("5")
+        vm.appendDigit("0")  // "2250" → clamped to 2000
+        #expect(vm.targetWeight == 2000)
+    }
+
+    @Test func suppressedCommitSkipsRevisionIncrement() {
+        let vm = CalculatorViewModel(settings: freshSettings())
+        vm.appendDigit("2")
+        vm.appendDigit("2")
+        vm.appendDigit("5")
+        vm.commitWeight()
+        let revision = vm.commitRevision
+        vm.appendDigit("0")  // "2250" → "2000", suppressNextCommit = true
+        vm.commitWeight()    // should be suppressed
+        #expect(vm.commitRevision == revision)
+    }
+
+    @Test func suppressedCommitKeepsBaselineAtPreviousWeight() {
+        let vm = CalculatorViewModel(settings: freshSettings())
+        vm.inputString = "225"
+        vm.commitWeight()
+        let baselinePlateCount = vm.committedResult?.platesPerSide.count
+        vm.appendDigit("0")  // "2250" → "2000", suppressNextCommit = true
+        vm.commitWeight()    // suppressed — baseline must not advance to 2000 lb plates
+        #expect(vm.committedResult?.platesPerSide.count == baselinePlateCount)
+    }
+
+    // MARK: — Delta toast correctness
+
+    @Test func firstCommitProducesNoDelta() {
+        // No prior committedResult → plateDelta returns [] → no toast
+        let vm = CalculatorViewModel(settings: freshSettings())
+        vm.inputString = "225"
+        vm.commitWeight()
+        #expect(vm.lastDelta.isEmpty)
+        #expect(vm.commitRevision == 1)
+    }
+
+    @Test func deltaFrom45To135AddsOne45PerSide() {
+        let vm = CalculatorViewModel(settings: freshSettings())
+        vm.inputString = "45"
+        vm.commitWeight()        // bare bar → 0 plates
+        vm.inputString = "135"
+        vm.commitWeight()        // 1×45 per side → delta = [(45, +1)]
+        let change = vm.lastDelta.first(where: { $0.weight == 45 })?.change
+        #expect(change == 1)
+        #expect(vm.lastDelta.count == 1)
+    }
+
+    @Test func deltaFrom135To225AddsOne45PerSide() {
+        let vm = CalculatorViewModel(settings: freshSettings())
+        vm.inputString = "135"
+        vm.commitWeight()
+        vm.inputString = "225"
+        vm.commitWeight()
+        let change = vm.lastDelta.first(where: { $0.weight == 45 })?.change
+        #expect(change == 1)
+        #expect(vm.lastDelta.count == 1)
+    }
+
+    @Test func deltaFrom500To590AddsOne45PerSide() {
+        // 500 = bar + 2×(5×45+2.5)   590 = bar + 2×(6×45+2.5)
+        let vm = CalculatorViewModel(settings: freshSettings())
+        vm.inputString = "500"
+        vm.commitWeight()
+        vm.inputString = "590"
+        vm.commitWeight()
+        let change = vm.lastDelta.first(where: { $0.weight == 45 })?.change
+        #expect(change == 1)
+        #expect(vm.lastDelta.count == 1)
+    }
+
+    @Test func deltaFrom350To440AddsOne45PerSide() {
+        // 350 = bar + 2×(3×45+10+5+2.5)   440 = bar + 2×(4×45+10+5+2.5)
+        let vm = CalculatorViewModel(settings: freshSettings())
+        vm.inputString = "350"
+        vm.commitWeight()
+        vm.inputString = "440"
+        vm.commitWeight()
+        let change = vm.lastDelta.first(where: { $0.weight == 45 })?.change
+        #expect(change == 1)
+        #expect(vm.lastDelta.count == 1)
+    }
+
+    @Test func deltaFrom135To45RemovesOne45PerSide() {
+        // Stripping back to bare bar — should ask to REMOVE the plate
+        let vm = CalculatorViewModel(settings: freshSettings())
+        vm.inputString = "135"
+        vm.commitWeight()
+        vm.inputString = "45"
+        vm.commitWeight()
+        let change = vm.lastDelta.first(where: { $0.weight == 45 })?.change
+        #expect(change == -1)
+        #expect(vm.lastDelta.count == 1)
+    }
+
+    @Test func deltaFrom315To45RemovesThree45PerSide() {
+        // 315 = bar + 2×(3×45); stripping to bare bar removes all three per side
+        let vm = CalculatorViewModel(settings: freshSettings())
+        vm.inputString = "315"
+        vm.commitWeight()
+        vm.inputString = "45"
+        vm.commitWeight()
+        let change = vm.lastDelta.first(where: { $0.weight == 45 })?.change
+        #expect(change == -3)
+        #expect(vm.lastDelta.count == 1)
+    }
+
+    @Test func deltaToSameWeightIsEmpty() {
+        // Committing the same weight twice should produce no delta
+        let vm = CalculatorViewModel(settings: freshSettings())
+        vm.inputString = "225"
+        vm.commitWeight()
+        vm.inputString = "225"
+        vm.commitWeight()
+        #expect(vm.lastDelta.isEmpty)
+    }
+
+    @Test func resetWeightClearsLastDelta() {
+        let vm = CalculatorViewModel(settings: freshSettings())
+        vm.inputString = "225"
+        vm.commitWeight()
+        vm.inputString = "135"
+        vm.commitWeight()
+        // lastDelta should be non-empty at this point
+        vm.resetWeight()
+        #expect(vm.lastDelta.isEmpty)
+    }
+
+    @Test func firstCommitAfterResetProducesNoDelta() {
+        // Reset clears committedResult; next commit is treated as a first-time load
+        let vm = CalculatorViewModel(settings: freshSettings())
+        vm.inputString = "225"
+        vm.commitWeight()
+        vm.inputString = "315"
+        vm.commitWeight()
+        vm.resetWeight()
+        vm.inputString = "135"
+        vm.commitWeight()
+        #expect(vm.lastDelta.isEmpty)
+    }
+
+    @Test func loadWeightProducesEmptyDelta() {
+        // loadWeight advances the baseline before committing — no visible change
+        let vm = CalculatorViewModel(settings: freshSettings())
+        vm.inputString = "225"
+        vm.commitWeight()
+        vm.loadWeight(135)
+        #expect(vm.lastDelta.isEmpty)
+    }
+
+    @Test func incrementProducesEmptyDelta() {
+        // +/- buttons mean "I'm loading this" — baseline advances, no toast
+        let vm = CalculatorViewModel(settings: freshSettings())
+        vm.appendDigit("1")
+        vm.appendDigit("0")
+        vm.appendDigit("0")
+        vm.commitWeight()
+        vm.increment()
+        #expect(vm.lastDelta.isEmpty)
+    }
+
+    @Test func decrementProducesEmptyDelta() {
+        let vm = CalculatorViewModel(settings: freshSettings())
+        vm.appendDigit("1")
+        vm.appendDigit("3")
+        vm.appendDigit("5")
+        vm.commitWeight()
+        vm.decrement()
+        #expect(vm.lastDelta.isEmpty)
+    }
+
+    @Test func commitRevisionIncreasesOnEachSettle() {
+        let vm = CalculatorViewModel(settings: freshSettings())
+        vm.inputString = "135"
+        vm.commitWeight()
+        vm.inputString = "225"
+        vm.commitWeight()
+        vm.inputString = "315"
+        vm.commitWeight()
+        #expect(vm.commitRevision == 3)
+    }
+
 }
