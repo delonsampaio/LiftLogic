@@ -121,6 +121,7 @@ final class CalculatorViewModel {
     func deleteLastDigit() {
         guard !inputString.isEmpty else { return }
         inputString.removeLast()
+        if inputString.isEmpty { committedResult = nil }
     }
 
     func resetWeight() {
@@ -132,6 +133,7 @@ final class CalculatorViewModel {
         let step = smallestEnabledPlate * 2
         let newValue = min(targetWeight + step, maxInputWeight)
         inputString = newValue.weightStringPrecise
+        committedResult = plateResult   // advance baseline — user is loading this
         commitWeight()
     }
 
@@ -139,7 +141,7 @@ final class CalculatorViewModel {
         let step = smallestEnabledPlate * 2
         let newValue = max(0, targetWeight - step)
         inputString = newValue == 0 ? "" : newValue.weightStringPrecise
-        if newValue == 0 { committedResult = nil }
+        committedResult = newValue == 0 ? nil : plateResult
         commitWeight()
     }
 
