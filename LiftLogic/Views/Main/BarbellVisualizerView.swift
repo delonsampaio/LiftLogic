@@ -180,10 +180,12 @@ struct BarbellVisualizerView: View {
         let lbs = settings.unit == .lbs ? weight : WeightUnit.kg.convert(weight, to: .lbs)
         let base: CGFloat
         switch lbs {
-        case 44...:   base = 16
+        case 95...:   base = 26  // 100 lb / 50 kg — ~2× thickness of a 45 lb plate
+        case 50..<95: base = 18  // 55 lb — slightly thicker than 45 lb
+        case 44..<50: base = 16  // 45 lb / 25 kg — standard
         case 22..<44: base = 13
         case 2...:    base = 10
-        default:      base = 7   // micro plates (< 2 lb) — very thin
+        default:      base = 7   // micro plates (< 2 lb)
         }
         return base * scale
     }
