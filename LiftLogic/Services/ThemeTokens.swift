@@ -22,7 +22,10 @@ enum ThemeTokens {
     static let deltaAdd    = Color(red: 0.25, green: 0.78, blue: 0.35)
     static let deltaRemove = Color(red: 0.95, green: 0.45, blue: 0.15)
 
-    // Standard plate colors — IWF/IPF color assignments
+    // Standard plate colors — IWF/IPF (kg) and Rogue/Ivanko industry standard (lbs)
+    static let chrome = Color(white: 0.72)    // silver / chrome — 1.25 kg, 0.25 kg
+    static let gold   = Color(red: 0.85, green: 0.65, blue: 0.13)  // 100 lb
+
     static func plateColor(for weight: Double, unit: WeightUnit) -> Color {
         if unit == .kg {
             switch weight {
@@ -35,21 +38,27 @@ enum ThemeTokens {
             case 2.5:   return .red
             case 2.0:   return .blue
             case 1.5:   return .yellow
+            case 1.25:  return chrome
             case 1.0:   return .green
             case 0.5:   return .white
+            case 0.25:  return chrome
             default:    return Color(white: 0.2)
             }
         } else {
             switch weight {
-            case 100.0: return Color(white: 0.2)
+            case 100.0: return gold
             case 55.0:  return .red
             case 45.0:  return .blue
             case 35.0:  return .yellow
             case 25.0:  return .green
             case 10.0:  return .white
-            case 5.0:   return .red
-            case 2.5:   return .green
-            case 1.25:  return .white
+            case 5.0:   return Color(white: 0.2)
+            case 2.5:   return Color(white: 0.2)
+            case 1.25:  return Color(white: 0.2)
+            case 1.0:   return .green
+            case 0.75:  return .blue
+            case 0.5:   return .white
+            case 0.25:  return .red
             default:    return Color(white: 0.2)
             }
         }
