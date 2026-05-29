@@ -109,19 +109,23 @@ final class CalculatorViewModel {
 
     // MARK: — Actions
 
+    // Set to true when the cap clamps input so the next debounce-triggered
+    // commitWeight doesn't lock in the clamped value as the delta baseline.
+    private var suppressNextCommit = false
+
     func appendDigit(_ digit: String) {
         if digit == "." && inputString.contains(".") { return }
         if inputString == "0" && digit != "." { inputString = digit; return }
         inputString.append(contentsOf: digit)
         if let value = Double(inputString), value > maxInputWeight {
             inputString = maxInputWeight.weightStringPrecise
+            suppressNextCommit = true
         }
     }
 
     func deleteLastDigit() {
         guard !inputString.isEmpty else { return }
         inputString.removeLast()
-        if inputString.isEmpty { committedResult = nil }
     }
 
     func resetWeight() {
@@ -160,6 +164,7 @@ final class CalculatorViewModel {
     /// explicit "I'm loading this" actions (increment, decrement, loadWeight)
     /// advance the baseline so the delta banner stays visible while exploring.
     func commitWeight() {
+        if suppressNextCommit { suppressNextCommit = false; return }
         guard targetWeight >= resolvedBarWeight, targetWeight > 0 else { return }
         settings.addRecentWeight(targetWeight)
         settings.successfulCalculationCount += 1
