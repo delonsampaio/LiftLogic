@@ -72,6 +72,10 @@ final class CalculatorViewModel {
             .min() ?? 2.5
     }
 
+    var maxInputWeight: Double {
+        settings.unit == .lbs ? 2000 : 907
+    }
+
     // MARK: — Delta (Add / Remove per side)
 
     /// Snapshot of the plate result the user last confirmed as loaded.
@@ -84,8 +88,6 @@ final class CalculatorViewModel {
     var plateDelta: [(weight: Double, change: Int)] {
         guard let committed = committedResult else { return [] }
         let current = plateResult
-        // Only show delta when current weight resolves to a real plate setup.
-        guard !current.platesPerSide.isEmpty else { return [] }
 
         var committedCounts: [Double: Int] = [:]
         for plate in committed.platesPerSide {
@@ -111,6 +113,9 @@ final class CalculatorViewModel {
         if digit == "." && inputString.contains(".") { return }
         if inputString == "0" && digit != "." { inputString = digit; return }
         inputString.append(contentsOf: digit)
+        if let value = Double(inputString), value > maxInputWeight {
+            inputString = maxInputWeight.weightStringPrecise
+        }
     }
 
     func deleteLastDigit() {
@@ -125,9 +130,8 @@ final class CalculatorViewModel {
 
     func increment() {
         let step = smallestEnabledPlate * 2
-        let newValue = targetWeight + step
+        let newValue = min(targetWeight + step, maxInputWeight)
         inputString = newValue.weightStringPrecise
-        committedResult = plateResult   // advance baseline — user is loading this
         commitWeight()
     }
 
@@ -135,7 +139,7 @@ final class CalculatorViewModel {
         let step = smallestEnabledPlate * 2
         let newValue = max(0, targetWeight - step)
         inputString = newValue == 0 ? "" : newValue.weightStringPrecise
-        committedResult = newValue == 0 ? nil : plateResult
+        if newValue == 0 { committedResult = nil }
         commitWeight()
     }
 
@@ -179,7 +183,10 @@ final class CalculatorViewModel {
 
     func canAddPlate(_ plate: PlateInventoryItem) -> Bool {
         let max = reverseMaxPerSide(for: plate)
-        return reverseCount(for: plate.weight) < max
+        guard reverseCount(for: plate.weight) < max else { return false }
+        guard reversePlateStack.count < 11 else { return false }
+        let projectedTotal = reverseTotal + plate.weight * (isSingleSided ? 1 : 2)
+        return projectedTotal <= maxInputWeight
     }
 
     /// Whether the user has any quantity limit set on any enabled plate.

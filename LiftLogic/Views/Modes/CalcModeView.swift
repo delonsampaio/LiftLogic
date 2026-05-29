@@ -11,7 +11,6 @@ struct CalcModeView: View {
     // Start dismissed so the toast doesn't fire when switching back to CALC mode
     // with a stale delta. It re-shows only when the delta actually changes.
     @State private var toastDismissed = true
-    @State private var lastDeltaKey = ""
 
     var body: some View {
         VStack(spacing: 12) {

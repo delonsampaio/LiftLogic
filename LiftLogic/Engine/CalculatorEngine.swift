@@ -55,7 +55,7 @@ struct CalculatorEngine {
                 ? Int.max
                 : (isSingleSided ? plate.quantity : plate.quantity / 2)
             var used = 0
-            while remaining >= plate.weight - 0.001 && used < maxPerSide {
+            while remaining >= plate.weight - 0.001 && used < maxPerSide && loaded.count < 11 {
                 loaded.append(LoadedPlate(weight: plate.weight))
                 remaining -= plate.weight
                 used += 1
