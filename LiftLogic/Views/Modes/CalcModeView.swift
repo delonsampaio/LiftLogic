@@ -80,8 +80,10 @@ struct CalcModeView: View {
         }
         // ── Delta toast overlay ──────────────────────────────────────────
         // Floats above the numpad so nothing in the layout shifts.
+        // Uses lastDelta (snapshot from last debounce) so the content is
+        // stable and correct — plateDelta is always 0 after committed advances.
         .overlay(alignment: .bottom) {
-            let delta = vm.plateDelta
+            let delta = vm.lastDelta
             let key = delta.map { "\($0.weight)\($0.change)" }.joined()
             if settings.deltaBannerEnabled && !delta.isEmpty && !toastDismissed {
                 PlateDeltaBannerView(
@@ -97,22 +99,18 @@ struct CalcModeView: View {
             }
         }
         .animation(.spring(response: 0.4, dampingFraction: 0.8),
-                   value: vm.plateDelta.isEmpty || toastDismissed)
+                   value: vm.lastDelta.isEmpty || toastDismissed)
         .onChange(of: vm.targetWeight) { _, _ in
             commitTask?.cancel()
             commitTask = Task {
                 try? await Task.sleep(for: .seconds(1.2))
                 if !Task.isCancelled { vm.commitWeight() }
             }
+            toastDismissed = true   // hide while the user is typing
         }
-        // While the user is actively typing the delta changes on every keystroke —
-        // hide the toast so it doesn't flash mid-edit.
-        .onChange(of: vm.plateDelta.map { "\($0.weight)\($0.change)" }.joined()) { _, _ in
-            toastDismissed = true
-        }
-        // Only reveal the toast once the 1.2 s debounce settles and commitWeight fires.
+        // Reveal the toast once the debounce settles and lastDelta is populated.
         .onChange(of: vm.commitRevision) { _, _ in
-            if !vm.plateDelta.isEmpty {
+            if !vm.lastDelta.isEmpty {
                 toastDismissed = false
             }
         }

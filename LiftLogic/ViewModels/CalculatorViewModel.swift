@@ -78,14 +78,16 @@ final class CalculatorViewModel {
 
     // MARK: — Delta (Add / Remove per side)
 
-    /// Snapshot of the plate result the user last confirmed as loaded.
-    /// Used to compute the add/remove delta when the target changes.
+    /// Snapshot of the plate result last settled on (advances every debounce fire).
     private(set) var committedResult: PlateResult? = nil
 
-    /// Per-side plate changes between `committedResult` and the current target.
-    /// Positive count = add that plate, negative = remove.
-    /// Empty when there is nothing committed yet or current matches committed.
-    var plateDelta: [(weight: Double, change: Int)] {
+    /// The delta captured at the last debounce fire, shown by the toast.
+    /// Stable between fires so the toast doesn't flicker mid-keystroke.
+    private(set) var lastDelta: [(weight: Double, change: Int)] = []
+
+    /// Live per-side diff between committedResult and the current target.
+    /// Used internally to compute lastDelta before advancing committedResult.
+    private var plateDelta: [(weight: Double, change: Int)] {
         guard let committed = committedResult else { return [] }
         let current = plateResult
 
@@ -130,7 +132,8 @@ final class CalculatorViewModel {
 
     func resetWeight() {
         inputString = ""
-        committedResult = nil   // clear delta when bar is wiped
+        committedResult = nil
+        lastDelta = []
     }
 
     func increment() {
@@ -159,18 +162,15 @@ final class CalculatorViewModel {
     /// show the delta toast only after the debounce settles, not mid-keystroke.
     private(set) var commitRevision: Int = 0
 
-    /// Records the current weight to recent history.
-    /// Only sets committedResult on first use (when nil) — after that only
-    /// explicit "I'm loading this" actions (increment, decrement, loadWeight)
-    /// advance the baseline so the delta banner stays visible while exploring.
+    /// Captures the current delta into lastDelta, then advances committedResult
+    /// to the current weight. Called by the 1.2 s debounce and explicit actions.
     func commitWeight() {
         if suppressNextCommit { suppressNextCommit = false; return }
         guard targetWeight >= resolvedBarWeight, targetWeight > 0 else { return }
         settings.addRecentWeight(targetWeight)
         settings.successfulCalculationCount += 1
-        if committedResult == nil {
-            committedResult = plateResult
-        }
+        lastDelta = plateDelta      // snapshot diff before advancing baseline
+        committedResult = plateResult   // always advance — keeps baseline current
         commitRevision += 1
     }
 
