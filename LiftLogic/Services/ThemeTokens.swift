@@ -22,38 +22,35 @@ enum ThemeTokens {
     static let deltaAdd    = Color(red: 0.25, green: 0.78, blue: 0.35)
     static let deltaRemove = Color(red: 0.95, green: 0.45, blue: 0.15)
 
-    // Standard plate colors — IWF/IPF thresholds in lbs
+    // Standard plate colors — IWF/IPF color assignments
     static func plateColor(for weight: Double, unit: WeightUnit) -> Color {
-        let lbs = unit == .lbs ? weight : WeightUnit.kg.convert(weight, to: .lbs)
-        switch lbs {
-        case 44...:  return Color(red: 0.80, green: 0.10, blue: 0.10)  // red    — 45 lb / 20 kg
-        case 33..<44: return Color(red: 0.10, green: 0.30, blue: 0.80) // blue   — 35 lb / 15 kg
-        case 22..<33: return Color(red: 0.90, green: 0.75, blue: 0.10) // yellow — 25 lb / 10 kg
-        case 9..<22:  return Color(white: 0.88)                         // white  — 10 lb / 5 kg
-        case 4..<9:   return Color(red: 0.10, green: 0.60, blue: 0.15) // green  — 5 lb / 2.5 kg
-        default:      return microPlateColor(weight: weight, unit: unit)
-        }
-    }
-
-    // Micro / small plate colors — IWF color cycle (red→blue→yellow→white→green)
-    // applied to micro sizes so they read as a family with standard plates.
-    private static func microPlateColor(weight: Double, unit: WeightUnit) -> Color {
-        if unit == .lbs {
+        if unit == .kg {
             switch weight {
-            case 2..<4:   return Color(white: 0.50)                          // 2.5 lb   — gray (standard chrome)
-            case 1.15...: return Color(red: 0.80, green: 0.10, blue: 0.10)  // 1.25 lb  — red  (matches 45 lb)
-            case ..<0.40: return Color(red: 0.10, green: 0.60, blue: 0.15)  // 0.25 lb  — green (matches 5 lb)
-            case ..<0.65: return Color(white: 0.88)                          // 0.50 lb  — white (matches 10 lb)
-            case ..<0.90: return Color(red: 0.90, green: 0.75, blue: 0.10)  // 0.75 lb  — yellow (matches 25 lb)
-            default:      return Color(red: 0.10, green: 0.30, blue: 0.80)  // 1.00 lb  — blue  (matches 35 lb)
+            case 50.0:  return .green
+            case 25.0:  return .red
+            case 20.0:  return .blue
+            case 15.0:  return .yellow
+            case 10.0:  return .green
+            case 5.0:   return .white
+            case 2.5:   return .red
+            case 2.0:   return .blue
+            case 1.5:   return .yellow
+            case 1.0:   return .green
+            case 0.5:   return .white
+            default:    return Color(white: 0.2)
             }
         } else {
-            // weight here is the original kg value
             switch weight {
-            case 1.15...: return Color(white: 0.50)                          // 1.25 kg  — gray (standard chrome)
-            case ..<0.65: return Color(white: 0.88)                          // 0.25/0.50 kg — white
-            case ..<1.15: return Color(red: 0.10, green: 0.60, blue: 0.15)  // 1.00 kg  — green (matches 5 lb)
-            default:      return Color(red: 0.90, green: 0.75, blue: 0.10)  // 1.50 kg  — yellow (matches 15 kg)
+            case 100.0: return Color(white: 0.2)
+            case 55.0:  return .red
+            case 45.0:  return .blue
+            case 35.0:  return .yellow
+            case 25.0:  return .green
+            case 10.0:  return .white
+            case 5.0:   return .red
+            case 2.5:   return .green
+            case 1.25:  return .white
+            default:    return Color(white: 0.2)
             }
         }
     }

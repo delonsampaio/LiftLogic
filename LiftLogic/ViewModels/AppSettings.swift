@@ -122,21 +122,21 @@ final class AppSettings {
     // MARK: — Defaults
 
     static let defaultLbs: [PlateInventoryItem] = {
+        let heavy:    [Double] = [100, 55]                   // non-standard — disabled by default
         let standard: [Double] = [45, 35, 25, 10, 5, 2.5]
-        // Micro plates (fractional) — disabled by default, enable in inventory
-        // Based on commercial standards: Rogue, Iron Company, Micro Gainz
-        let micro: [Double] = [1.25, 1.0, 0.75, 0.5, 0.25]
-        return standard.map { PlateInventoryItem(weight: $0, isEnabled: true) }
-             + micro.map   { PlateInventoryItem(weight: $0, isEnabled: false) }
+        let micro:    [Double] = [1.25, 1.0, 0.75, 0.5, 0.25]
+        return heavy.map    { PlateInventoryItem(weight: $0, isEnabled: false) }
+             + standard.map { PlateInventoryItem(weight: $0, isEnabled: true) }
+             + micro.map    { PlateInventoryItem(weight: $0, isEnabled: false) }
     }()
 
     static let defaultKg: [PlateInventoryItem] = {
+        let heavy:    [Double] = [50]                        // non-standard — disabled by default
         let standard: [Double] = [25, 20, 15, 10, 5, 2.5, 1.25]
-        // Micro plates — disabled by default
-        // Based on IPF/IWF fractional change plate standards
-        let micro: [Double] = [2.0, 1.5, 1.0, 0.5, 0.25]
-        return standard.map { PlateInventoryItem(weight: $0, isEnabled: true) }
-             + micro.map   { PlateInventoryItem(weight: $0, isEnabled: false) }
+        let micro:    [Double] = [2.0, 1.5, 1.0, 0.5, 0.25]
+        return heavy.map    { PlateInventoryItem(weight: $0, isEnabled: false) }
+             + standard.map { PlateInventoryItem(weight: $0, isEnabled: true) }
+             + micro.map    { PlateInventoryItem(weight: $0, isEnabled: false) }
     }()
 }
 
