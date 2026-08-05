@@ -2,9 +2,10 @@ import SwiftUI
 import StoreKit
 
 struct MainView: View {
-    @State private var settings = AppSettings()
+    @State private var settings: AppSettings
     @State private var vm: CalculatorViewModel
     @State private var timer = TimerService()
+    @State private var store = StoreKitService()
     @State private var showPaywall = false
     @State private var showSettings = false
     @State private var showSavedSetups = false
@@ -164,7 +165,7 @@ struct MainView: View {
             }
         }
         .fullScreenCover(isPresented: $showPaywall) {
-            ProPaywallView(settings: settings)
+            ProPaywallView(settings: settings, store: store)
         }
         .fullScreenCover(isPresented: $showSettings) {
             SettingsView(settings: settings, vm: vm)
@@ -180,6 +181,9 @@ struct MainView: View {
         .onAppear {
             UIApplication.shared.isIdleTimerDisabled = true
             timer.reattachIfNeeded()
+        }
+        .task {
+            store.start(settings: settings)
         }
         .onChange(of: scenePhase) { _, newPhase in
             if newPhase == .active { timer.syncFromActivity() }

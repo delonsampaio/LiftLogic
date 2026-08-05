@@ -193,6 +193,70 @@ struct CalculatorEngineTests {
         #expect(result.platesPerSide.count == 3)
     }
 
+    // MARK: — Plate quantity limits (feature #63)
+
+    @Test func quantityLimitCapsPlatesPerSide() {
+        // Gym owns only 2× 45 lb plates → 1 per side. A 315 target wants 3 per side.
+        let inv = [PlateInventoryItem(weight: 45, isEnabled: true, quantity: 2)]
+        let result = CalculatorEngine.calculate(
+            target: 315, barWeight: 45, collarWeight: 0,
+            inventory: inv, unit: .lbs, isSingleSided: false
+        )
+        #expect(result.platesPerSide.count == 1)
+        #expect(!result.isExact)
+    }
+
+    @Test func oddQuantityRoundsDownPerSide() {
+        // 3 plates owned can't load symmetrically past 1 per side (3/2 = 1).
+        let inv = [PlateInventoryItem(weight: 45, isEnabled: true, quantity: 3)]
+        let result = CalculatorEngine.calculate(
+            target: 315, barWeight: 45, collarWeight: 0,
+            inventory: inv, unit: .lbs, isSingleSided: false
+        )
+        #expect(result.platesPerSide.count == 1)
+    }
+
+    @Test func singleSidedUsesFullQuantity() {
+        // Single-sided loads one side, so all owned plates are usable there.
+        let inv = [PlateInventoryItem(weight: 45, isEnabled: true, quantity: 3)]
+        let result = CalculatorEngine.calculate(
+            target: 500, barWeight: 45, collarWeight: 0,
+            inventory: inv, unit: .lbs, isSingleSided: true
+        )
+        #expect(result.platesPerSide.count == 3)
+    }
+
+    // MARK: — Shortage reason inference
+
+    @Test func shortageReasonNoneWhenExact() {
+        let result = CalculatorEngine.calculate(
+            target: 225, barWeight: 45, collarWeight: 0,
+            inventory: lbsInventory, unit: .lbs, isSingleSided: false
+        )
+        #expect(result.shortageReason == .none)
+    }
+
+    @Test func shortageReasonUnsupportedWhenInventoryUnlimited() {
+        // Every plate is unlimited but 228 simply isn't loadable with these sizes.
+        let result = CalculatorEngine.calculate(
+            target: 228, barWeight: 45, collarWeight: 0,
+            inventory: lbsInventory, unit: .lbs, isSingleSided: false
+        )
+        #expect(!result.isExact)
+        #expect(result.shortageReason == .unsupportedIncrement)
+    }
+
+    @Test func shortageReasonOutOfPlatesWhenQuantityLimited() {
+        // A finite quantity is the reason the exact target can't be reached.
+        let inv = [PlateInventoryItem(weight: 45, isEnabled: true, quantity: 2)]
+        let result = CalculatorEngine.calculate(
+            target: 315, barWeight: 45, collarWeight: 0,
+            inventory: inv, unit: .lbs, isSingleSided: false
+        )
+        #expect(!result.isExact)
+        #expect(result.shortageReason == .outOfPlates)
+    }
+
     @Test func kgBreakdown100kg() {
         // 100 kg = 20 kg bar + 2×(1×25 + 1×15) per side
         let inv: [PlateInventoryItem] = [25, 20, 15, 10, 5, 2.5, 1.25].map {

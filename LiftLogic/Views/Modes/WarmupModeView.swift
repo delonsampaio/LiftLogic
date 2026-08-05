@@ -55,12 +55,13 @@ struct WarmupModeView: View {
                     .foregroundStyle(ThemeTokens.textPrimary)
                     .frame(maxWidth: .infinity, alignment: .leading)
 
-                let grouped = PlateResult(platesPerSide: set.platesPerSide, totalWeight: set.targetWeight, remainder: 0).grouped
-                let parts = grouped.prefix(3).map { "\($0.count)×\($0.weight.weightString)" }
-                Text(parts.joined(separator: " "))
+                let summary = PlateResult(platesPerSide: set.platesPerSide, totalWeight: set.targetWeight, remainder: 0).summary
+                Text(summary)
                     .font(.caption.weight(.medium))
                     .monospaced()
                     .foregroundStyle(ThemeTokens.textMuted)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
                     .frame(maxWidth: .infinity, alignment: .trailing)
             }
             .padding(.horizontal, 16)

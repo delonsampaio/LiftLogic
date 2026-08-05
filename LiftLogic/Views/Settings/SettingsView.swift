@@ -5,6 +5,8 @@ struct SettingsView: View {
     let vm: CalculatorViewModel
     @State private var showCustomBarSheet = false
     @State private var customBarInput = ""
+    @FocusState private var numericFieldFocused: Bool
+    @FocusState private var customBarFocused: Bool
     @Environment(\.dismiss) var dismiss
 
     var body: some View {
@@ -82,6 +84,7 @@ struct SettingsView: View {
                                 set: { settings.bodyWeight = $0 }
                             ), format: .number)
                             .keyboardType(.decimalPad)
+                            .focused($numericFieldFocused)
                             .multilineTextAlignment(.trailing)
                             .frame(width: 80)
                             Text(settings.unit.symbol)
@@ -125,6 +128,7 @@ struct SettingsView: View {
                                     set: { settings.deltaAutoDismissSeconds = max(5, $0) }
                                 ), format: .number)
                                 .keyboardType(.numberPad)
+                                .focused($numericFieldFocused)
                                 .multilineTextAlignment(.trailing)
                                 .frame(width: 52)
                                 Text("sec")
@@ -161,6 +165,10 @@ struct SettingsView: View {
                     Button("Done") { dismiss() }
                         .foregroundStyle(ThemeTokens.accent)
                 }
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button("Done") { numericFieldFocused = false }
+                }
             }
         }
         .sheet(isPresented: $showCustomBarSheet) {
@@ -182,6 +190,7 @@ struct SettingsView: View {
                 HStack {
                     TextField("45", text: $customBarInput)
                         .keyboardType(.decimalPad)
+                        .focused($customBarFocused)
                         .font(.largeTitle.weight(.bold))
                         .monospaced()
                         .foregroundStyle(ThemeTokens.textPrimary)
@@ -209,6 +218,10 @@ struct SettingsView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button("Cancel") { showCustomBarSheet = false }
+                }
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button("Done") { customBarFocused = false }
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Save") {

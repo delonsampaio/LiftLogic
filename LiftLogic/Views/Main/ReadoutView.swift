@@ -15,9 +15,8 @@ struct ReadoutView: View {
     private var remainderText: String? {
         guard isAmber else { return nil }
         let result = vm.plateResult
-        let r = result.remainder
         let closest = String(format: "Closest: %.1f %@ (%.1f short)",
-                             displayWeight - r, settings.unit.symbol, r)
+                             vm.closestLoadableWeight, settings.unit.symbol, vm.totalShort)
         switch result.shortageReason {
         case .outOfPlates:
             return "\(closest) · Out of Plates"

@@ -41,7 +41,7 @@ struct ShareCardView: View {
                     .font(.system(size: 22, weight: .semibold))
                     .foregroundStyle(Color(white: 0.5))
 
-                let grouped = vm.plateResult.grouped
+                let grouped = vm.displayGrouped
                 if !grouped.isEmpty {
                     let parts = grouped.map { "\($0.count)× \($0.weight.weightString)" }
                     Text(parts.joined(separator: " · "))

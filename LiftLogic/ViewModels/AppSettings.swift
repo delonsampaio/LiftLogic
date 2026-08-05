@@ -42,8 +42,19 @@ final class AppSettings {
     var customTimerSeconds: Int {
         didSet { UserDefaults.standard.set(customTimerSeconds, forKey: "customTimerSeconds") }
     }
+    // Recent weights — stored per unit so lbs values never surface as kg (or vice versa).
+    private var lbsRecentWeights: [Double] {
+        didSet { saveDoubleArray(lbsRecentWeights, key: "lbsRecentWeights") }
+    }
+    private var kgRecentWeights: [Double] {
+        didSet { saveDoubleArray(kgRecentWeights, key: "kgRecentWeights") }
+    }
+    /// Recent weights for the currently-selected unit.
     var recentWeights: [Double] {
-        didSet { saveDoubleArray(recentWeights, key: "recentWeights") }
+        get { unit == .lbs ? lbsRecentWeights : kgRecentWeights }
+        set {
+            if unit == .lbs { lbsRecentWeights = newValue } else { kgRecentWeights = newValue }
+        }
     }
     var savedSetups: [SavedSetup] {
         didSet { saveCodable(savedSetups, key: "savedSetupsJSON") }
@@ -61,7 +72,8 @@ final class AppSettings {
 
     init() {
         let ud = UserDefaults.standard
-        unit = WeightUnit(rawValue: ud.string(forKey: "unit") ?? "") ?? .lbs
+        let savedUnit = WeightUnit(rawValue: ud.string(forKey: "unit") ?? "") ?? .lbs
+        unit = savedUnit
         defaultBar = BarType(rawValue: ud.string(forKey: "defaultBar") ?? "") ?? .olympic45lb
         customBarWeight = ud.double(forKey: "customBarWeight").nonZero ?? 45.0
         lbsInventory = AppSettings.mergedInventory(saved: loadInventory(key: "lbsInventoryJSON"),
@@ -72,7 +84,10 @@ final class AppSettings {
         successfulCalculationCount = ud.integer(forKey: "successfulCalculationCount")
         bodyWeight = ud.double(forKey: "bodyWeight")
         customTimerSeconds = ud.integer(forKey: "customTimerSeconds")
-        recentWeights = loadDoubleArray(key: "recentWeights") ?? []
+        // Migrate the pre-1.x single recent-weights list into the active unit's bucket.
+        let legacyRecent = loadDoubleArray(key: "recentWeights") ?? []
+        lbsRecentWeights = loadDoubleArray(key: "lbsRecentWeights") ?? (savedUnit == .lbs ? legacyRecent : [])
+        kgRecentWeights  = loadDoubleArray(key: "kgRecentWeights")  ?? (savedUnit == .kg  ? legacyRecent : [])
         savedSetups = loadCodable([SavedSetup].self, key: "savedSetupsJSON") ?? []
         deltaBannerEnabled = ud.object(forKey: "deltaBannerEnabled") as? Bool ?? true
         deltaAutoDismissSeconds = ud.integer(forKey: "deltaAutoDismissSeconds")  // 0 = off

@@ -1,6 +1,6 @@
 import Foundation
 
-enum ShortageReason {
+enum ShortageReason: Equatable {
     /// Result is exact — no shortage.
     case none
     /// No enabled plate is small enough to fill the remainder. Adding more
@@ -18,6 +18,12 @@ struct PlateResult {
     var shortageReason: ShortageReason = .none
 
     var isExact: Bool { remainder >= 0 && remainder < 0.001 }
+
+    /// Compact "count×weight" summary of every plate group, heaviest first.
+    /// e.g. "2×45 1×25 1×10". Never truncates.
+    var summary: String {
+        grouped.map { "\($0.count)×\($0.weight.weightString)" }.joined(separator: " ")
+    }
 
     var grouped: [(weight: Double, count: Int)] {
         var result: [(weight: Double, count: Int)] = []

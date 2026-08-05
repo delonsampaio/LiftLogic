@@ -26,6 +26,14 @@ struct PlateResultTests {
         let b = LoadedPlate(weight: 45)
         #expect(a.id != b.id)
     }
+    @Test func summaryListsEveryGroupHeaviestFirst() {
+        // Four distinct plate types — none may be dropped (regression for the
+        // warmup breakdown that used to truncate to the first three groups).
+        let plates = [45, 45, 25, 10, 5].map { LoadedPlate(weight: $0) }
+        let result = PlateResult(platesPerSide: plates, totalWeight: 0, remainder: 0)
+        #expect(result.summary == "2×45 1×25 1×10 1×5")
+    }
+
     @Test func isExactEpsilonBoundary() {
         // remainder just under epsilon — should be treated as exact
         let result = PlateResult(platesPerSide: [], totalWeight: 100, remainder: 0.0009)

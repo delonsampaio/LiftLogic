@@ -3,7 +3,7 @@ import StoreKit
 
 struct ProPaywallView: View {
     let settings: AppSettings
-    @State private var store = StoreKitService()
+    let store: StoreKitService
     @Environment(\.dismiss) var dismiss
 
     var body: some View {
@@ -66,6 +66,14 @@ struct ProPaywallView: View {
                 }
                 .font(.footnote)
                 .foregroundStyle(ThemeTokens.textMuted)
+
+                if let message = store.restoreMessage ?? store.errorMessage {
+                    Text(message)
+                        .font(.caption2)
+                        .foregroundStyle(ThemeTokens.textMuted)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 24)
+                }
 
                 Button("Not Now") { dismiss() }
                     .font(.footnote)

@@ -65,6 +65,29 @@ final class CalculatorViewModel {
         return resolvedBarWeight + resolvedCollarWeight + (platesTotal * sides)
     }
 
+    /// Plate grouping to display for the current mode: the reverse stack in REV
+    /// mode, otherwise the computed CALC result. Keeps the share card consistent
+    /// with what the user is actually looking at.
+    var displayGrouped: [(weight: Double, count: Int)] {
+        if currentMode == .reverse {
+            return PlateResult(platesPerSide: reversePlateStack, totalWeight: reverseTotal, remainder: 0).grouped
+        }
+        return plateResult.grouped
+    }
+
+    /// Total weight the loaded bar falls short of the target (0 when exact).
+    /// `plateResult.remainder` is a *per-side* value, so a two-sided bar is short
+    /// on both sides — the total shortfall is doubled unless loading single-sided.
+    var totalShort: Double {
+        guard !plateResult.isExact else { return 0 }
+        return plateResult.remainder * (isSingleSided ? 1 : 2)
+    }
+
+    /// Closest total weight actually loadable at or below the target.
+    var closestLoadableWeight: Double {
+        max(0, targetWeight - totalShort)
+    }
+
     var smallestEnabledPlate: Double {
         settings.activeInventory
             .filter(\.isEnabled)

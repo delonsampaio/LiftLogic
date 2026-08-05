@@ -117,6 +117,41 @@ struct CalculatorViewModelTests {
         #expect(vm.reversePlateStack.isEmpty)
     }
 
+    // MARK: — Reverse-mode inventory limits
+
+    @Test func reverseTotalIncludesBarAndBothSides() {
+        let vm = CalculatorViewModel(settings: freshSettings())   // 45 lb bar default
+        vm.addPlate(PlateInventoryItem(weight: 45, isEnabled: true))
+        #expect(vm.reverseTotal == 135)                          // 45 bar + 2×45
+    }
+
+    @Test func reverseTotalSingleSidedCountsOneSide() {
+        let vm = CalculatorViewModel(settings: freshSettings())
+        vm.isSingleSided = true
+        vm.addPlate(PlateInventoryItem(weight: 45, isEnabled: true))
+        #expect(vm.reverseTotal == 90)                           // 45 bar + 1×45
+    }
+
+    @Test func canAddPlateRespectsQuantityLimit() {
+        let settings = freshSettings()
+        settings.lbsInventory = [PlateInventoryItem(weight: 45, isEnabled: true, quantity: 2)]
+        let vm = CalculatorViewModel(settings: settings)
+        let plate = settings.lbsInventory[0]
+        vm.addPlate(plate)                        // 1 per side (quantity 2 / 2 sides)
+        #expect(vm.reverseCount(for: 45) == 1)
+        #expect(vm.canAddPlate(plate) == false)   // a 2nd per side would exceed the limit
+    }
+
+    @Test func reverseAllInventoryExhaustedWhenLimitReached() {
+        let settings = freshSettings()
+        settings.lbsInventory = [PlateInventoryItem(weight: 45, isEnabled: true, quantity: 2)]
+        let vm = CalculatorViewModel(settings: settings)
+        #expect(!vm.reverseAllInventoryExhausted)
+        vm.addPlate(settings.lbsInventory[0])
+        #expect(vm.reverseHitInventoryLimit)
+        #expect(vm.reverseAllInventoryExhausted)
+    }
+
     // MARK: — Weight cap
 
     @Test func appendDigitClampsAt2000Lbs() {
@@ -304,6 +339,56 @@ struct CalculatorViewModelTests {
         vm.inputString = "315"
         vm.commitWeight()
         #expect(vm.commitRevision == 3)
+    }
+
+    // MARK: — Closest-loadable / shortfall (per-side remainder → total)
+
+    @Test func totalShortDoublesPerSideRemainderForTwoSidedBar() {
+        // 228 lb, 45 bar, standard plates: per-side loads 2×45 = 90, leaving 1.5/side.
+        // The bar is 1.5 short on EACH side → 3.0 lb short in total.
+        let vm = CalculatorViewModel(settings: freshSettings())
+        vm.inputString = "228"
+        #expect(abs(vm.totalShort - 3.0) < 0.001)
+        #expect(abs(vm.closestLoadableWeight - 225.0) < 0.001)
+    }
+
+    @Test func totalShortEqualsPerSideRemainderForSingleSidedBar() {
+        // Single-sided: all net weight on one side, so the shortfall is not doubled.
+        // 101 lb, 45 bar, single side: 45+10 = 55 loaded, 1 lb short.
+        let vm = CalculatorViewModel(settings: freshSettings())
+        vm.isSingleSided = true
+        vm.inputString = "101"
+        #expect(abs(vm.totalShort - 1.0) < 0.001)
+        #expect(abs(vm.closestLoadableWeight - 100.0) < 0.001)
+    }
+
+    @Test func totalShortIsZeroWhenExact() {
+        let vm = CalculatorViewModel(settings: freshSettings())
+        vm.inputString = "225"
+        #expect(vm.totalShort == 0)
+        #expect(vm.closestLoadableWeight == 225)
+    }
+
+    // MARK: — Mode-aware plate grouping (used by the share card)
+
+    @Test func displayGroupedReflectsReverseStackInReverseMode() {
+        let vm = CalculatorViewModel(settings: freshSettings())
+        vm.currentMode = .reverse
+        vm.addPlate(PlateInventoryItem(weight: 45, isEnabled: true))
+        vm.addPlate(PlateInventoryItem(weight: 45, isEnabled: true))
+        vm.addPlate(PlateInventoryItem(weight: 25, isEnabled: true))
+        let grouped = vm.displayGrouped
+        #expect(grouped.first?.weight == 45)
+        #expect(grouped.first?.count == 2)
+        #expect(grouped.contains { $0.weight == 25 && $0.count == 1 })
+    }
+
+    @Test func displayGroupedReflectsCalcResultInCalcMode() {
+        let vm = CalculatorViewModel(settings: freshSettings())
+        vm.inputString = "225"          // 2×45 per side
+        let grouped = vm.displayGrouped
+        #expect(grouped.first?.weight == 45)
+        #expect(grouped.first?.count == 2)
     }
 
 }
