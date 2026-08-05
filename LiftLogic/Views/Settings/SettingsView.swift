@@ -7,6 +7,8 @@ struct SettingsView: View {
     @State private var customBarInput = ""
     @FocusState private var numericFieldFocused: Bool
     @FocusState private var customBarFocused: Bool
+    @State private var editingPreset: RestTimerPreset?
+    @State private var showNewPresetSheet = false
     @Environment(\.dismiss) var dismiss
 
     var body: some View {
@@ -93,6 +95,29 @@ struct SettingsView: View {
                     }
                 }
 
+                if settings.isPro {
+                    Section("Rest Timer") {
+                        ForEach(settings.restTimerPresets) { preset in
+                            Button {
+                                editingPreset = preset
+                            } label: {
+                                HStack {
+                                    Text(preset.name).foregroundStyle(ThemeTokens.textPrimary)
+                                    Spacer()
+                                    Text(restTimerDurationLabel(preset.seconds))
+                                        .foregroundStyle(ThemeTokens.textMuted)
+                                        .monospaced()
+                                }
+                            }
+                        }
+                        .onDelete { indexSet in
+                            indexSet.map { settings.restTimerPresets[$0].id }.forEach { settings.deleteTimerPreset(id: $0) }
+                        }
+                        Button("Add Preset") { showNewPresetSheet = true }
+                            .foregroundStyle(ThemeTokens.accent)
+                    }
+                }
+
                 Section("Calculator") {
                     // Master on/off
                     Toggle(isOn: Binding(
@@ -173,6 +198,16 @@ struct SettingsView: View {
         }
         .sheet(isPresented: $showCustomBarSheet) {
             customBarWeightSheet
+        }
+        .sheet(isPresented: $showNewPresetSheet) {
+            TimerPresetEditorSheet(initialName: "", initialSeconds: 120) { name, seconds in
+                settings.addTimerPreset(name: name, seconds: seconds)
+            }
+        }
+        .sheet(item: $editingPreset) { preset in
+            TimerPresetEditorSheet(initialName: preset.name, initialSeconds: preset.seconds) { name, seconds in
+                settings.updateTimerPreset(RestTimerPreset(id: preset.id, name: name, seconds: seconds))
+            }
         }
     }
 
