@@ -150,7 +150,7 @@ struct SettingsView: View {
                             .foregroundStyle(settings.isPro ? ThemeTokens.accentPro : ThemeTokens.textSecondary)
                         Spacer()
                         if !settings.isPro {
-                            Text("$1.99")
+                            Text("$0.99")
                                 .foregroundStyle(ThemeTokens.accentPro)
                         }
                     }

@@ -43,7 +43,7 @@ struct ProPaywallView: View {
                         if store.isPurchasing {
                             ProgressView().tint(.white)
                         } else {
-                            Text(store.product.map { "Unlock Pro — \($0.displayPrice)" } ?? "Unlock Pro — $1.99")
+                            Text(store.product.map { "Unlock Pro — \($0.displayPrice)" } ?? "Unlock Pro — $0.99")
                                 .font(.headline)
                         }
                     }

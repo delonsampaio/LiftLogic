@@ -189,7 +189,7 @@ struct HelpView: View {
             )
             FAQRow(
                 question: "How do I buy Pro?",
-                answer: "Tap the PRO button in the top-right corner of the main screen, or tap any locked mode pill. The price is $1.99 — a one-time purchase with Family Sharing enabled.",
+                answer: "Tap the PRO button in the top-right corner of the main screen, or tap any locked mode pill. The price is $0.99 — a one-time purchase with Family Sharing enabled.",
                 isProFeature: false, userIsPro: isPro
             )
             FAQRow(
@@ -234,7 +234,7 @@ struct HelpView: View {
         .init(section: "Gestures & Controls", question: "How do I share my lift?", answer: "Tap the share icon in the top toolbar. LiftLogic generates a summary card showing your weight, plate breakdown, and unit — ready to share to Messages, Instagram, or anywhere."),
         .init(section: "Gestures & Controls", question: "How do I use the rest timer?", answer: "Tap the timer icon in the top toolbar and choose a preset (1:30, 2 min, 3 min, 5 min) or tap Custom to pick your own duration. The countdown appears as a Live Activity on your Lock Screen and in the Dynamic Island, and the timer icon in LiftLogic becomes a live countdown pill — tap it to reopen the controls. Long-press the Custom chip to edit the duration. Three heavy haptic pulses fire at zero.", isPro: true),
         .init(section: "Pro", question: "What is included in Pro?", answer: "Warmup mode, 1RM estimator, Reverse mode, bodyweight ratio in the readout, saved setups, rest timer, and plate quantity limits. One-time purchase, no subscription."),
-        .init(section: "Pro", question: "How do I buy Pro?", answer: "Tap the PRO button in the top-right corner of the main screen, or tap any locked mode pill. The price is $1.99 — a one-time purchase with Family Sharing enabled."),
+        .init(section: "Pro", question: "How do I buy Pro?", answer: "Tap the PRO button in the top-right corner of the main screen, or tap any locked mode pill. The price is $0.99 — a one-time purchase with Family Sharing enabled."),
         .init(section: "Pro", question: "Does Pro work on all my devices?", answer: "Yes. Tap \"Restore Purchases\" in Settings → Pro Status to activate Pro on any iPhone signed into the same Apple ID."),
         .init(section: "Pro", question: "How do I set my bodyweight ratio?", answer: "Go to Settings → Pro — Bodyweight and enter your bodyweight. The ratio (e.g. \"1.87× bodyweight\") appears under the main readout and is included in your Share My Lift card.", isPro: true),
         .init(section: "Pro", question: "What are saved setups?", answer: "Bookmark any bar configuration — weight, bar type, collar, unit — for one-tap recall. Tap the bookmark icon in the top toolbar to save or load a setup.", isPro: true),
