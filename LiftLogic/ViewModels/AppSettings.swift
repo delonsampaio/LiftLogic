@@ -60,6 +60,11 @@ final class AppSettings {
         didSet { saveCodable(savedSetups, key: "savedSetupsJSON") }
     }
 
+    /// Named rest-timer presets (Pro). Replaces the legacy single customTimerSeconds.
+    var restTimerPresets: [RestTimerPreset] {
+        didSet { saveCodable(restTimerPresets, key: "restTimerPresetsJSON") }
+    }
+
     /// Whether the add/remove per-side toast appears when the target weight changes.
     var deltaBannerEnabled: Bool {
         didSet { UserDefaults.standard.set(deltaBannerEnabled, forKey: "deltaBannerEnabled") }
@@ -91,6 +96,16 @@ final class AppSettings {
         savedSetups = loadCodable([SavedSetup].self, key: "savedSetupsJSON") ?? []
         deltaBannerEnabled = ud.object(forKey: "deltaBannerEnabled") as? Bool ?? true
         deltaAutoDismissSeconds = ud.integer(forKey: "deltaAutoDismissSeconds")  // 0 = off
+        // Migrate the legacy single custom timer into one named preset on first run only.
+        // If the presets key is present (even as []), the user has curated them — don't reseed.
+        let legacyCustomTimerSeconds = ud.integer(forKey: "customTimerSeconds")
+        if let savedPresets = loadCodable([RestTimerPreset].self, key: "restTimerPresetsJSON") {
+            restTimerPresets = savedPresets
+        } else if legacyCustomTimerSeconds > 0 {
+            restTimerPresets = [RestTimerPreset(name: "Custom", seconds: legacyCustomTimerSeconds)]
+        } else {
+            restTimerPresets = []
+        }
     }
 
     // MARK: — Derived
@@ -119,6 +134,29 @@ final class AppSettings {
 
     func deleteSetup(id: UUID) {
         savedSetups.removeAll { $0.id == id }
+    }
+
+    // MARK: — Rest Timer Presets (Pro)
+
+    func addTimerPreset(name: String, seconds: Int) {
+        restTimerPresets.append(makePreset(id: UUID(), name: name, seconds: seconds))
+    }
+
+    func updateTimerPreset(_ preset: RestTimerPreset) {
+        guard let idx = restTimerPresets.firstIndex(where: { $0.id == preset.id }) else { return }
+        restTimerPresets[idx] = makePreset(id: preset.id, name: preset.name, seconds: preset.seconds)
+    }
+
+    func deleteTimerPreset(id: UUID) {
+        restTimerPresets.removeAll { $0.id == id }
+    }
+
+    /// Clamps to a 15s floor and falls back to a duration label when the name is blank.
+    private func makePreset(id: UUID, name: String, seconds: Int) -> RestTimerPreset {
+        let safeSeconds = max(15, seconds)
+        let trimmed = name.trimmingCharacters(in: .whitespaces)
+        let label = trimmed.isEmpty ? restTimerDurationLabel(safeSeconds) : trimmed
+        return RestTimerPreset(id: id, name: label, seconds: safeSeconds)
     }
 
     // MARK: — Inventory migration

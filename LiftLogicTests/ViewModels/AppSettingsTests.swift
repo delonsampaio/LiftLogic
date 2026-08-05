@@ -69,4 +69,73 @@ struct AppSettingsTests {
         let merged = AppSettings.mergedInventory(saved: nil, defaults: defaults)
         #expect(merged.count == defaults.count)
     }
+
+    // MARK: — Rest timer presets (#81)
+
+    /// Sets specific UserDefaults keys on a clean domain, then builds AppSettings.
+    private func settingsWith(_ configure: (UserDefaults) -> Void) -> AppSettings {
+        let ud = UserDefaults.standard
+        ud.removePersistentDomain(forName: Bundle.main.bundleIdentifier ?? "")
+        configure(ud)
+        return AppSettings()
+    }
+
+    @Test func migratesLegacyCustomTimerIntoOnePreset() {
+        let s = settingsWith { $0.set(240, forKey: "customTimerSeconds") }
+        #expect(s.restTimerPresets.count == 1)
+        #expect(s.restTimerPresets.first?.seconds == 240)
+        #expect(s.restTimerPresets.first?.name == "Custom")
+    }
+
+    @Test func noPresetsWhenNoLegacyCustom() {
+        let s = settingsWith { _ in }
+        #expect(s.restTimerPresets.isEmpty)
+    }
+
+    @Test func doesNotReseedAfterPresetsPersisted() {
+        // Presets key present but empty → user cleared them; a legacy custom must NOT reseed.
+        let s = settingsWith {
+            $0.set(240, forKey: "customTimerSeconds")
+            $0.set(try! JSONEncoder().encode([RestTimerPreset]()), forKey: "restTimerPresetsJSON")
+        }
+        #expect(s.restTimerPresets.isEmpty)
+    }
+
+    @Test func addTimerPresetAppends() {
+        let s = settingsWith { _ in }
+        s.addTimerPreset(name: "Heavy", seconds: 300)
+        #expect(s.restTimerPresets.map(\.name) == ["Heavy"])
+        #expect(s.restTimerPresets.first?.seconds == 300)
+    }
+
+    @Test func addTimerPresetClampsSecondsAndLabelsBlankName() {
+        let s = settingsWith { _ in }
+        s.addTimerPreset(name: "   ", seconds: 5)   // below floor, blank name
+        #expect(s.restTimerPresets.first?.seconds == 15)
+        #expect(s.restTimerPresets.first?.name == "15s")
+    }
+
+    @Test func updateTimerPresetReplacesById() {
+        let s = settingsWith { _ in }
+        s.addTimerPreset(name: "Heavy", seconds: 300)
+        let original = s.restTimerPresets[0]
+        s.updateTimerPreset(RestTimerPreset(id: original.id, name: "Max", seconds: 360))
+        #expect(s.restTimerPresets.count == 1)
+        #expect(s.restTimerPresets[0].name == "Max")
+        #expect(s.restTimerPresets[0].seconds == 360)
+    }
+
+    @Test func deleteTimerPresetRemovesById() {
+        let s = settingsWith { _ in }
+        s.addTimerPreset(name: "Heavy", seconds: 300)
+        let id = s.restTimerPresets[0].id
+        s.deleteTimerPreset(id: id)
+        #expect(s.restTimerPresets.isEmpty)
+    }
+
+    @Test func durationLabelFormats() {
+        #expect(restTimerDurationLabel(45) == "45s")
+        #expect(restTimerDurationLabel(120) == "2m")
+        #expect(restTimerDurationLabel(150) == "2:30")
+    }
 }
