@@ -24,7 +24,6 @@ struct MainView: View {
     @State private var topBarSideWidth: CGFloat = 0
     @Environment(\.requestReview) private var requestReview
     @Environment(\.scenePhase) private var scenePhase
-    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
     init() {
         let s = AppSettings()
@@ -51,36 +50,18 @@ struct MainView: View {
                         .frame(maxWidth: .infinity)
                         .padding(.horizontal, topBarSideWidth + 8)
 
-                    // Left side: settings
+                    // Left side: settings + rest timer (kept together so the timer
+                    // button doesn't jump sides between its idle and running states)
                     HStack {
-                        Button {
-                            showSettings = true
-                        } label: {
-                            Image(systemName: "gearshape")
-                                .font(.title3)
-                                .foregroundStyle(ThemeTokens.textMuted)
-                        }
-                        .accessibilityLabel("Settings")
-                        .background {
-                            GeometryReader { geo in
-                                Color.clear.preference(key: TopBarSideWidthKey.self, value: geo.size.width)
-                            }
-                        }
-                        Spacer()
-                    }
-
-                    // Right side: evenly spaced action icons
-                    HStack {
-                        Spacer()
-                        HStack(spacing: 20) {
+                        HStack(spacing: 12) {
                             Button {
-                                ShareService.share(vm: vm, settings: settings)
+                                showSettings = true
                             } label: {
-                                Image(systemName: "square.and.arrow.up")
-                                    .font(.system(size: 20))
+                                Image(systemName: "gearshape")
+                                    .font(.title3)
                                     .foregroundStyle(ThemeTokens.textMuted)
                             }
-                            .accessibilityLabel("Share lift")
+                            .accessibilityLabel("Settings")
 
                             Button {
                                 guard settings.isPro else { showPaywall = true; return }
@@ -108,6 +89,28 @@ struct MainView: View {
                                 }
                             }
                             .accessibilityLabel(timer.state == .running ? "Rest timer running, \(timer.formattedTime) remaining" : "Rest timer")
+                        }
+                        .background {
+                            GeometryReader { geo in
+                                Color.clear.preference(key: TopBarSideWidthKey.self, value: geo.size.width)
+                            }
+                        }
+
+                        Spacer()
+                    }
+
+                    // Right side: evenly spaced action icons
+                    HStack {
+                        Spacer()
+                        HStack(spacing: 20) {
+                            Button {
+                                ShareService.share(vm: vm, settings: settings)
+                            } label: {
+                                Image(systemName: "square.and.arrow.up")
+                                    .font(.system(size: 20))
+                                    .foregroundStyle(ThemeTokens.textMuted)
+                            }
+                            .accessibilityLabel("Share lift")
 
                             if settings.isPro {
                                 Button {
@@ -143,11 +146,7 @@ struct MainView: View {
                 .padding(.horizontal)
                 .padding(.top, 8)
 
-                if horizontalSizeClass == .regular {
-                    regularBody
-                } else {
-                    compactBody
-                }
+                compactBody
             }
         }
         .fullScreenCover(isPresented: $showPaywall) {
@@ -222,7 +221,8 @@ struct MainView: View {
             .padding(.vertical, 8)
     }
 
-    // iPhone / compact: single column with the morphing control zone (unchanged).
+    // Single column on both iPhone and iPad — elements scale up via each
+    // subview's own horizontalSizeClass check, but the layout stays unified.
     @ViewBuilder
     private var compactBody: some View {
         heroSection
@@ -230,34 +230,6 @@ struct MainView: View {
         controlZone
             .padding(.top, 8)
         Spacer(minLength: 0)
-    }
-
-    // iPad / regular: hero + persistent numpad on the left, mode panel on the right.
-    @ViewBuilder
-    private var regularBody: some View {
-        HStack(alignment: .top, spacing: 0) {
-            VStack(spacing: 0) {
-                heroSection
-                CalcInputView(vm: vm, settings: settings)
-                    .padding(.top, 8)
-                Spacer(minLength: 0)
-            }
-            .frame(maxWidth: .infinity)
-
-            Divider().opacity(0.15)
-
-            // Vertically centered — panels are short (breakdown/estimators/rack) and
-            // read better centered than pinned to the top. No outer ScrollView here:
-            // WarmupModeView already scrolls, and nesting same-axis scroll views is janky.
-            VStack(spacing: 0) {
-                Spacer(minLength: 0)
-                ModePanelView(vm: vm, settings: settings)
-                Spacer(minLength: 0)
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-        }
-        .frame(maxWidth: 900)
-        .frame(maxWidth: .infinity)   // center the capped container
     }
 
     @ViewBuilder
