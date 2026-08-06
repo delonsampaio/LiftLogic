@@ -10,12 +10,10 @@ struct RestTimerView: View {
 
     var body: some View {
         VStack(spacing: 20) {
-            // Timer display — left-aligned so it uses the space that would
-            // otherwise sit empty beside it when centered.
+            // Timer display
             Text(timer.state == .idle ? "Rest Timer" : timer.formattedTime)
                 .font(.system(size: 48 * scale, weight: .black, design: .monospaced))
                 .foregroundStyle(timer.state == .finished ? ThemeTokens.accent : ThemeTokens.textPrimary)
-                .frame(maxWidth: .infinity, alignment: .leading)
                 .contentTransition(.numericText())
                 .animation(.spring(response: 0.3), value: timer.remainingSeconds)
 
