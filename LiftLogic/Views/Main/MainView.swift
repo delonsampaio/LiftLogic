@@ -12,6 +12,7 @@ struct MainView: View {
     @State private var showTimer = false
     @Environment(\.requestReview) private var requestReview
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
     init() {
         let s = AppSettings()
@@ -114,54 +115,11 @@ struct MainView: View {
                 .padding(.horizontal)
                 .padding(.top, 8)
 
-                // Readout
-                ReadoutView(vm: vm, settings: settings)
-                    .padding(.vertical, 8)
-
-                // Single Side mode indicator — visible reminder that calculation semantics changed
-                if vm.isSingleSided {
-                    Label("Single Side", systemImage: "arrow.right")
-                        .font(.caption2.weight(.semibold))
-                        .foregroundStyle(ThemeTokens.accent)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 3)
-                        .background(Capsule().fill(ThemeTokens.accent.opacity(0.15)))
-                        .transition(.opacity.combined(with: .scale(scale: 0.9)))
-                        .animation(.easeInOut(duration: 0.2), value: vm.isSingleSided)
-                        .padding(.bottom, 4)
+                if horizontalSizeClass == .regular {
+                    regularBody
+                } else {
+                    compactBody
                 }
-
-                // Barbell hero
-                BarbellVisualizerView(vm: vm, settings: settings)
-                    .padding(.vertical, 4)
-
-                // Sleeve space warning — shown when many plates are loaded
-                let visiblePlateCount = vm.currentMode == .reverse
-                    ? vm.reversePlateStack.count
-                    : vm.plateResult.platesPerSide.count
-                if visiblePlateCount >= 9 {
-                    Label("Check sleeve space", systemImage: "exclamationmark.triangle")
-                        .font(.caption.weight(.medium))
-                        .foregroundStyle(ThemeTokens.warningAmber)
-                        .transition(.opacity.combined(with: .scale(scale: 0.95)))
-                        .animation(.easeInOut(duration: 0.25), value: visiblePlateCount >= 9)
-                }
-
-                // Quick toggle strip
-                QuickToggleStripView(vm: vm, settings: settings)
-                    .padding(.vertical, 6)
-
-                // Mode pills
-                ModePillStripView(vm: vm, settings: settings, showPaywall: $showPaywall)
-                    .padding(.vertical, 8)
-
-                Divider().opacity(0.15)
-
-                // Control zone — morphs per mode
-                controlZone
-                    .padding(.top, 8)
-
-                Spacer(minLength: 0)
             }
         }
         .fullScreenCover(isPresented: $showPaywall) {
@@ -196,6 +154,81 @@ struct MainView: View {
                 requestReview()
             }
         }
+    }
+
+    @ViewBuilder
+    private var heroSection: some View {
+        ReadoutView(vm: vm, settings: settings)
+            .padding(.vertical, 8)
+
+        if vm.isSingleSided {
+            Label("Single Side", systemImage: "arrow.right")
+                .font(.caption2.weight(.semibold))
+                .foregroundStyle(ThemeTokens.accent)
+                .padding(.horizontal, 8)
+                .padding(.vertical, 3)
+                .background(Capsule().fill(ThemeTokens.accent.opacity(0.15)))
+                .transition(.opacity.combined(with: .scale(scale: 0.9)))
+                .animation(.easeInOut(duration: 0.2), value: vm.isSingleSided)
+                .padding(.bottom, 4)
+        }
+
+        BarbellVisualizerView(vm: vm, settings: settings)
+            .padding(.vertical, 4)
+
+        let visiblePlateCount = vm.currentMode == .reverse
+            ? vm.reversePlateStack.count
+            : vm.plateResult.platesPerSide.count
+        if visiblePlateCount >= 9 {
+            Label("Check sleeve space", systemImage: "exclamationmark.triangle")
+                .font(.caption.weight(.medium))
+                .foregroundStyle(ThemeTokens.warningAmber)
+                .transition(.opacity.combined(with: .scale(scale: 0.95)))
+                .animation(.easeInOut(duration: 0.25), value: visiblePlateCount >= 9)
+        }
+
+        QuickToggleStripView(vm: vm, settings: settings)
+            .padding(.vertical, 6)
+
+        ModePillStripView(vm: vm, settings: settings, showPaywall: $showPaywall)
+            .padding(.vertical, 8)
+    }
+
+    // iPhone / compact: single column with the morphing control zone (unchanged).
+    @ViewBuilder
+    private var compactBody: some View {
+        heroSection
+        Divider().opacity(0.15)
+        controlZone
+            .padding(.top, 8)
+        Spacer(minLength: 0)
+    }
+
+    // iPad / regular: hero + persistent numpad on the left, mode panel on the right.
+    @ViewBuilder
+    private var regularBody: some View {
+        HStack(alignment: .top, spacing: 0) {
+            VStack(spacing: 0) {
+                heroSection
+                CalcInputView(vm: vm, settings: settings)
+                    .padding(.top, 8)
+                Spacer(minLength: 0)
+            }
+            .frame(maxWidth: .infinity)
+
+            Divider().opacity(0.15)
+
+            // No outer ScrollView here: WarmupModeView already scrolls, and nesting
+            // same-axis scroll views is janky. The other panels are short and fit.
+            VStack(spacing: 0) {
+                ModePanelView(vm: vm, settings: settings)
+                    .padding(.top, 8)
+                Spacer(minLength: 0)
+            }
+            .frame(maxWidth: .infinity)
+        }
+        .frame(maxWidth: 900)
+        .frame(maxWidth: .infinity)   // center the capped container
     }
 
     @ViewBuilder
