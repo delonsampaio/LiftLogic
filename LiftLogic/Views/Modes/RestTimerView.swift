@@ -27,6 +27,7 @@ struct RestTimerView: View {
                         presetChip(seconds: preset.seconds, label: preset.name, name: preset.name)
                     }
                 }
+                .frame(maxWidth: .infinity)
                 .padding(.horizontal, 4)
             }
             .scrollBounceBehavior(.basedOnSize, axes: .horizontal)

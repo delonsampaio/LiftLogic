@@ -1,6 +1,14 @@
 import SwiftUI
 import StoreKit
 
+/// Tracks the widest top-bar side cluster so the title can reserve space for it.
+private struct TopBarSideWidthKey: PreferenceKey {
+    static var defaultValue: CGFloat = 0
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+        value = max(value, nextValue())
+    }
+}
+
 struct MainView: View {
     @State private var settings: AppSettings
     @State private var vm: CalculatorViewModel
@@ -10,6 +18,10 @@ struct MainView: View {
     @State private var showSettings = false
     @State private var showSavedSetups = false
     @State private var showTimer = false
+    // Widest of the two top-bar side clusters — the title reserves this much
+    // horizontal padding on each side so it can never overlap either side,
+    // even when the running-timer badge widens the trailing cluster.
+    @State private var topBarSideWidth: CGFloat = 0
     @Environment(\.requestReview) private var requestReview
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
@@ -28,11 +40,16 @@ struct MainView: View {
                 // Top bar — ZStack so title is always geometrically centered
                 // regardless of how many icons are on each side
                 ZStack {
-                    // Center layer: title
+                    // Center layer: title. Reserves horizontal space matching the wider
+                    // side cluster so it can never overlap either side — the trailing
+                    // cluster grows when the running-timer badge shows its digits.
                     Text("LiftLogic")
                         .font(.callout.weight(.semibold))
                         .foregroundStyle(ThemeTokens.textMuted)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.7)
                         .frame(maxWidth: .infinity)
+                        .padding(.horizontal, topBarSideWidth + 8)
 
                     // Left side: settings
                     HStack {
@@ -44,6 +61,11 @@ struct MainView: View {
                                 .foregroundStyle(ThemeTokens.textMuted)
                         }
                         .accessibilityLabel("Settings")
+                        .background {
+                            GeometryReader { geo in
+                                Color.clear.preference(key: TopBarSideWidthKey.self, value: geo.size.width)
+                            }
+                        }
                         Spacer()
                     }
 
@@ -110,8 +132,14 @@ struct MainView: View {
                                 .accessibilityLabel("Upgrade to Pro")
                             }
                         }
+                        .background {
+                            GeometryReader { geo in
+                                Color.clear.preference(key: TopBarSideWidthKey.self, value: geo.size.width)
+                            }
+                        }
                     }
                 }
+                .onPreferenceChange(TopBarSideWidthKey.self) { topBarSideWidth = $0 }
                 .padding(.horizontal)
                 .padding(.top, 8)
 
@@ -218,14 +246,15 @@ struct MainView: View {
 
             Divider().opacity(0.15)
 
-            // No outer ScrollView here: WarmupModeView already scrolls, and nesting
-            // same-axis scroll views is janky. The other panels are short and fit.
+            // Vertically centered — panels are short (breakdown/estimators/rack) and
+            // read better centered than pinned to the top. No outer ScrollView here:
+            // WarmupModeView already scrolls, and nesting same-axis scroll views is janky.
             VStack(spacing: 0) {
+                Spacer(minLength: 0)
                 ModePanelView(vm: vm, settings: settings)
-                    .padding(.top, 8)
                 Spacer(minLength: 0)
             }
-            .frame(maxWidth: .infinity)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .frame(maxWidth: 900)
         .frame(maxWidth: .infinity)   // center the capped container
