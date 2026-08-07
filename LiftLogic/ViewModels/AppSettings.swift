@@ -57,7 +57,10 @@ final class AppSettings {
         }
     }
     var savedSetups: [SavedSetup] {
-        didSet { saveCodable(savedSetups, key: "savedSetupsJSON") }
+        didSet {
+            saveCodable(savedSetups, key: "savedSetupsJSON")
+            pushSavedSetupsToCloud()
+        }
     }
 
     /// Named rest-timer presets (Pro). Replaces the legacy single customTimerSeconds.
@@ -106,6 +109,20 @@ final class AppSettings {
         } else {
             restTimerPresets = []
         }
+
+        // iCloud sync for Saved Setups — adopt remote state if it exists and differs,
+        // then keep listening for changes pushed from other devices. Placed last in
+        // init() since it calls an instance method, which requires every stored
+        // property to already be assigned.
+        pullSavedSetupsFromCloud()
+        NotificationCenter.default.addObserver(
+            forName: NSUbiquitousKeyValueStore.didChangeExternallyNotification,
+            object: NSUbiquitousKeyValueStore.default,
+            queue: .main
+        ) { [weak self] _ in
+            self?.pullSavedSetupsFromCloud()
+        }
+        NSUbiquitousKeyValueStore.default.synchronize()
     }
 
     // MARK: — Derived
@@ -134,6 +151,30 @@ final class AppSettings {
 
     func deleteSetup(id: UUID) {
         savedSetups.removeAll { $0.id == id }
+    }
+
+    // MARK: — Saved Setups iCloud sync
+
+    /// Set while applying a remote change to `savedSetups`, so the resulting
+    /// `didSet` doesn't push the same data right back to the cloud.
+    private var isApplyingRemoteSavedSetups = false
+
+    /// Encodes and pushes `savedSetups` to the iCloud key-value store, unless
+    /// this change originated from a cloud pull.
+    private func pushSavedSetupsToCloud() {
+        guard !isApplyingRemoteSavedSetups else { return }
+        guard let data = try? JSONEncoder().encode(savedSetups) else { return }
+        NSUbiquitousKeyValueStore.default.set(data, forKey: "savedSetupsJSON")
+    }
+
+    /// Reads the iCloud key-value store and adopts it locally if present and different.
+    private func pullSavedSetupsFromCloud() {
+        guard let data = NSUbiquitousKeyValueStore.default.data(forKey: "savedSetupsJSON"),
+              let remote = try? JSONDecoder().decode([SavedSetup].self, from: data),
+              remote != savedSetups else { return }
+        isApplyingRemoteSavedSetups = true
+        savedSetups = remote
+        isApplyingRemoteSavedSetups = false
     }
 
     // MARK: — Rest Timer Presets (Pro)
