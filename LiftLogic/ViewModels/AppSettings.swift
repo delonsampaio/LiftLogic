@@ -115,7 +115,7 @@ final class AppSettings {
         // init() since it calls an instance method, which requires every stored
         // property to already be assigned.
         pullSavedSetupsFromCloud()
-        NotificationCenter.default.addObserver(
+        cloudSyncObserver = NotificationCenter.default.addObserver(
             forName: NSUbiquitousKeyValueStore.didChangeExternallyNotification,
             object: NSUbiquitousKeyValueStore.default,
             queue: .main
@@ -123,6 +123,12 @@ final class AppSettings {
             self?.pullSavedSetupsFromCloud()
         }
         NSUbiquitousKeyValueStore.default.synchronize()
+    }
+
+    deinit {
+        if let cloudSyncObserver {
+            NotificationCenter.default.removeObserver(cloudSyncObserver)
+        }
     }
 
     // MARK: — Derived
@@ -154,6 +160,12 @@ final class AppSettings {
     }
 
     // MARK: — Saved Setups iCloud sync
+
+    /// Token for the `NSUbiquitousKeyValueStore.didChangeExternallyNotification`
+    /// observer registered in `init()`. Removed in `deinit` so a discarded
+    /// `AppSettings` instance doesn't leak its registration in
+    /// `NotificationCenter` for the remainder of the process's lifetime.
+    private var cloudSyncObserver: NSObjectProtocol?
 
     /// Set while applying a remote change to `savedSetups`, so the resulting
     /// `didSet` doesn't push the same data right back to the cloud.
