@@ -1,6 +1,6 @@
 import Foundation
 
-struct SavedSetup: Identifiable, Codable {
+struct SavedSetup: Identifiable, Codable, Equatable {
     let id: UUID
     var name: String
     let weight: Double
