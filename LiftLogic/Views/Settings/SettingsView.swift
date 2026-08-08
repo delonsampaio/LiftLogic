@@ -93,11 +93,11 @@ struct SettingsView: View {
                                 .foregroundStyle(ThemeTokens.textMuted)
                         }
                         Picker("Sex", selection: Binding(
-                            get: { settings.sex ?? .male },
+                            get: { settings.sex },
                             set: { settings.sex = $0 }
                         )) {
                             ForEach(Sex.allCases, id: \.self) { sex in
-                                Text(sex.displayName).tag(sex)
+                                Text(sex.displayName).tag(Sex?.some(sex))
                             }
                         }
                         .pickerStyle(.segmented)

@@ -87,6 +87,11 @@ struct OneRMModeView: View {
                         strengthRow(label: "Wilks", value: strength.wilks)
                         strengthRow(label: "DOTS", value: strength.dots)
                         strengthRow(label: "IPF GL", value: strength.ipfGL)
+
+                        Text("IPF GL Points are calibrated for a full 3-lift total, so a single lift scores much lower than Wilks/DOTS on the same weight.")
+                            .font(.caption2)
+                            .foregroundStyle(ThemeTokens.textMuted)
+                            .frame(maxWidth: .infinity, alignment: .leading)
                     }
                     .padding(.horizontal)
                 } else {
