@@ -70,6 +70,10 @@ final class AppSettings {
         didSet { saveCodable(barbellHistory, key: "barbellHistoryJSON") }
     }
 
+    var warmupPercentages: [WarmupPercentageStep] {
+        didSet { saveCodable(warmupPercentages, key: "warmupPercentagesJSON") }
+    }
+
     /// Named rest-timer presets (Pro). Replaces the legacy single customTimerSeconds.
     var restTimerPresets: [RestTimerPreset] {
         didSet { saveCodable(restTimerPresets, key: "restTimerPresetsJSON") }
@@ -106,6 +110,8 @@ final class AppSettings {
         kgRecentWeights  = loadDoubleArray(key: "kgRecentWeights")  ?? (savedUnit == .kg  ? legacyRecent : [])
         savedSetups = loadCodable([SavedSetup].self, key: "savedSetupsJSON") ?? []
         barbellHistory = loadCodable([BarbellHistoryEntry].self, key: "barbellHistoryJSON") ?? []
+        warmupPercentages = loadCodable([WarmupPercentageStep].self, key: "warmupPercentagesJSON")
+            ?? WarmupEngine.percentages.map { WarmupPercentageStep(id: UUID(), percentage: $0) }
         deltaBannerEnabled = ud.object(forKey: "deltaBannerEnabled") as? Bool ?? true
         deltaAutoDismissSeconds = ud.integer(forKey: "deltaAutoDismissSeconds")  // 0 = off
         // Migrate the legacy single custom timer into one named preset on first run only.
@@ -187,6 +193,33 @@ final class AppSettings {
 
     func deleteHistoryEntry(id: UUID) {
         barbellHistory.removeAll { $0.id == id }
+    }
+
+    // MARK: — Warmup Percentages (Pro)
+
+    func addWarmupPercentage() {
+        guard warmupPercentages.count < 8 else { return }
+        let nextValue = min(150, (warmupPercentages.map(\.percentage).max() ?? 40) + 10)
+        guard !warmupPercentages.contains(where: { $0.percentage == nextValue }) else { return }
+        warmupPercentages.append(WarmupPercentageStep(id: UUID(), percentage: nextValue))
+        warmupPercentages.sort { $0.percentage < $1.percentage }
+    }
+
+    func updateWarmupPercentage(id: UUID, percentage: Int) {
+        guard let idx = warmupPercentages.firstIndex(where: { $0.id == id }) else { return }
+        let clamped = min(150, max(10, percentage))
+        guard !warmupPercentages.contains(where: { $0.id != id && $0.percentage == clamped }) else { return }
+        warmupPercentages[idx].percentage = clamped
+        warmupPercentages.sort { $0.percentage < $1.percentage }
+    }
+
+    func deleteWarmupPercentage(id: UUID) {
+        guard warmupPercentages.count > 1 else { return }
+        warmupPercentages.removeAll { $0.id == id }
+    }
+
+    func resetWarmupPercentagesToDefault() {
+        warmupPercentages = WarmupEngine.percentages.map { WarmupPercentageStep(id: UUID(), percentage: $0) }
     }
 
     // MARK: — Saved Setups iCloud sync

@@ -139,6 +139,67 @@ struct AppSettingsTests {
         #expect(restTimerDurationLabel(150) == "2:30")
     }
 
+    // MARK: — Warmup percentage customization (#58)
+
+    @Test func defaultWarmupPercentagesAreFiveStandardSteps() {
+        let s = freshSettings()
+        #expect(s.warmupPercentages.map(\.percentage) == [50, 60, 70, 80, 90])
+    }
+
+    @Test func addWarmupPercentageAppendsAboveCurrentMax() {
+        let s = freshSettings()
+        s.addWarmupPercentage()
+        #expect(s.warmupPercentages.map(\.percentage) == [50, 60, 70, 80, 90, 100])
+    }
+
+    @Test func addWarmupPercentageRespectsEightStepCap() {
+        let s = freshSettings()
+        for _ in 0..<10 { s.addWarmupPercentage() }
+        #expect(s.warmupPercentages.count == 8)
+    }
+
+    @Test func updateWarmupPercentageClampsToRange() {
+        let s = freshSettings()
+        let id = s.warmupPercentages[0].id
+        s.updateWarmupPercentage(id: id, percentage: 5)
+        #expect(s.warmupPercentages.first { $0.id == id }?.percentage == 10)
+        s.updateWarmupPercentage(id: id, percentage: 200)
+        #expect(s.warmupPercentages.first { $0.id == id }?.percentage == 150)
+    }
+
+    @Test func updateWarmupPercentageRejectsDuplicateValue() {
+        let s = freshSettings()
+        let id = s.warmupPercentages[0].id  // starts at 50
+        s.updateWarmupPercentage(id: id, percentage: 60)  // 60 already exists
+        #expect(s.warmupPercentages.first { $0.id == id }?.percentage == 50)  // unchanged
+    }
+
+    @Test func deleteWarmupPercentageRefusesToRemoveLastStep() {
+        let s = freshSettings()
+        while s.warmupPercentages.count > 1 {
+            s.deleteWarmupPercentage(id: s.warmupPercentages[0].id)
+        }
+        #expect(s.warmupPercentages.count == 1)
+        s.deleteWarmupPercentage(id: s.warmupPercentages[0].id)
+        #expect(s.warmupPercentages.count == 1)
+    }
+
+    @Test func warmupPercentagesStaySortedAscendingAfterMutation() {
+        let s = freshSettings()
+        s.addWarmupPercentage()  // adds 100
+        let firstId = s.warmupPercentages[0].id  // currently 50
+        s.updateWarmupPercentage(id: firstId, percentage: 95)
+        #expect(s.warmupPercentages.map(\.percentage) == s.warmupPercentages.map(\.percentage).sorted())
+    }
+
+    @Test func resetWarmupPercentagesToDefaultRestoresFiveStandardSteps() {
+        let s = freshSettings()
+        s.addWarmupPercentage()
+        s.deleteWarmupPercentage(id: s.warmupPercentages[0].id)
+        s.resetWarmupPercentagesToDefault()
+        #expect(s.warmupPercentages.map(\.percentage) == [50, 60, 70, 80, 90])
+    }
+
     // MARK: — Barbell History (#57)
 
     @Test func recordHistoryPrependsNewEntry() {

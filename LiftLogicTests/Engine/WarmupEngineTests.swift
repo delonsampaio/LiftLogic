@@ -37,4 +37,14 @@ struct WarmupEngineTests {
         #expect(sets[0].targetWeight == 40)
         #expect(sets[0].platesPerSide.isEmpty)
     }
+
+    @Test func customPercentagesOverrideDefault() {
+        let sets = WarmupEngine.calculate(
+            target: 200, barWeight: 45, collarWeight: 0,
+            inventory: inventory, unit: .lbs, isSingleSided: false,
+            percentages: [40, 75, 100]
+        )
+        #expect(sets.map(\.percentage) == [40, 75, 100])
+        #expect(sets[2].targetWeight == 200)
+    }
 }

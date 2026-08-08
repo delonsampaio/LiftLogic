@@ -7,7 +7,8 @@ struct WarmupEngine {
         collarWeight: Double,
         inventory: [PlateInventoryItem],
         unit: WeightUnit,
-        isSingleSided: Bool
+        isSingleSided: Bool,
+        percentages: [Int] = WarmupEngine.percentages
     ) -> [WarmupSet] {
         percentages.map { pct in
             let targetForPct = (target * Double(pct) / 100).rounded()
