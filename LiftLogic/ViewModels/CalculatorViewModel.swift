@@ -59,8 +59,8 @@ final class CalculatorViewModel {
         OneRMEngine.calculate(weight: targetWeight, reps: oneRMReps)
     }
 
-    func relativeStrengthResult(bodyweightKg: Double, sex: Sex) -> RelativeStrengthResult {
-        RelativeStrengthEngine.calculate(bodyweightKg: bodyweightKg, sex: sex, liftedKg: oneRMResult.average)
+    func relativeStrengthResult(bodyweightKg: Double, sex: Sex, liftedKg: Double) -> RelativeStrengthResult {
+        RelativeStrengthEngine.calculate(bodyweightKg: bodyweightKg, sex: sex, liftedKg: liftedKg)
     }
 
     var reverseTotal: Double {

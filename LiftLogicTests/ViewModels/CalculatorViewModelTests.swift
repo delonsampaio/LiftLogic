@@ -401,10 +401,49 @@ struct CalculatorViewModelTests {
         vm.oneRMReps = 1
         let expectedLifted = vm.oneRMResult.average
         let direct = RelativeStrengthEngine.calculate(bodyweightKg: 80, sex: .male, liftedKg: expectedLifted)
-        let viaViewModel = vm.relativeStrengthResult(bodyweightKg: 80, sex: .male)
+        let viaViewModel = vm.relativeStrengthResult(bodyweightKg: 80, sex: .male, liftedKg: expectedLifted)
         #expect(abs(viaViewModel.wilks - direct.wilks) < 0.001)
         #expect(abs(viaViewModel.dots - direct.dots) < 0.001)
         #expect(abs(viaViewModel.ipfGL - direct.ipfGL) < 0.001)
+    }
+
+    @Test func relativeStrengthResultAcceptsExplicitLiftedKg() {
+        let vm = CalculatorViewModel(settings: freshSettings())
+        let direct = RelativeStrengthEngine.calculate(bodyweightKg: 80, sex: .male, liftedKg: 100)
+        let viaViewModel = vm.relativeStrengthResult(bodyweightKg: 80, sex: .male, liftedKg: 100)
+        #expect(abs(viaViewModel.wilks - direct.wilks) < 0.001)
+        #expect(abs(viaViewModel.dots - direct.dots) < 0.001)
+        #expect(abs(viaViewModel.ipfGL - direct.ipfGL) < 0.001)
+    }
+
+    // Regression test for the #76 final-review bug fix: the lifted weight from
+    // oneRMResult.average is in the user's *display* unit (lbs by default), but
+    // RelativeStrengthEngine is calibrated in kg. This test models the exact
+    // conversion OneRMModeView performs at its call site — converting liftedKg
+    // via WeightUnit.convert before calling relativeStrengthResult — and would
+    // fail if that conversion were reverted (i.e. raw lbs passed as liftedKg).
+    @Test func lbsModeLiftedWeightMustBeConvertedToKgBeforeScoring() {
+        let settings = freshSettings()
+        settings.unit = .lbs
+        let vm = CalculatorViewModel(settings: settings)
+        vm.appendDigit("2")
+        vm.appendDigit("2")
+        vm.appendDigit("5")   // 225 lb
+        vm.oneRMReps = 1
+        let liftedLbs = vm.oneRMResult.average   // ~225, still in lbs
+        let correctlyConvertedKg = WeightUnit.lbs.convert(liftedLbs, to: .kg)
+
+        let viaViewModel = vm.relativeStrengthResult(bodyweightKg: 80, sex: .male, liftedKg: correctlyConvertedKg)
+        let direct = RelativeStrengthEngine.calculate(bodyweightKg: 80, sex: .male, liftedKg: correctlyConvertedKg)
+
+        // Correctly-converted call matches the engine called directly with kg.
+        #expect(abs(viaViewModel.wilks - direct.wilks) < 0.001)
+
+        // Sanity: passing the raw, unconverted lbs value (the original bug)
+        // produces a materially different — inflated — score, proving this
+        // test is sensitive to the conversion actually happening.
+        let buggyUnconverted = vm.relativeStrengthResult(bodyweightKg: 80, sex: .male, liftedKg: liftedLbs)
+        #expect(abs(buggyUnconverted.wilks - viaViewModel.wilks) > 1.0)
     }
 
 }

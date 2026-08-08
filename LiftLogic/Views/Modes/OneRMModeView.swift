@@ -75,7 +75,8 @@ struct OneRMModeView: View {
                 // Relative strength (#76)
                 if let sex = settings.sex, settings.bodyWeight > 0 {
                     let bodyweightKg = settings.unit.convert(settings.bodyWeight, to: .kg)
-                    let strength = vm.relativeStrengthResult(bodyweightKg: bodyweightKg, sex: sex)
+                    let liftedKg = settings.unit.convert(vm.oneRMResult.average, to: .kg)
+                    let strength = vm.relativeStrengthResult(bodyweightKg: bodyweightKg, sex: sex, liftedKg: liftedKg)
 
                     VStack(spacing: 12) {
                         Text("Relative Strength")
