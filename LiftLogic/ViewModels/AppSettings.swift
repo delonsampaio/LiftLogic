@@ -66,6 +66,10 @@ final class AppSettings {
         }
     }
 
+    var barbellHistory: [BarbellHistoryEntry] {
+        didSet { saveCodable(barbellHistory, key: "barbellHistoryJSON") }
+    }
+
     /// Named rest-timer presets (Pro). Replaces the legacy single customTimerSeconds.
     var restTimerPresets: [RestTimerPreset] {
         didSet { saveCodable(restTimerPresets, key: "restTimerPresetsJSON") }
@@ -101,6 +105,7 @@ final class AppSettings {
         lbsRecentWeights = loadDoubleArray(key: "lbsRecentWeights") ?? (savedUnit == .lbs ? legacyRecent : [])
         kgRecentWeights  = loadDoubleArray(key: "kgRecentWeights")  ?? (savedUnit == .kg  ? legacyRecent : [])
         savedSetups = loadCodable([SavedSetup].self, key: "savedSetupsJSON") ?? []
+        barbellHistory = loadCodable([BarbellHistoryEntry].self, key: "barbellHistoryJSON") ?? []
         deltaBannerEnabled = ud.object(forKey: "deltaBannerEnabled") as? Bool ?? true
         deltaAutoDismissSeconds = ud.integer(forKey: "deltaAutoDismissSeconds")  // 0 = off
         // Migrate the legacy single custom timer into one named preset on first run only.
@@ -161,6 +166,27 @@ final class AppSettings {
 
     func deleteSetup(id: UUID) {
         savedSetups.removeAll { $0.id == id }
+    }
+
+    // MARK: — Barbell History (Pro)
+
+    /// Records a config, promoting an existing identical config to the front instead of
+    /// duplicating it, then caps the list at the 10 most recent distinct configs.
+    func recordHistory(weight: Double, barType: BarType, collarType: CollarType, unit: WeightUnit, isSingleSided: Bool) {
+        barbellHistory.removeAll {
+            $0.weight == weight && $0.barType == barType && $0.collarType == collarType &&
+            $0.unit == unit && $0.isSingleSided == isSingleSided
+        }
+        let entry = BarbellHistoryEntry(
+            id: UUID(), weight: weight, barType: barType, collarType: collarType,
+            unit: unit, isSingleSided: isSingleSided, recordedAt: Date()
+        )
+        barbellHistory.insert(entry, at: 0)
+        barbellHistory = Array(barbellHistory.prefix(10))
+    }
+
+    func deleteHistoryEntry(id: UUID) {
+        barbellHistory.removeAll { $0.id == id }
     }
 
     // MARK: — Saved Setups iCloud sync

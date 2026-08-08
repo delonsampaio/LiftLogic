@@ -139,6 +139,50 @@ struct AppSettingsTests {
         #expect(restTimerDurationLabel(150) == "2:30")
     }
 
+    // MARK: — Barbell History (#57)
+
+    @Test func recordHistoryPrependsNewEntry() {
+        let s = freshSettings()
+        s.recordHistory(weight: 225, barType: .olympic45lb, collarType: .none, unit: .lbs, isSingleSided: false)
+        #expect(s.barbellHistory.count == 1)
+        #expect(s.barbellHistory.first?.weight == 225)
+    }
+
+    @Test func recordHistoryPromotesExistingConfigInsteadOfDuplicating() {
+        let s = freshSettings()
+        s.recordHistory(weight: 225, barType: .olympic45lb, collarType: .none, unit: .lbs, isSingleSided: false)
+        s.recordHistory(weight: 315, barType: .olympic45lb, collarType: .none, unit: .lbs, isSingleSided: false)
+        s.recordHistory(weight: 225, barType: .olympic45lb, collarType: .none, unit: .lbs, isSingleSided: false)
+        #expect(s.barbellHistory.count == 2)
+        #expect(s.barbellHistory.first?.weight == 225)
+        #expect(s.barbellHistory.last?.weight == 315)
+    }
+
+    @Test func recordHistoryTreatsDifferentBarAsDistinctConfig() {
+        let s = freshSettings()
+        s.recordHistory(weight: 225, barType: .olympic45lb, collarType: .none, unit: .lbs, isSingleSided: false)
+        s.recordHistory(weight: 225, barType: .olympic35lb, collarType: .none, unit: .lbs, isSingleSided: false)
+        #expect(s.barbellHistory.count == 2)
+    }
+
+    @Test func recordHistoryCapsAtTenMostRecent() {
+        let s = freshSettings()
+        for i in 1...11 {
+            s.recordHistory(weight: Double(i) * 10, barType: .olympic45lb, collarType: .none, unit: .lbs, isSingleSided: false)
+        }
+        #expect(s.barbellHistory.count == 10)
+        #expect(s.barbellHistory.first?.weight == 110)
+        #expect(!s.barbellHistory.contains { $0.weight == 10 })
+    }
+
+    @Test func barbellHistoryPersistsAcrossRelaunch() {
+        let s = freshSettings()
+        s.recordHistory(weight: 225, barType: .olympic45lb, collarType: .none, unit: .lbs, isSingleSided: false)
+        let reloaded = AppSettings()
+        #expect(reloaded.barbellHistory.count == 1)
+        #expect(reloaded.barbellHistory.first?.weight == 225)
+    }
+
     // MARK: — Sex (#76)
 
     @Test func sexDefaultsToNilWhenUnset() {
