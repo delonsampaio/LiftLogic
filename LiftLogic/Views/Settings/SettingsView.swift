@@ -77,7 +77,7 @@ struct SettingsView: View {
                 }
 
                 if settings.isPro {
-                    Section("Pro — Bodyweight & Sex") {
+                    Section {
                         HStack {
                             Text("Bodyweight")
                             Spacer()
@@ -101,11 +101,16 @@ struct SettingsView: View {
                             }
                         }
                         .pickerStyle(.segmented)
+                    } header: {
+                        Text("Bodyweight & Sex")
+                    } footer: {
+                        Text("Used for the bodyweight ratio under your readout, and unlocks Wilks/DOTS/IPF GL Points scoring in 1RM mode.")
+                            .foregroundStyle(ThemeTokens.textMuted)
                     }
                 }
 
                 if settings.isPro {
-                    Section("Pro — Warmup %") {
+                    Section {
                         ForEach(settings.warmupPercentages) { step in
                             Stepper(value: Binding(
                                 get: { settings.warmupPercentages.first { $0.id == step.id }?.percentage ?? step.percentage },
@@ -123,6 +128,11 @@ struct SettingsView: View {
                                 .foregroundStyle(ThemeTokens.accent)
                         }
                         Button("Reset to Default") { settings.resetWarmupPercentagesToDefault() }
+                            .foregroundStyle(ThemeTokens.textMuted)
+                    } header: {
+                        Text("Warmup %")
+                    } footer: {
+                        Text("The ladder shown in WARMUP mode. Defaults to 50/60/70/80/90% of your target weight.")
                             .foregroundStyle(ThemeTokens.textMuted)
                     }
                 }
