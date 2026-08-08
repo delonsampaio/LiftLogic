@@ -446,4 +446,20 @@ struct CalculatorViewModelTests {
         #expect(abs(buggyUnconverted.wilks - viaViewModel.wilks) > 1.0)
     }
 
+    // MARK: — Barbell History wiring (#57)
+
+    @Test func commitWeightRecordsHistoryOnlyWhenPro() {
+        let settings = freshSettings()
+        settings.isPro = false
+        let vm = CalculatorViewModel(settings: settings)
+        vm.appendDigit("2"); vm.appendDigit("2"); vm.appendDigit("5")
+        vm.commitWeight()
+        #expect(settings.barbellHistory.isEmpty)
+
+        settings.isPro = true
+        vm.commitWeight()
+        #expect(settings.barbellHistory.count == 1)
+        #expect(settings.barbellHistory.first?.weight == 225)
+    }
+
 }

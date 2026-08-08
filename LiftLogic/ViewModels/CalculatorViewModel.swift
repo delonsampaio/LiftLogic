@@ -195,6 +195,9 @@ final class CalculatorViewModel {
         if suppressNextCommit { suppressNextCommit = false; return }
         guard targetWeight >= resolvedBarWeight, targetWeight > 0 else { return }
         settings.addRecentWeight(targetWeight)
+        if settings.isPro {
+            settings.recordHistory(weight: targetWeight, barType: selectedBar, collarType: collarType, unit: settings.unit, isSingleSided: isSingleSided)
+        }
         settings.successfulCalculationCount += 1
         lastDelta = plateDelta      // snapshot diff before advancing baseline
         committedResult = plateResult   // always advance — keeps baseline current

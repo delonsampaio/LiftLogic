@@ -10,17 +10,29 @@ struct SavedSetupsView: View {
     var body: some View {
         NavigationStack {
             List {
-                if settings.savedSetups.isEmpty {
-                    Text("No saved setups. Save the current configuration to recall it later.")
-                        .foregroundStyle(ThemeTokens.textMuted)
-                        .font(.subheadline)
-                        .listRowBackground(Color.clear)
-                } else {
-                    ForEach(settings.savedSetups) { setup in
-                        setupRow(setup)
+                if !settings.barbellHistory.isEmpty {
+                    Section("Recent") {
+                        ForEach(settings.barbellHistory) { entry in
+                            historyRow(entry)
+                        }
+                        .onDelete { indexSet in
+                            indexSet.forEach { settings.deleteHistoryEntry(id: settings.barbellHistory[$0].id) }
+                        }
                     }
-                    .onDelete { indexSet in
-                        indexSet.forEach { settings.savedSetups.remove(at: $0) }
+                }
+                Section("Saved") {
+                    if settings.savedSetups.isEmpty {
+                        Text("No saved setups. Save the current configuration to recall it later.")
+                            .foregroundStyle(ThemeTokens.textMuted)
+                            .font(.subheadline)
+                            .listRowBackground(Color.clear)
+                    } else {
+                        ForEach(settings.savedSetups) { setup in
+                            setupRow(setup)
+                        }
+                        .onDelete { indexSet in
+                            indexSet.forEach { settings.savedSetups.remove(at: $0) }
+                        }
                     }
                 }
             }
@@ -64,6 +76,34 @@ struct SavedSetupsView: View {
                         .font(.subheadline.weight(.semibold))
                         .foregroundStyle(ThemeTokens.textPrimary)
                     Text("\(setup.weight.weightString) \(setup.unit.symbol) · \(setup.barType.displayName)")
+                        .font(.caption)
+                        .foregroundStyle(ThemeTokens.textMuted)
+                }
+                Spacer()
+                Image(systemName: "chevron.right")
+                    .font(.caption)
+                    .foregroundStyle(ThemeTokens.textMuted)
+            }
+        }
+        .buttonStyle(.plain)
+    }
+
+    @ViewBuilder
+    private func historyRow(_ entry: BarbellHistoryEntry) -> some View {
+        Button {
+            vm.loadWeight(entry.weight)
+            vm.selectedBar = entry.barType
+            vm.collarType = entry.collarType
+            vm.isSingleSided = entry.isSingleSided
+            settings.unit = entry.unit
+            dismiss()
+        } label: {
+            HStack {
+                VStack(alignment: .leading, spacing: 3) {
+                    Text("\(entry.weight.weightString) \(entry.unit.symbol) · \(entry.barType.displayName)")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(ThemeTokens.textPrimary)
+                    Text(entry.recordedAt.formatted(.relative(presentation: .named)))
                         .font(.caption)
                         .foregroundStyle(ThemeTokens.textMuted)
                 }
