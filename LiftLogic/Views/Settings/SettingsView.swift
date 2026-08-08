@@ -108,7 +108,7 @@ struct SettingsView: View {
                     Section("Pro — Warmup %") {
                         ForEach(settings.warmupPercentages) { step in
                             Stepper(value: Binding(
-                                get: { step.percentage },
+                                get: { settings.warmupPercentages.first { $0.id == step.id }?.percentage ?? step.percentage },
                                 set: { settings.updateWarmupPercentage(id: step.id, percentage: $0) }
                             ), in: 10...150, step: 5) {
                                 Text("\(step.percentage)%")

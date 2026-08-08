@@ -181,7 +181,7 @@ final class CalculatorViewModel {
     }
 
     func loadWeight(_ value: Double) {
-        inputString = value.weightStringPrecise
+        inputString = min(value, maxInputWeight).weightStringPrecise
         committedResult = plateResult   // chip tap = "this is what I'm loading"
         commitWeight()
     }
