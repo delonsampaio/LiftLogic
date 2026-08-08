@@ -24,7 +24,7 @@ struct ProPaywallView: View {
 
                 // Feature list
                 VStack(alignment: .leading, spacing: 14) {
-                    proFeatureRow("WARMUP Mode", "50/60/70/80/90% warm-up table")
+                    proFeatureRow("WARMUP Mode", "Customizable warm-up ladder")
                     proFeatureRow("1RM Mode", "Epley + Brzycki estimators")
                     proFeatureRow("Relative Strength", "Wilks, DOTS & IPF GL Points scoring")
                     proFeatureRow("REVERSE Mode", "Tap plates to build, undo last")
