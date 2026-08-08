@@ -462,4 +462,40 @@ struct CalculatorViewModelTests {
         #expect(settings.barbellHistory.first?.weight == 225)
     }
 
+    // Regression test for the final-review bug fix: SavedSetupsView's row taps
+    // must set the config (bar/collar/single-sided/unit) BEFORE calling
+    // vm.loadWeight(), since loadWeight() internally calls commitWeight(),
+    // which is what actually records the barbell history entry. Setting
+    // config after loadWeight() would let commitWeight() fire with the still-
+    // stale live config, recording a phantom entry the user never built. This
+    // test replicates the corrected row-tap order at the model level.
+    @Test func reloadingAHistoryEntryRecordsItsOwnConfigNotStaleLiveState() {
+        let settings = freshSettings()
+        settings.isPro = true
+        let vm = CalculatorViewModel(settings: settings)
+
+        // Commit an initial "live" config that differs from what we'll reload.
+        vm.selectedBar = .olympic45lb
+        vm.collarType = .none
+        settings.unit = .lbs
+        vm.appendDigit("1"); vm.appendDigit("0"); vm.appendDigit("0")
+        vm.commitWeight()
+
+        // Simulate tapping a history/saved row for a DIFFERENT config, using the
+        // corrected order: config fields set BEFORE loadWeight() (which
+        // internally calls commitWeight()).
+        vm.selectedBar = .olympic20kg
+        vm.collarType = .competition
+        vm.isSingleSided = true
+        settings.unit = .kg
+        vm.loadWeight(150)
+
+        let mostRecent = settings.barbellHistory.first
+        #expect(mostRecent?.weight == 150)
+        #expect(mostRecent?.barType == .olympic20kg)
+        #expect(mostRecent?.collarType == .competition)
+        #expect(mostRecent?.unit == .kg)
+        #expect(mostRecent?.isSingleSided == true)
+    }
+
 }

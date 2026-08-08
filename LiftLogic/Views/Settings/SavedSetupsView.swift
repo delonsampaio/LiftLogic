@@ -63,11 +63,11 @@ struct SavedSetupsView: View {
     @ViewBuilder
     private func setupRow(_ setup: SavedSetup) -> some View {
         Button {
-            vm.loadWeight(setup.weight)
             vm.selectedBar = setup.barType
             vm.collarType = setup.collarType
             vm.isSingleSided = setup.isSingleSided
             settings.unit = setup.unit
+            vm.loadWeight(setup.weight)
             dismiss()
         } label: {
             HStack {
@@ -91,11 +91,11 @@ struct SavedSetupsView: View {
     @ViewBuilder
     private func historyRow(_ entry: BarbellHistoryEntry) -> some View {
         Button {
-            vm.loadWeight(entry.weight)
             vm.selectedBar = entry.barType
             vm.collarType = entry.collarType
             vm.isSingleSided = entry.isSingleSided
             settings.unit = entry.unit
+            vm.loadWeight(entry.weight)
             dismiss()
         } label: {
             HStack {
