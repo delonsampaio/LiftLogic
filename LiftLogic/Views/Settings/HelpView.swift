@@ -144,7 +144,12 @@ struct HelpView: View {
             )
             FAQRow(
                 question: "What is 1RM mode?",
-                answer: "Enter a weight and rep count to estimate your one-rep max using the Epley and Brzycki formulas. The average of both is shown. Tap the result to load it into CALC.",
+                answer: "Enter a weight and rep count to estimate your one-rep max using the Epley and Brzycki formulas. The average of both is shown. Tap the result to load it into CALC. If you've set your bodyweight and sex in Settings, a Relative Strength panel below also shows your Wilks, DOTS, and IPF GL Points scores for that lift.",
+                isProFeature: true, userIsPro: isPro
+            )
+            FAQRow(
+                question: "What are Wilks, DOTS, and IPF GL Points?",
+                answer: "Three real powerlifting formulas that adjust your lift for bodyweight, so you can compare relative strength across different body sizes instead of just raw numbers. They use your estimated 1RM from 1RM mode along with your bodyweight and sex (set in Settings → Pro — Bodyweight & Sex), and all three scores appear together in the 1RM mode panel.",
                 isProFeature: true, userIsPro: isPro
             )
             FAQRow(
@@ -184,7 +189,7 @@ struct HelpView: View {
         Section("Pro") {
             FAQRow(
                 question: "What is included in Pro?",
-                answer: "Warmup mode, 1RM estimator, Reverse mode, bodyweight ratio in the readout, saved setups, rest timer, and plate quantity limits. One-time purchase, no subscription.",
+                answer: "Warmup mode, 1RM estimator, Wilks/DOTS/IPF GL Points relative strength scoring, Reverse mode, bodyweight ratio in the readout, saved setups, rest timer, and plate quantity limits. One-time purchase, no subscription.",
                 isProFeature: false, userIsPro: isPro
             )
             FAQRow(
@@ -199,7 +204,7 @@ struct HelpView: View {
             )
             FAQRow(
                 question: "How do I set my bodyweight ratio?",
-                answer: "Go to Settings → Pro — Bodyweight and enter your bodyweight. The ratio (e.g. \"1.87× bodyweight\") appears under the main readout and is included in your Share My Lift card.",
+                answer: "Go to Settings → Pro — Bodyweight & Sex and enter your bodyweight. The ratio (e.g. \"1.87× bodyweight\") appears under the main readout and is included in your Share My Lift card. Setting your sex there also unlocks the Wilks/DOTS/IPF GL Points panel in 1RM mode.",
                 isProFeature: true, userIsPro: isPro
             )
             FAQRow(
@@ -227,16 +232,17 @@ struct HelpView: View {
         .init(section: "Plates & Bar", question: "What does \"Check sleeve space\" mean?", answer: "An amber warning that appears below the barbell when 9 or more plates are loaded per side. Most Olympic bar sleeves hold around 8 standard plates before running out of room. Loading is capped at 11 plates per side and 2,000 lb / 907 kg total bar weight."),
         .init(section: "Modes", question: "What is CALC mode?", answer: "The main plate calculator. Type a total bar weight and see the exact plates to load per side, with a remainder warning if the weight isn't exactly achievable."),
         .init(section: "Modes", question: "What is WARMUP mode?", answer: "Automatically generates a 5-set warmup ladder at 50%, 60%, 70%, 80%, and 90% of your target weight, rounded to loadable plates. Tap any row to load that weight into CALC.", isPro: true),
-        .init(section: "Modes", question: "What is 1RM mode?", answer: "Enter a weight and rep count to estimate your one-rep max using the Epley and Brzycki formulas. The average of both is shown. Tap the result to load it into CALC.", isPro: true),
+        .init(section: "Modes", question: "What is 1RM mode?", answer: "Enter a weight and rep count to estimate your one-rep max using the Epley and Brzycki formulas. The average of both is shown. Tap the result to load it into CALC. If you've set your bodyweight and sex in Settings, a Relative Strength panel below also shows your Wilks, DOTS, and IPF GL Points scores for that lift.", isPro: true),
+        .init(section: "Modes", question: "What are Wilks, DOTS, and IPF GL Points?", answer: "Three real powerlifting formulas that adjust your lift for bodyweight, so you can compare relative strength across different body sizes instead of just raw numbers. They use your estimated 1RM from 1RM mode along with your bodyweight and sex (set in Settings → Pro — Bodyweight & Sex), and all three scores appear together in the 1RM mode panel.", isPro: true),
         .init(section: "Modes", question: "What is REV (Reverse) mode?", answer: "Build a bar weight by tapping plates one at a time — useful when you're standing at the rack and want to add up what's already loaded. Tap any plate on the barbell to remove it, or use the Undo button to remove the last plate added.", isPro: true),
         .init(section: "Gestures & Controls", question: "How do I clear the bar with a gesture?", answer: "In CALC mode: long-press the barbell to animate plates flying off, double-tap to reset instantly, or swipe left/right. In REV mode: swipe or long-press the barbell to clear all plates, or tap any individual plate on the barbell to remove it."),
         .init(section: "Gestures & Controls", question: "What do the + and − buttons next to the weight do?", answer: "They increment or decrement the weight by the smallest enabled plate × 2 (one increment per side). Useful for fine-tuning without retyping the full number."),
         .init(section: "Gestures & Controls", question: "How do I share my lift?", answer: "Tap the share icon in the top toolbar. LiftLogic generates a summary card showing your weight, plate breakdown, and unit — ready to share to Messages, Instagram, or anywhere."),
         .init(section: "Gestures & Controls", question: "How do I use the rest timer?", answer: "Tap the timer icon in the top toolbar and pick a preset — the built-in 1:30, 2 min, 3 min, and 5 min chips, plus any named presets you've created. Add your own in Settings → Rest Timer: tap Add Preset, give it a name (e.g. \"Heavy\") and a duration, and it appears as a chip in the timer sheet. Tap a preset in Settings to edit it, or swipe to delete. The countdown appears as a Live Activity on your Lock Screen and in the Dynamic Island, and the timer icon in LiftLogic becomes a live countdown pill — tap it to reopen the controls. Three heavy haptic pulses fire at zero.", isPro: true),
-        .init(section: "Pro", question: "What is included in Pro?", answer: "Warmup mode, 1RM estimator, Reverse mode, bodyweight ratio in the readout, saved setups, rest timer, and plate quantity limits. One-time purchase, no subscription."),
+        .init(section: "Pro", question: "What is included in Pro?", answer: "Warmup mode, 1RM estimator, Wilks/DOTS/IPF GL Points relative strength scoring, Reverse mode, bodyweight ratio in the readout, saved setups, rest timer, and plate quantity limits. One-time purchase, no subscription."),
         .init(section: "Pro", question: "How do I buy Pro?", answer: "Tap the PRO button in the top-right corner of the main screen, or tap any locked mode pill. The price is $0.99 — a one-time purchase with Family Sharing enabled."),
         .init(section: "Pro", question: "Does Pro work on all my devices?", answer: "Yes. Tap \"Restore Purchases\" in Settings → Pro Status to activate Pro on any iPhone signed into the same Apple ID."),
-        .init(section: "Pro", question: "How do I set my bodyweight ratio?", answer: "Go to Settings → Pro — Bodyweight and enter your bodyweight. The ratio (e.g. \"1.87× bodyweight\") appears under the main readout and is included in your Share My Lift card.", isPro: true),
+        .init(section: "Pro", question: "How do I set my bodyweight ratio?", answer: "Go to Settings → Pro — Bodyweight & Sex and enter your bodyweight. The ratio (e.g. \"1.87× bodyweight\") appears under the main readout and is included in your Share My Lift card. Setting your sex there also unlocks the Wilks/DOTS/IPF GL Points panel in 1RM mode.", isPro: true),
         .init(section: "Pro", question: "What are saved setups?", answer: "Bookmark any bar configuration — weight, bar type, collar, unit — for one-tap recall. Tap the bookmark icon in the top toolbar to save or load a setup.", isPro: true),
     ]
 }

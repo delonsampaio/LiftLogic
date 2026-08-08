@@ -31,6 +31,7 @@ struct ProPaywallView: View {
                     proFeatureRow("Saved Setups", "Name and recall any barbell config")
                     proFeatureRow("Bodyweight Ratio", "See your lift as a multiple of BW")
                     proFeatureRow("Rest Timer", "Live Activity in Dynamic Island")
+                    proFeatureRow("Plate Quantity Limits", "Never suggests plates you don't own")
                 }
                 .padding(.horizontal, 24)
 
