@@ -77,7 +77,7 @@ struct SettingsView: View {
                 }
 
                 if settings.isPro {
-                    Section("Pro — Bodyweight") {
+                    Section("Pro — Bodyweight & Sex") {
                         HStack {
                             Text("Bodyweight")
                             Spacer()
@@ -92,6 +92,15 @@ struct SettingsView: View {
                             Text(settings.unit.symbol)
                                 .foregroundStyle(ThemeTokens.textMuted)
                         }
+                        Picker("Sex", selection: Binding(
+                            get: { settings.sex ?? .male },
+                            set: { settings.sex = $0 }
+                        )) {
+                            ForEach(Sex.allCases, id: \.self) { sex in
+                                Text(sex.displayName).tag(sex)
+                            }
+                        }
+                        .pickerStyle(.segmented)
                     }
                 }
 

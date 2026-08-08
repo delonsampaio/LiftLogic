@@ -138,4 +138,18 @@ struct AppSettingsTests {
         #expect(restTimerDurationLabel(120) == "2m")
         #expect(restTimerDurationLabel(150) == "2:30")
     }
+
+    // MARK: — Sex (#76)
+
+    @Test func sexDefaultsToNilWhenUnset() {
+        let s = freshSettings()
+        #expect(s.sex == nil)
+    }
+
+    @Test func sexPersistsAcrossRelaunch() {
+        let s = freshSettings()
+        s.sex = .female
+        let reloaded = AppSettings()
+        #expect(reloaded.sex == .female)
+    }
 }

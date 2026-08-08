@@ -38,6 +38,9 @@ final class AppSettings {
     var bodyWeight: Double {
         didSet { UserDefaults.standard.set(bodyWeight, forKey: "bodyWeight") }
     }
+    var sex: Sex? {
+        didSet { UserDefaults.standard.set(sex?.rawValue, forKey: "sex") }
+    }
     /// User's preferred custom rest timer duration in seconds. 0 = not yet set.
     var customTimerSeconds: Int {
         didSet { UserDefaults.standard.set(customTimerSeconds, forKey: "customTimerSeconds") }
@@ -91,6 +94,7 @@ final class AppSettings {
         isPro = ud.bool(forKey: "isPro")
         successfulCalculationCount = ud.integer(forKey: "successfulCalculationCount")
         bodyWeight = ud.double(forKey: "bodyWeight")
+        sex = ud.string(forKey: "sex").flatMap(Sex.init(rawValue:))
         customTimerSeconds = ud.integer(forKey: "customTimerSeconds")
         // Migrate the pre-1.x single recent-weights list into the active unit's bucket.
         let legacyRecent = loadDoubleArray(key: "recentWeights") ?? []
