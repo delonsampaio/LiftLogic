@@ -71,6 +71,29 @@ struct OneRMModeView: View {
                     .buttonStyle(.plain)
                 }
                 .padding(.horizontal)
+
+                // Relative strength (#76)
+                if let sex = settings.sex, settings.bodyWeight > 0 {
+                    let bodyweightKg = settings.unit.convert(settings.bodyWeight, to: .kg)
+                    let strength = vm.relativeStrengthResult(bodyweightKg: bodyweightKg, sex: sex)
+
+                    VStack(spacing: 12) {
+                        Text("Relative Strength")
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(ThemeTokens.textMuted)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+
+                        strengthRow(label: "Wilks", value: strength.wilks)
+                        strengthRow(label: "DOTS", value: strength.dots)
+                        strengthRow(label: "IPF GL", value: strength.ipfGL)
+                    }
+                    .padding(.horizontal)
+                } else {
+                    Text("Set bodyweight & sex in Settings to see your strength score")
+                        .font(.caption2)
+                        .foregroundStyle(ThemeTokens.textMuted)
+                        .padding(.horizontal)
+                }
             }
         }
     }
@@ -83,6 +106,21 @@ struct OneRMModeView: View {
                 .foregroundStyle(ThemeTokens.textSecondary)
             Spacer()
             Text("\(Int(value.rounded())) \(unit)")
+                .font(.callout.weight(.semibold))
+                .monospaced()
+                .foregroundStyle(ThemeTokens.textPrimary)
+        }
+        .padding(.horizontal)
+    }
+
+    @ViewBuilder
+    private func strengthRow(label: String, value: Double) -> some View {
+        HStack {
+            Text(label)
+                .font(.subheadline.weight(.medium))
+                .foregroundStyle(ThemeTokens.textSecondary)
+            Spacer()
+            Text("\(Int(value.rounded()))")
                 .font(.callout.weight(.semibold))
                 .monospaced()
                 .foregroundStyle(ThemeTokens.textPrimary)

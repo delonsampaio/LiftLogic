@@ -59,6 +59,10 @@ final class CalculatorViewModel {
         OneRMEngine.calculate(weight: targetWeight, reps: oneRMReps)
     }
 
+    func relativeStrengthResult(bodyweightKg: Double, sex: Sex) -> RelativeStrengthResult {
+        RelativeStrengthEngine.calculate(bodyweightKg: bodyweightKg, sex: sex, liftedKg: oneRMResult.average)
+    }
+
     var reverseTotal: Double {
         let platesTotal = reversePlateStack.map(\.weight).reduce(0, +)
         let sides: Double = isSingleSided ? 1 : 2

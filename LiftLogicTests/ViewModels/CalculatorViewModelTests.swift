@@ -391,4 +391,20 @@ struct CalculatorViewModelTests {
         #expect(grouped.first?.count == 2)
     }
 
+    // MARK: — Relative strength (#76)
+
+    @Test func relativeStrengthResultUsesOneRMAverageAsLiftedWeight() {
+        let vm = CalculatorViewModel(settings: freshSettings())
+        vm.appendDigit("2")
+        vm.appendDigit("0")
+        vm.appendDigit("0")
+        vm.oneRMReps = 1
+        let expectedLifted = vm.oneRMResult.average
+        let direct = RelativeStrengthEngine.calculate(bodyweightKg: 80, sex: .male, liftedKg: expectedLifted)
+        let viaViewModel = vm.relativeStrengthResult(bodyweightKg: 80, sex: .male)
+        #expect(abs(viaViewModel.wilks - direct.wilks) < 0.001)
+        #expect(abs(viaViewModel.dots - direct.dots) < 0.001)
+        #expect(abs(viaViewModel.ipfGL - direct.ipfGL) < 0.001)
+    }
+
 }
