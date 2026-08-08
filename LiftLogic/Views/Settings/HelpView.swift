@@ -189,7 +189,7 @@ struct HelpView: View {
         Section("Pro") {
             FAQRow(
                 question: "What is included in Pro?",
-                answer: "Warmup mode, 1RM estimator, Wilks/DOTS/IPF GL Points relative strength scoring, Reverse mode, bodyweight ratio in the readout, saved setups, rest timer, and plate quantity limits. One-time purchase, no subscription.",
+                answer: "Warmup mode, 1RM estimator, Wilks/DOTS/IPF GL Points relative strength scoring, Reverse mode, bodyweight ratio in the readout, saved setups, Barbell History, rest timer, and plate quantity limits. One-time purchase, no subscription.",
                 isProFeature: false, userIsPro: isPro
             )
             FAQRow(
@@ -210,6 +210,11 @@ struct HelpView: View {
             FAQRow(
                 question: "What are saved setups?",
                 answer: "Bookmark any bar configuration — weight, bar type, collar, unit — for one-tap recall. Tap the bookmark icon in the top toolbar to save or load a setup.",
+                isProFeature: true, userIsPro: isPro
+            )
+            FAQRow(
+                question: "What is Barbell History?",
+                answer: "LiftLogic automatically remembers your last 10 distinct barbell configurations (weight, bar, collar, unit) as you use CALC mode — no need to save anything manually. Tap the bookmark icon, and you'll see a \"Recent\" section above your Saved Setups. Tap any entry to reload it instantly.",
                 isProFeature: true, userIsPro: isPro
             )
         }
@@ -239,11 +244,12 @@ struct HelpView: View {
         .init(section: "Gestures & Controls", question: "What do the + and − buttons next to the weight do?", answer: "They increment or decrement the weight by the smallest enabled plate × 2 (one increment per side). Useful for fine-tuning without retyping the full number."),
         .init(section: "Gestures & Controls", question: "How do I share my lift?", answer: "Tap the share icon in the top toolbar. LiftLogic generates a summary card showing your weight, plate breakdown, and unit — ready to share to Messages, Instagram, or anywhere."),
         .init(section: "Gestures & Controls", question: "How do I use the rest timer?", answer: "Tap the timer icon in the top toolbar and pick a preset — the built-in 1:30, 2 min, 3 min, and 5 min chips, plus any named presets you've created. Add your own in Settings → Rest Timer: tap Add Preset, give it a name (e.g. \"Heavy\") and a duration, and it appears as a chip in the timer sheet. Tap a preset in Settings to edit it, or swipe to delete. The countdown appears as a Live Activity on your Lock Screen and in the Dynamic Island, and the timer icon in LiftLogic becomes a live countdown pill — tap it to reopen the controls. Three heavy haptic pulses fire at zero.", isPro: true),
-        .init(section: "Pro", question: "What is included in Pro?", answer: "Warmup mode, 1RM estimator, Wilks/DOTS/IPF GL Points relative strength scoring, Reverse mode, bodyweight ratio in the readout, saved setups, rest timer, and plate quantity limits. One-time purchase, no subscription."),
+        .init(section: "Pro", question: "What is included in Pro?", answer: "Warmup mode, 1RM estimator, Wilks/DOTS/IPF GL Points relative strength scoring, Reverse mode, bodyweight ratio in the readout, saved setups, Barbell History, rest timer, and plate quantity limits. One-time purchase, no subscription."),
         .init(section: "Pro", question: "How do I buy Pro?", answer: "Tap the PRO button in the top-right corner of the main screen, or tap any locked mode pill. The price is $0.99 — a one-time purchase with Family Sharing enabled."),
         .init(section: "Pro", question: "Does Pro work on all my devices?", answer: "Yes. Tap \"Restore Purchases\" in Settings → Pro Status to activate Pro on any iPhone signed into the same Apple ID."),
         .init(section: "Pro", question: "How do I set my bodyweight ratio?", answer: "Go to Settings → Pro — Bodyweight & Sex and enter your bodyweight. The ratio (e.g. \"1.87× bodyweight\") appears under the main readout and is included in your Share My Lift card. Setting your sex there also unlocks the Wilks/DOTS/IPF GL Points panel in 1RM mode.", isPro: true),
         .init(section: "Pro", question: "What are saved setups?", answer: "Bookmark any bar configuration — weight, bar type, collar, unit — for one-tap recall. Tap the bookmark icon in the top toolbar to save or load a setup.", isPro: true),
+        .init(section: "Pro", question: "What is Barbell History?", answer: "LiftLogic automatically remembers your last 10 distinct barbell configurations (weight, bar, collar, unit) as you use CALC mode — no need to save anything manually. Tap the bookmark icon, and you'll see a \"Recent\" section above your Saved Setups. Tap any entry to reload it instantly.", isPro: true),
     ]
 }
 

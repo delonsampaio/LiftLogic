@@ -29,6 +29,7 @@ struct ProPaywallView: View {
                     proFeatureRow("Relative Strength", "Wilks, DOTS & IPF GL Points scoring")
                     proFeatureRow("REVERSE Mode", "Tap plates to build, undo last")
                     proFeatureRow("Saved Setups", "Name and recall any barbell config")
+                    proFeatureRow("Barbell History", "Auto-saves your last 10 configs")
                     proFeatureRow("Bodyweight Ratio", "See your lift as a multiple of BW")
                     proFeatureRow("Rest Timer", "Live Activity in Dynamic Island")
                     proFeatureRow("Plate Quantity Limits", "Never suggests plates you don't own")
