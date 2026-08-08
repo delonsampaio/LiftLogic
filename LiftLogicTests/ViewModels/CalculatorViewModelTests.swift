@@ -498,4 +498,20 @@ struct CalculatorViewModelTests {
         #expect(mostRecent?.isSingleSided == true)
     }
 
+    // MARK: — Warmup percentage wiring (#58)
+
+    @Test func warmupSetsReflectCustomPercentages() {
+        let settings = freshSettings()
+        while settings.warmupPercentages.count > 1 {
+            settings.deleteWarmupPercentage(id: settings.warmupPercentages[0].id)
+        }
+        settings.updateWarmupPercentage(id: settings.warmupPercentages[0].id, percentage: 40)
+        settings.addWarmupPercentage()  // adds 50 (40 + 10)
+
+        let vm = CalculatorViewModel(settings: settings)
+        vm.appendDigit("2"); vm.appendDigit("0"); vm.appendDigit("0")
+
+        #expect(vm.warmupSets.map(\.percentage) == [40, 50])
+    }
+
 }

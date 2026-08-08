@@ -51,7 +51,8 @@ final class CalculatorViewModel {
             collarWeight: resolvedCollarWeight,
             inventory: settings.activeInventory,
             unit: settings.unit,
-            isSingleSided: isSingleSided
+            isSingleSided: isSingleSided,
+            percentages: settings.warmupPercentages.map(\.percentage)
         )
     }
 

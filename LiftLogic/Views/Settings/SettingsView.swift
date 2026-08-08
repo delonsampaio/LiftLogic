@@ -105,6 +105,29 @@ struct SettingsView: View {
                 }
 
                 if settings.isPro {
+                    Section("Pro — Warmup %") {
+                        ForEach(settings.warmupPercentages) { step in
+                            Stepper(value: Binding(
+                                get: { step.percentage },
+                                set: { settings.updateWarmupPercentage(id: step.id, percentage: $0) }
+                            ), in: 10...150, step: 5) {
+                                Text("\(step.percentage)%")
+                                    .foregroundStyle(ThemeTokens.textPrimary)
+                            }
+                        }
+                        .onDelete { indexSet in
+                            indexSet.map { settings.warmupPercentages[$0].id }.forEach { settings.deleteWarmupPercentage(id: $0) }
+                        }
+                        if settings.warmupPercentages.count < 8 {
+                            Button("Add Step") { settings.addWarmupPercentage() }
+                                .foregroundStyle(ThemeTokens.accent)
+                        }
+                        Button("Reset to Default") { settings.resetWarmupPercentagesToDefault() }
+                            .foregroundStyle(ThemeTokens.textMuted)
+                    }
+                }
+
+                if settings.isPro {
                     Section("Rest Timer") {
                         ForEach(settings.restTimerPresets) { preset in
                             Button {
