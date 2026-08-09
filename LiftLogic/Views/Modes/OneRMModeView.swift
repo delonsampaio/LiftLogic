@@ -28,6 +28,20 @@ struct OneRMModeView: View {
                         }
                         .padding(.horizontal)
 
+                        // RPE stepper (#61)
+                        HStack(spacing: 16) {
+                            Text("RPE:")
+                                .foregroundStyle(ThemeTokens.textSecondary)
+                                .font(.subheadline.weight(.medium))
+
+                            Stepper(String(format: "%.1f", vm.oneRMRPE), value: Binding(
+                                get: { vm.oneRMRPE },
+                                set: { vm.oneRMRPE = $0 }
+                            ), in: 6.0...10.0, step: 0.5)
+                            .fixedSize()
+                        }
+                        .padding(.horizontal)
+
                         if vm.oneRMReps > 10 {
                             Text("Estimates lose accuracy above 10 reps")
                                 .font(.caption2)
@@ -41,6 +55,15 @@ struct OneRMModeView: View {
                         VStack(spacing: 12) {
                             oneRMRow(label: "Epley", value: result.epley, unit: settings.unit.symbol)
                             oneRMRow(label: "Brzycki", value: result.brzycki, unit: settings.unit.symbol)
+
+                            if let rpeEstimate = vm.rpeAdjustedOneRM {
+                                oneRMRow(label: "RPE Est.", value: rpeEstimate, unit: settings.unit.symbol)
+                            } else {
+                                Text("RPE estimate unavailable above 12 reps")
+                                    .font(.caption2)
+                                    .foregroundStyle(ThemeTokens.textMuted)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                            }
 
                             Divider().opacity(0.2)
 
