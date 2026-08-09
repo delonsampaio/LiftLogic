@@ -179,6 +179,32 @@ struct SettingsView: View {
                     }
                 }
 
+                if settings.isPro {
+                    Section {
+                        HStack(spacing: 16) {
+                            ForEach(AccentColorOption.allCases) { option in
+                                Circle()
+                                    .fill(option.color)
+                                    .frame(width: 32, height: 32)
+                                    .overlay {
+                                        if settings.accentColorOption == option {
+                                            Image(systemName: "checkmark")
+                                                .foregroundStyle(.white)
+                                                .font(.caption.weight(.bold))
+                                        }
+                                    }
+                                    .onTapGesture { settings.accentColorOption = option }
+                            }
+                        }
+                        .padding(.vertical, 4)
+                    } header: {
+                        Text("Accent Color")
+                    } footer: {
+                        Text("Changes the app's accent color everywhere, including your Share My Lift card.")
+                            .foregroundStyle(ThemeTokens.textMuted)
+                    }
+                }
+
                 Section("Calculator") {
                     // Master on/off
                     Toggle(isOn: Binding(
