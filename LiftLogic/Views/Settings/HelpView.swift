@@ -222,6 +222,11 @@ struct HelpView: View {
                 answer: "Show a QR code of your current setup (weight, bar, collar, unit) for a training partner to scan — tap the new QR icon in the top toolbar, then \"Show My QR Code\" or \"Scan Partner's Code\". Scanning shows a confirmation before loading anything, and requires camera access.",
                 isProFeature: true, userIsPro: isPro
             )
+            FAQRow(
+                question: "What is Decimal Precision Lock?",
+                answer: "A kg-only setting that rounds any weight you commit to the nearest increment actually loadable with your enabled plates — so you never end up with a target that isn't physically achievable. Turn it on in Settings. Has no effect in lbs mode.",
+                isProFeature: true, userIsPro: isPro
+            )
         }
     }
 
@@ -256,6 +261,7 @@ struct HelpView: View {
         .init(section: "Pro", question: "What are saved setups?", answer: "Bookmark any bar configuration — weight, bar type, collar, unit — for one-tap recall. Tap the bookmark icon in the top toolbar to save or load a setup.", isPro: true),
         .init(section: "Pro", question: "What is Barbell History?", answer: "LiftLogic automatically remembers your last 10 distinct barbell configurations (weight, bar, collar, unit) as you use CALC mode — no need to save anything manually. Tap the bookmark icon, and you'll see a \"Recent\" section above your Saved Setups. Tap any entry to reload it instantly.", isPro: true),
         .init(section: "Pro", question: "What is Lifting Partner Mode?", answer: "Show a QR code of your current setup (weight, bar, collar, unit) for a training partner to scan — tap the new QR icon in the top toolbar, then \"Show My QR Code\" or \"Scan Partner's Code\". Scanning shows a confirmation before loading anything, and requires camera access.", isPro: true),
+        .init(section: "Pro", question: "What is Decimal Precision Lock?", answer: "A kg-only setting that rounds any weight you commit to the nearest increment actually loadable with your enabled plates — so you never end up with a target that isn't physically achievable. Turn it on in Settings. Has no effect in lbs mode.", isPro: true),
     ]
 }
 

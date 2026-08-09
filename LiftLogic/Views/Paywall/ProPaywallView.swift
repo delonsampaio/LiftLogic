@@ -34,6 +34,7 @@ struct ProPaywallView: View {
                     proFeatureRow("Rest Timer", "Live Activity in Dynamic Island")
                     proFeatureRow("Plate Quantity Limits", "Never suggests plates you don't own")
                     proFeatureRow("Lifting Partner", "Share a setup via QR code")
+                    proFeatureRow("Decimal Precision Lock", "Always loadable kg targets")
                 }
                 .padding(.horizontal, 24)
 
