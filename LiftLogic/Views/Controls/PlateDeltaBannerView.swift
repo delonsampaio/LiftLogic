@@ -11,6 +11,7 @@ struct PlateDeltaBannerView: View {
     /// Seconds until auto-dismiss. 0 = stay until manually dismissed.
     let duration: Double
     let onDismiss: () -> Void
+    let accentColor: Color
 
     @State private var progress: CGFloat = 1.0
 
@@ -64,7 +65,7 @@ struct PlateDeltaBannerView: View {
                     ZStack(alignment: .leading) {
                         Capsule().fill(Color(white: 0.2))
                         Capsule()
-                            .fill(ThemeTokens.accent.opacity(0.7))
+                            .fill(accentColor.opacity(0.7))
                             .frame(width: geo.size.width * progress)
                             .animation(.linear(duration: duration), value: progress)
                     }

@@ -48,7 +48,7 @@ struct CalcInputView: View {
                 } label: {
                     Image(systemName: "plus.circle.fill")
                         .font(.largeTitle)
-                        .foregroundStyle(ThemeTokens.accent)
+                        .foregroundStyle(settings.accentColor)
                 }
                 .accessibilityLabel("Increase weight")
             }
@@ -65,7 +65,8 @@ struct CalcInputView: View {
                     delta: delta,
                     unit: settings.unit,
                     duration: Double(settings.deltaAutoDismissSeconds),
-                    onDismiss: { toastDismissed = true }
+                    onDismiss: { toastDismissed = true },
+                    accentColor: settings.accentColor
                 )
                 .id(key)
                 .padding(.horizontal, 12)

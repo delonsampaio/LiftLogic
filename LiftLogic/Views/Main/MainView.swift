@@ -78,11 +78,11 @@ struct MainView: View {
                                             .contentTransition(.numericText())
                                             .animation(.spring(response: 0.3), value: timer.remainingSeconds)
                                     }
-                                    .foregroundStyle(ThemeTokens.accent)
+                                    .foregroundStyle(settings.accentColor)
                                     .padding(.horizontal, 8)
                                     .padding(.vertical, 3)
-                                    .background(Capsule().fill(ThemeTokens.accent.opacity(0.15)))
-                                    .overlay(Capsule().strokeBorder(ThemeTokens.accent.opacity(0.35), lineWidth: 1))
+                                    .background(Capsule().fill(settings.accentColor.opacity(0.15)))
+                                    .overlay(Capsule().strokeBorder(settings.accentColor.opacity(0.35), lineWidth: 1))
                                 } else {
                                     Image(systemName: "timer")
                                         .font(.title3)
@@ -204,10 +204,10 @@ struct MainView: View {
         if vm.isSingleSided {
             Label("Single Side", systemImage: "arrow.right")
                 .font(.caption2.weight(.semibold))
-                .foregroundStyle(ThemeTokens.accent)
+                .foregroundStyle(settings.accentColor)
                 .padding(.horizontal, 8)
                 .padding(.vertical, 3)
-                .background(Capsule().fill(ThemeTokens.accent.opacity(0.15)))
+                .background(Capsule().fill(settings.accentColor.opacity(0.15)))
                 .transition(.opacity.combined(with: .scale(scale: 0.9)))
                 .animation(.easeInOut(duration: 0.2), value: vm.isSingleSided)
                 .padding(.bottom, 4)

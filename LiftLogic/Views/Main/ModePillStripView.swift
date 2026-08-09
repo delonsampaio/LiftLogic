@@ -37,14 +37,14 @@ struct ModePillStripView: View {
                         Text(mode.displayName)
                             .font(sizeClass == .regular ? .subheadline.weight(.semibold) : .caption.weight(.semibold))
                     }
-                    .foregroundStyle(vm.currentMode == mode ? ThemeTokens.accent : ThemeTokens.textMuted)
+                    .foregroundStyle(vm.currentMode == mode ? settings.accentColor : ThemeTokens.textMuted)
                     .padding(.horizontal, 12 * pillScale)
                     .padding(.vertical, 8 * pillScale)
                     .background {
                         if vm.currentMode == mode {
                             Capsule()
-                                .fill(ThemeTokens.accent.opacity(0.18))
-                                .overlay(Capsule().strokeBorder(ThemeTokens.accent.opacity(0.4), lineWidth: 1))
+                                .fill(settings.accentColor.opacity(0.18))
+                                .overlay(Capsule().strokeBorder(settings.accentColor.opacity(0.4), lineWidth: 1))
                         } else {
                             Capsule()
                                 .glassEffect()

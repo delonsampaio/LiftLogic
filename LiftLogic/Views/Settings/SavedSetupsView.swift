@@ -50,7 +50,7 @@ struct SavedSetupsView: View {
                         showSaveSheet = true
                     } label: {
                         Image(systemName: "plus")
-                            .foregroundStyle(ThemeTokens.accent)
+                            .foregroundStyle(settings.accentColor)
                     }
                 }
             }
@@ -155,7 +155,7 @@ struct SavedSetupsView: View {
                         settings.saveSetup(setup)
                         showSaveSheet = false
                     }
-                    .foregroundStyle(ThemeTokens.accent)
+                    .foregroundStyle(settings.accentColor)
                 }
             }
         }

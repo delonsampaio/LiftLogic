@@ -57,7 +57,7 @@ struct ScanPartnerView: View {
         .navigationTitle("Scan Partner's Code")
         .navigationBarTitleDisplayMode(.inline)
         .sheet(item: $scannedItem) { ref in
-            PartnerScanConfirmationView(payload: ref.payload) {
+            PartnerScanConfirmationView(payload: ref.payload, accentColor: settings.accentColor) {
                 apply(ref.payload)
                 scannedItem = nil
                 onSetupLoaded()
@@ -87,7 +87,7 @@ struct ScanPartnerView: View {
                     UIApplication.shared.open(url)
                 }
             }
-            .foregroundStyle(ThemeTokens.accent)
+            .foregroundStyle(settings.accentColor)
         }
         .padding()
     }

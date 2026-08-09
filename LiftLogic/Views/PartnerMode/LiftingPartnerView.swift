@@ -28,7 +28,7 @@ struct LiftingPartnerView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Done") { dismiss() }
-                        .foregroundStyle(ThemeTokens.accent)
+                        .foregroundStyle(settings.accentColor)
                 }
             }
         }
@@ -39,7 +39,7 @@ struct LiftingPartnerView: View {
         HStack(spacing: 16) {
             Image(systemName: icon)
                 .font(.title2)
-                .foregroundStyle(ThemeTokens.accent)
+                .foregroundStyle(settings.accentColor)
                 .frame(width: 32)
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)

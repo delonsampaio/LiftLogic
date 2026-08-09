@@ -2,6 +2,7 @@ import SwiftUI
 
 struct PartnerScanConfirmationView: View {
     let payload: PartnerSetupPayload
+    let accentColor: Color
     let onLoad: () -> Void
     @Environment(\.dismiss) var dismiss
 
@@ -26,7 +27,7 @@ struct PartnerScanConfirmationView: View {
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Load") { onLoad() }
-                        .foregroundStyle(ThemeTokens.accent)
+                        .foregroundStyle(accentColor)
                 }
             }
         }

@@ -5,15 +5,17 @@ struct TimerPresetEditorSheet: View {
     let initialName: String
     let initialSeconds: Int
     let onSave: (String, Int) -> Void
+    let accentColor: Color
 
     @Environment(\.dismiss) private var dismiss
     @State private var name: String
     @State private var minutes: Int
     @State private var seconds: Int
 
-    init(initialName: String, initialSeconds: Int, onSave: @escaping (String, Int) -> Void) {
+    init(initialName: String, initialSeconds: Int, accentColor: Color, onSave: @escaping (String, Int) -> Void) {
         self.initialName = initialName
         self.initialSeconds = initialSeconds
+        self.accentColor = accentColor
         self.onSave = onSave
         _name = State(initialValue: initialName)
         _minutes = State(initialValue: max(0, initialSeconds / 60))
@@ -57,7 +59,7 @@ struct TimerPresetEditorSheet: View {
                         onSave(name, max(15, minutes * 60 + seconds))
                         dismiss()
                     }
-                    .foregroundStyle(ThemeTokens.accent)
+                    .foregroundStyle(accentColor)
                     .disabled(minutes == 0 && seconds == 0)
                 }
             }

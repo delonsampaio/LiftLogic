@@ -47,7 +47,7 @@ struct WarmupModeView: View {
                 Text("\(set.percentage)%")
                     .font(.footnote.weight(.bold))
                     .monospaced()
-                    .foregroundStyle(ThemeTokens.accent)
+                    .foregroundStyle(settings.accentColor)
                     .frame(width: 44, alignment: .center)
 
                 Text("\(set.targetWeight.weightString) \(settings.unit.symbol)")

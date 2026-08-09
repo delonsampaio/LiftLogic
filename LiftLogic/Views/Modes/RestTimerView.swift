@@ -13,7 +13,7 @@ struct RestTimerView: View {
             // Timer display
             Text(timer.state == .idle ? "Rest Timer" : timer.formattedTime)
                 .font(.system(size: 48 * scale, weight: .black, design: .monospaced))
-                .foregroundStyle(timer.state == .finished ? ThemeTokens.accent : ThemeTokens.textPrimary)
+                .foregroundStyle(timer.state == .finished ? settings.accentColor : ThemeTokens.textPrimary)
                 .contentTransition(.numericText())
                 .animation(.spring(response: 0.3), value: timer.remainingSeconds)
 
@@ -40,7 +40,7 @@ struct RestTimerView: View {
                     Button {
                         timer.resume()
                     } label: {
-                        controlButton(systemImage: "play.fill", color: ThemeTokens.accent)
+                        controlButton(systemImage: "play.fill", color: settings.accentColor)
                     }
                 }
 
@@ -71,14 +71,14 @@ struct RestTimerView: View {
         } label: {
             Text(label)
                 .font(sizeClass == .regular ? .subheadline.weight(.semibold) : .footnote.weight(.semibold))
-                .foregroundStyle(isActive ? ThemeTokens.accent : ThemeTokens.textMuted)
+                .foregroundStyle(isActive ? settings.accentColor : ThemeTokens.textMuted)
                 .padding(.horizontal, 12 * scale)
                 .padding(.vertical, 8 * scale)
                 .background(
                     Capsule()
-                        .fill(isActive ? ThemeTokens.accent.opacity(0.15) : Color(white: 0.12))
+                        .fill(isActive ? settings.accentColor.opacity(0.15) : Color(white: 0.12))
                         .overlay(Capsule().strokeBorder(
-                            isActive ? ThemeTokens.accent.opacity(0.4) : Color(white: 0.2),
+                            isActive ? settings.accentColor.opacity(0.4) : Color(white: 0.2),
                             lineWidth: 1
                         ))
                 )

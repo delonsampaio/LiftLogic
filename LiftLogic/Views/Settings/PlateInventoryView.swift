@@ -4,6 +4,7 @@ struct PlateInventoryView: View {
     @Binding var inventory: [PlateInventoryItem]
     let unit: WeightUnit
     let isPro: Bool
+    let accentColor: Color
 
     @State private var showResetConfirm = false
 
@@ -20,7 +21,7 @@ struct PlateInventoryView: View {
                             .font(.system(.body, design: .monospaced))
                             .foregroundStyle(item.isEnabled ? ThemeTokens.textPrimary : ThemeTokens.textMuted)
                     }
-                    .tint(ThemeTokens.accent)
+                    .tint(accentColor)
 
                     if item.isEnabled {
                         if isPro {

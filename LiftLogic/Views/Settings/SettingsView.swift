@@ -37,7 +37,7 @@ struct SettingsView: View {
                             Spacer()
                             if settings.defaultBar == bar {
                                 Image(systemName: "checkmark")
-                                    .foregroundStyle(ThemeTokens.accent)
+                                    .foregroundStyle(settings.accentColor)
                             }
                         }
                         .contentShape(Rectangle())
@@ -61,7 +61,8 @@ struct SettingsView: View {
                                 set: { settings.lbsInventory = $0 }
                             ),
                             unit: .lbs,
-                            isPro: settings.isPro
+                            isPro: settings.isPro,
+                            accentColor: settings.accentColor
                         )
                     }
                     NavigationLink("Kilograms (kg)") {
@@ -71,7 +72,8 @@ struct SettingsView: View {
                                 set: { settings.kgInventory = $0 }
                             ),
                             unit: .kg,
-                            isPro: settings.isPro
+                            isPro: settings.isPro,
+                            accentColor: settings.accentColor
                         )
                     }
                 }
@@ -125,7 +127,7 @@ struct SettingsView: View {
                         }
                         if settings.warmupPercentages.count < 8 {
                             Button("Add Step") { settings.addWarmupPercentage() }
-                                .foregroundStyle(ThemeTokens.accent)
+                                .foregroundStyle(settings.accentColor)
                         }
                         Button("Reset to Default") { settings.resetWarmupPercentagesToDefault() }
                             .foregroundStyle(ThemeTokens.textMuted)
@@ -156,7 +158,7 @@ struct SettingsView: View {
                             indexSet.map { settings.restTimerPresets[$0].id }.forEach { settings.deleteTimerPreset(id: $0) }
                         }
                         Button("Add Preset") { showNewPresetSheet = true }
-                            .foregroundStyle(ThemeTokens.accent)
+                            .foregroundStyle(settings.accentColor)
                     }
                 }
 
@@ -168,7 +170,7 @@ struct SettingsView: View {
                         )) {
                             Text("Decimal Precision Lock")
                         }
-                        .tint(ThemeTokens.accent)
+                        .tint(settings.accentColor)
                     } header: {
                         Text("Decimal Precision Lock")
                     } footer: {
@@ -190,7 +192,7 @@ struct SettingsView: View {
                                 .foregroundStyle(ThemeTokens.textMuted)
                         }
                     }
-                    .tint(ThemeTokens.accent)
+                    .tint(settings.accentColor)
 
                     if settings.deltaBannerEnabled {
                         // Auto-dismiss toggle
@@ -200,7 +202,7 @@ struct SettingsView: View {
                         )) {
                             Text("Auto-dismiss")
                         }
-                        .tint(ThemeTokens.accent)
+                        .tint(settings.accentColor)
 
                         // Seconds entry — only visible when auto-dismiss is on
                         if settings.deltaAutoDismissSeconds > 0 {
@@ -224,7 +226,7 @@ struct SettingsView: View {
 
                 Section("Support") {
                     NavigationLink("Help & FAQ") {
-                        HelpView(isPro: settings.isPro)
+                        HelpView(isPro: settings.isPro, accentColor: settings.accentColor)
                     }
                 }
 
@@ -247,7 +249,7 @@ struct SettingsView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Done") { dismiss() }
-                        .foregroundStyle(ThemeTokens.accent)
+                        .foregroundStyle(settings.accentColor)
                 }
                 ToolbarItemGroup(placement: .keyboard) {
                     Spacer()
@@ -259,12 +261,12 @@ struct SettingsView: View {
             customBarWeightSheet
         }
         .sheet(isPresented: $showNewPresetSheet) {
-            TimerPresetEditorSheet(initialName: "", initialSeconds: 120) { name, seconds in
+            TimerPresetEditorSheet(initialName: "", initialSeconds: 120, accentColor: settings.accentColor) { name, seconds in
                 settings.addTimerPreset(name: name, seconds: seconds)
             }
         }
         .sheet(item: $editingPreset) { preset in
-            TimerPresetEditorSheet(initialName: preset.name, initialSeconds: preset.seconds) { name, seconds in
+            TimerPresetEditorSheet(initialName: preset.name, initialSeconds: preset.seconds, accentColor: settings.accentColor) { name, seconds in
                 settings.updateTimerPreset(RestTimerPreset(id: preset.id, name: name, seconds: seconds))
             }
         }
@@ -325,7 +327,7 @@ struct SettingsView: View {
                             showCustomBarSheet = false
                         }
                     }
-                    .foregroundStyle(customBarInputValue == nil ? ThemeTokens.textMuted : ThemeTokens.accent)
+                    .foregroundStyle(customBarInputValue == nil ? ThemeTokens.textMuted : settings.accentColor)
                     .disabled(customBarInputValue == nil)
                 }
             }

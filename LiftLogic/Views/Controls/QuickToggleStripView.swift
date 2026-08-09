@@ -88,14 +88,14 @@ struct QuickToggleStripView: View {
                         .font(sizeClass == .regular ? .caption.weight(.semibold) : .caption2.weight(.semibold))
                 }
             }
-            .foregroundStyle(isActive ? ThemeTokens.accent : ThemeTokens.textSecondary)
+            .foregroundStyle(isActive ? settings.accentColor : ThemeTokens.textSecondary)
             .padding(.horizontal, 12 * scale)
             .padding(.vertical, 7 * scale)
             .background(
                 Capsule()
-                    .fill(isActive ? ThemeTokens.accent.opacity(0.15) : Color(white: 0.12))
+                    .fill(isActive ? settings.accentColor.opacity(0.15) : Color(white: 0.12))
                     .overlay(Capsule().strokeBorder(
-                        isActive ? ThemeTokens.accent.opacity(0.4) : Color(white: 0.2),
+                        isActive ? settings.accentColor.opacity(0.4) : Color(white: 0.2),
                         lineWidth: 1
                     ))
             )

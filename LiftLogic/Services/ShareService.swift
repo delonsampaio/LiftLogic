@@ -59,7 +59,7 @@ struct ShareCardView: View {
 
                 Text("via LiftLogic")
                     .font(.system(size: 11, weight: .semibold))
-                    .foregroundStyle(ThemeTokens.accent)
+                    .foregroundStyle(settings.accentColor)
             }
             .padding(32)
         }

@@ -51,10 +51,10 @@ struct ReverseModeView: View {
         let isEmpty = vm.reversePlateStack.isEmpty
         return ZStack {
             Circle()
-                .fill(isEmpty ? Color(white: 0.10) : ThemeTokens.accent.opacity(0.10))
+                .fill(isEmpty ? Color(white: 0.10) : settings.accentColor.opacity(0.10))
             Circle()
                 .strokeBorder(
-                    isEmpty ? Color(white: 0.20) : ThemeTokens.accent.opacity(0.45),
+                    isEmpty ? Color(white: 0.20) : settings.accentColor.opacity(0.45),
                     lineWidth: 1.5
                 )
             VStack(spacing: 3) {
@@ -63,7 +63,7 @@ struct ReverseModeView: View {
                 Text("Undo")
                     .font(.caption2.weight(.semibold))
             }
-            .foregroundStyle(isEmpty ? ThemeTokens.textMuted : ThemeTokens.accent)
+            .foregroundStyle(isEmpty ? ThemeTokens.textMuted : settings.accentColor)
         }
         .frame(width: 68 * scale, height: 68 * scale)
         .contentShape(Circle())
