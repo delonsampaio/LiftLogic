@@ -25,7 +25,7 @@ struct ProPaywallView: View {
                 // Feature list
                 VStack(alignment: .leading, spacing: 14) {
                     proFeatureRow("WARMUP Mode", "Customizable warm-up ladder")
-                    proFeatureRow("1RM Mode", "Epley + Brzycki estimators")
+                    proFeatureRow("1RM Mode", "Epley, Brzycki + RPE-based estimate")
                     proFeatureRow("Relative Strength", "Wilks, DOTS & IPF GL Points scoring")
                     proFeatureRow("REVERSE Mode", "Tap plates to build, undo last")
                     proFeatureRow("Saved Setups", "Name and recall any barbell config")
