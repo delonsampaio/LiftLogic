@@ -228,6 +228,11 @@ struct HelpView: View {
                 answer: "Rounds any weight you commit to the nearest increment actually loadable with your enabled plates — so you never end up with a target that isn't physically achievable. Works in both lbs and kg. Turn it on in Settings.",
                 isProFeature: true, userIsPro: isPro, accentColor: accentColor
             )
+            FAQRow(
+                question: "Can I change the accent color?",
+                answer: "Yes — pick from 4 colors (Orange, Blue, Teal, Pink) in Settings → Pro — Accent Color. Applies everywhere the accent appears, including your Share My Lift card.",
+                isProFeature: true, userIsPro: isPro, accentColor: accentColor
+            )
         }
     }
 
@@ -263,6 +268,7 @@ struct HelpView: View {
         .init(section: "Pro", question: "What is Barbell History?", answer: "LiftLogic automatically remembers your last 10 distinct barbell configurations (weight, bar, collar, unit) as you use CALC mode — no need to save anything manually. Tap the bookmark icon, and you'll see a \"Recent\" section above your Saved Setups. Tap any entry to reload it instantly.", isPro: true),
         .init(section: "Pro", question: "What is Lifting Partner Mode?", answer: "Show a QR code of your current setup (weight, bar, collar, unit) for a training partner to scan — tap the new QR icon in the top toolbar, then \"Show My QR Code\" or \"Scan Partner's Code\". Scanning shows a confirmation before loading anything, and requires camera access.", isPro: true),
         .init(section: "Pro", question: "What is Decimal Precision Lock?", answer: "Rounds any weight you commit to the nearest increment actually loadable with your enabled plates — so you never end up with a target that isn't physically achievable. Works in both lbs and kg. Turn it on in Settings.", isPro: true),
+        .init(section: "Pro", question: "Can I change the accent color?", answer: "Yes — pick from 4 colors (Orange, Blue, Teal, Pink) in Settings → Pro — Accent Color. Applies everywhere the accent appears, including your Share My Lift card.", isPro: true),
     ]
 }
 
