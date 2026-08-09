@@ -61,7 +61,7 @@ final class CalculatorViewModel {
         OneRMEngine.calculate(weight: targetWeight, reps: oneRMReps)
     }
 
-    var rpeAdjustedOneRM: Double? {
+    var rpeEstimatedOneRM: Double? {
         guard let percent = OneRMEngine.percentOf1RM(reps: oneRMReps, rpe: oneRMRPE) else { return nil }
         return targetWeight / (percent / 100)
     }

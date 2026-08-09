@@ -617,7 +617,7 @@ struct CalculatorViewModelTests {
         #expect(vm.oneRMRPE == 10.0)
     }
 
-    @Test func rpeAdjustedOneRMMatchesTableLookup() {
+    @Test func rpeEstimatedOneRMMatchesTableLookup() {
         let vm = CalculatorViewModel(settings: freshSettings())
         vm.appendDigit("1")
         vm.appendDigit("0")
@@ -625,17 +625,17 @@ struct CalculatorViewModelTests {
         vm.oneRMReps = 5
         vm.oneRMRPE = 8.0
         let expected = 100.0 / (81.1 / 100)
-        #expect(abs(vm.rpeAdjustedOneRM! - expected) < 0.001)
+        #expect(abs(vm.rpeEstimatedOneRM! - expected) < 0.001)
     }
 
-    @Test func rpeAdjustedOneRMNilAboveTwelveReps() {
+    @Test func rpeEstimatedOneRMNilAboveTwelveReps() {
         let vm = CalculatorViewModel(settings: freshSettings())
         vm.appendDigit("1")
         vm.appendDigit("0")
         vm.appendDigit("0")
         vm.oneRMReps = 13
         vm.oneRMRPE = 10.0
-        #expect(vm.rpeAdjustedOneRM == nil)
+        #expect(vm.rpeEstimatedOneRM == nil)
     }
 
     @Test func oneRMResultUnaffectedByOneRMRPE() {

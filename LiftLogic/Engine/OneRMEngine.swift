@@ -24,6 +24,7 @@ struct OneRMEngine {
     /// Epley/Brzycki stop being trusted above `maxReliableReps`.
     static func percentOf1RM(reps: Int, rpe: Double) -> Double? {
         guard (1...12).contains(reps) else { return nil }
+        guard rpe.isFinite else { return nil }
         let rpeKey = Int((rpe * 10).rounded())
         guard let column = rpeTable[rpeKey] else { return nil }
         return column[reps - 1]

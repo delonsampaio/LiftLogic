@@ -56,7 +56,7 @@ struct OneRMModeView: View {
                             oneRMRow(label: "Epley", value: result.epley, unit: settings.unit.symbol)
                             oneRMRow(label: "Brzycki", value: result.brzycki, unit: settings.unit.symbol)
 
-                            if let rpeEstimate = vm.rpeAdjustedOneRM {
+                            if let rpeEstimate = vm.rpeEstimatedOneRM {
                                 oneRMRow(label: "RPE Est.", value: rpeEstimate, unit: settings.unit.symbol)
                             } else {
                                 Text("RPE estimate unavailable above 12 reps")
@@ -77,7 +77,7 @@ struct OneRMModeView: View {
                             } label: {
                                 HStack {
                                     VStack(alignment: .leading, spacing: 2) {
-                                        Text("Average (Est. 1RM)")
+                                        Text("Average (Epley/Brzycki)")
                                             .font(.caption.weight(.semibold))
                                             .foregroundStyle(ThemeTokens.accentPro)
                                         Text("Tap to load into CALC")

@@ -42,10 +42,25 @@ struct OneRMEngineTests {
         #expect(OneRMEngine.percentOf1RM(reps: 5, rpe: 5.5) == nil)
         #expect(OneRMEngine.percentOf1RM(reps: 5, rpe: 10.5) == nil)
     }
+    @Test func percentOf1RMNonFiniteRPEReturnsNilInsteadOfTrapping() {
+        #expect(OneRMEngine.percentOf1RM(reps: 5, rpe: .nan) == nil)
+        #expect(OneRMEngine.percentOf1RM(reps: 5, rpe: .infinity) == nil)
+        #expect(OneRMEngine.percentOf1RM(reps: 5, rpe: -.infinity) == nil)
+    }
     @Test func percentOf1RMOffGridDecimalReturnsNil() {
-        // 8.1 isn't a stepper-reachable value (steps are 0.5), but the table lookup
-        // must not silently match a neighboring cell for it — see Global Constraints
-        // on why the table is Int-keyed.
+        // Int((rpe*10).rounded()) snaps to the nearest 0.1 and then requires exact
+        // grid membership — 8.1 is far enough from any supported RPE (6.0...10.0 in
+        // 0.5 steps) that it lands on an unsupported key (81) and returns nil, rather
+        // than silently matching a neighboring cell.
         #expect(OneRMEngine.percentOf1RM(reps: 5, rpe: 8.1) == nil)
+    }
+    @Test func percentOf1RMTableIsInternallyConsistent() {
+        for reps in 1...11 {
+            for rpeTimesTen in stride(from: 70, through: 100, by: 5) {
+                let rpe = Double(rpeTimesTen) / 10
+                #expect(OneRMEngine.percentOf1RM(reps: reps + 1, rpe: rpe)
+                     == OneRMEngine.percentOf1RM(reps: reps, rpe: rpe - 1.0))
+            }
+        }
     }
 }
