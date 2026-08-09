@@ -160,6 +160,23 @@ struct SettingsView: View {
                     }
                 }
 
+                if settings.isPro {
+                    Section {
+                        Toggle(isOn: Binding(
+                            get: { settings.decimalPrecisionLockEnabled },
+                            set: { settings.decimalPrecisionLockEnabled = $0 }
+                        )) {
+                            Text("Decimal Precision Lock")
+                        }
+                        .tint(ThemeTokens.accent)
+                    } header: {
+                        Text("Decimal Precision Lock")
+                    } footer: {
+                        Text("When enabled, kg weights round to the nearest increment loadable with your enabled plates — no more targets that aren't physically achievable. Has no effect in lbs mode.")
+                            .foregroundStyle(ThemeTokens.textMuted)
+                    }
+                }
+
                 Section("Calculator") {
                     // Master on/off
                     Toggle(isOn: Binding(
