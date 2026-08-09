@@ -17,6 +17,7 @@ struct MainView: View {
     @State private var showPaywall = false
     @State private var showSettings = false
     @State private var showSavedSetups = false
+    @State private var showLiftingPartner = false
     @State private var showTimer = false
     // Widest of the two top-bar side clusters — the title reserves this much
     // horizontal padding on each side so it can never overlap either side,
@@ -121,6 +122,15 @@ struct MainView: View {
                                         .foregroundStyle(ThemeTokens.textMuted)
                                 }
                                 .accessibilityLabel("Saved setups")
+
+                                Button {
+                                    showLiftingPartner = true
+                                } label: {
+                                    Image(systemName: "qrcode")
+                                        .font(.system(size: 20))
+                                        .foregroundStyle(ThemeTokens.textMuted)
+                                }
+                                .accessibilityLabel("Lifting Partner Mode")
                             } else {
                                 Button {
                                     showPaywall = true
@@ -157,6 +167,9 @@ struct MainView: View {
         }
         .fullScreenCover(isPresented: $showSavedSetups) {
             SavedSetupsView(settings: settings, vm: vm)
+        }
+        .fullScreenCover(isPresented: $showLiftingPartner) {
+            LiftingPartnerView(vm: vm, settings: settings, onSetupLoaded: { showLiftingPartner = false })
         }
         .sheet(isPresented: $showTimer) {
             RestTimerView(timer: timer, settings: settings, isPresented: $showTimer)
