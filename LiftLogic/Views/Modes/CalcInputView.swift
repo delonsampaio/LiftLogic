@@ -12,6 +12,11 @@ struct CalcInputView: View {
     @State private var commitTask: Task<Void, Never>?
     // Start dismissed so the toast doesn't fire when switching back to CALC with a stale delta.
     @State private var toastDismissed = true
+    // Tracks the last commitRevision this view has already reacted to, so a
+    // targetWeight change caused by commitWeight() itself (e.g. Decimal
+    // Precision Lock rounding the value after a commit) can be told apart
+    // from a targetWeight change caused by fresh user typing.
+    @State private var lastSeenCommitRevision = 0
 
     var body: some View {
         VStack(spacing: 12) {
@@ -71,6 +76,11 @@ struct CalcInputView: View {
         .animation(.spring(response: 0.4, dampingFraction: 0.8),
                    value: vm.lastDelta.isEmpty || toastDismissed)
         .onChange(of: vm.targetWeight) { _, _ in
+            // A commit already advanced commitRevision since we last recorded it —
+            // this targetWeight change was caused by that commit (rounding), not
+            // by new typing. Don't reschedule a redundant commit or hide a toast
+            // that should stay visible.
+            guard vm.commitRevision == lastSeenCommitRevision else { return }
             commitTask?.cancel()
             commitTask = Task {
                 try? await Task.sleep(for: .seconds(1.2))
@@ -78,7 +88,8 @@ struct CalcInputView: View {
             }
             toastDismissed = true
         }
-        .onChange(of: vm.commitRevision) { _, _ in
+        .onChange(of: vm.commitRevision) { _, newValue in
+            lastSeenCommitRevision = newValue
             if !vm.lastDelta.isEmpty {
                 toastDismissed = false
             }

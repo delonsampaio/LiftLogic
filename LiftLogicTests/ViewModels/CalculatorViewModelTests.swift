@@ -518,6 +518,7 @@ struct CalculatorViewModelTests {
 
     @Test func precisionLockRoundsToNearestGranularityWithStandardPlatesOnly() {
         let settings = freshSettings()
+        settings.isPro = true
         settings.unit = .kg
         settings.decimalPrecisionLockEnabled = true
         let vm = CalculatorViewModel(settings: settings)
@@ -533,6 +534,7 @@ struct CalculatorViewModelTests {
 
     @Test func precisionLockUsesFinerGranularityWithMicroPlatesEnabled() {
         let settings = freshSettings()
+        settings.isPro = true
         settings.unit = .kg
         settings.decimalPrecisionLockEnabled = true
         // Enable the 0.25 kg micro plate so smallestEnabledPlate becomes 0.25 → granularity 0.5.
@@ -551,6 +553,7 @@ struct CalculatorViewModelTests {
 
     @Test func precisionLockHasNoEffectInLbsMode() {
         let settings = freshSettings()
+        settings.isPro = true
         settings.unit = .lbs
         settings.decimalPrecisionLockEnabled = true
         let vm = CalculatorViewModel(settings: settings)
@@ -562,6 +565,7 @@ struct CalculatorViewModelTests {
 
     @Test func precisionLockHasNoEffectWhenDisabled() {
         let settings = freshSettings()
+        settings.isPro = true
         settings.unit = .kg
         settings.decimalPrecisionLockEnabled = false
         let vm = CalculatorViewModel(settings: settings)
@@ -569,6 +573,20 @@ struct CalculatorViewModelTests {
         vm.appendDigit("1"); vm.appendDigit("0"); vm.appendDigit("1"); vm.appendDigit("."); vm.appendDigit("3")
         vm.commitWeight()
         #expect(vm.targetWeight == 101.3)
+    }
+
+    @Test func precisionLockRoundingProducesNoSpuriousDelta() {
+        let settings = freshSettings()
+        settings.isPro = true
+        settings.unit = .kg
+        settings.decimalPrecisionLockEnabled = true
+        let vm = CalculatorViewModel(settings: settings)
+        vm.selectedBar = .olympic20kg
+        // 62 is off the 2.5 kg grid (standard plates only) and rounds to 62.5 —
+        // loadWeight() is an explicit action and must never show a delta banner,
+        // regardless of whether the lock's rounding changed the value.
+        vm.loadWeight(62)
+        #expect(vm.lastDelta.isEmpty)
     }
 
 }

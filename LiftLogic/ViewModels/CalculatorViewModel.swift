@@ -168,22 +168,24 @@ final class CalculatorViewModel {
         let step = smallestEnabledPlate * 2
         let newValue = min(targetWeight + step, maxInputWeight)
         inputString = newValue.weightStringPrecise
-        committedResult = plateResult   // advance baseline — user is loading this
-        commitWeight()
+        commitWeight(suppressDelta: true)   // explicit action — user is loading this, no delta banner
     }
 
     func decrement() {
         let step = smallestEnabledPlate * 2
         let newValue = max(0, targetWeight - step)
         inputString = newValue == 0 ? "" : newValue.weightStringPrecise
-        committedResult = newValue == 0 ? nil : plateResult
-        commitWeight()
+        if newValue == 0 {
+            committedResult = nil
+            lastDelta = []
+        } else {
+            commitWeight(suppressDelta: true)
+        }
     }
 
     func loadWeight(_ value: Double) {
         inputString = min(value, maxInputWeight).weightStringPrecise
-        committedResult = plateResult   // chip tap = "this is what I'm loading"
-        commitWeight()
+        commitWeight(suppressDelta: true)   // chip tap = "this is what I'm loading", no delta banner
     }
 
     /// Increments each time commitWeight() fires — used by CalcModeView to
@@ -192,7 +194,7 @@ final class CalculatorViewModel {
 
     /// Captures the current delta into lastDelta, then advances committedResult
     /// to the current weight. Called by the 1.2 s debounce and explicit actions.
-    func commitWeight() {
+    func commitWeight(suppressDelta: Bool = false) {
         if suppressNextCommit { suppressNextCommit = false; return }
         guard targetWeight >= resolvedBarWeight, targetWeight > 0 else { return }
         applyDecimalPrecisionLockIfNeeded()
@@ -201,7 +203,7 @@ final class CalculatorViewModel {
             settings.recordHistory(weight: targetWeight, barType: selectedBar, collarType: collarType, unit: settings.unit, isSingleSided: isSingleSided)
         }
         settings.successfulCalculationCount += 1
-        lastDelta = plateDelta      // snapshot diff before advancing baseline
+        lastDelta = suppressDelta ? [] : plateDelta   // snapshot diff before advancing baseline (unless caller wants it suppressed)
         committedResult = plateResult   // always advance — keeps baseline current
         commitRevision += 1
     }
@@ -213,7 +215,7 @@ final class CalculatorViewModel {
     /// than a hardcoded constant, so it stays correct whether the user has only
     /// standard plates enabled or has turned on kg micro-loading.
     private func applyDecimalPrecisionLockIfNeeded() {
-        guard settings.decimalPrecisionLockEnabled, settings.unit == .kg else { return }
+        guard settings.decimalPrecisionLockEnabled, settings.isPro, settings.unit == .kg else { return }
         let granularity = smallestEnabledPlate * 2
         guard granularity > 0 else { return }
         let rounded = (targetWeight / granularity).rounded() * granularity
