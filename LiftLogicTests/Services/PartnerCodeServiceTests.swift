@@ -12,7 +12,7 @@ struct PartnerCodeServiceTests {
         let decoded = PartnerCodeService.decode(encoded!)
         #expect(decoded?.weight == 225)
         #expect(decoded?.barType == .olympic45lb)
-        #expect(decoded?.collarType == .none)
+        #expect(decoded?.collarType == CollarType.none)
         #expect(decoded?.unit == .lbs)
         #expect(decoded?.isSingleSided == false)
     }
