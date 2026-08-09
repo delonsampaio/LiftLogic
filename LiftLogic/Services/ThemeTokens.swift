@@ -69,3 +69,27 @@ enum ThemeTokens {
     static let readoutSubFont = Font.system(size: 16, weight: .medium)
     static let numpadFont     = Font.system(size: 28, weight: .semibold, design: .rounded)
 }
+
+enum AccentColorOption: String, CaseIterable, Identifiable {
+    case orange, blue, teal, pink
+
+    var id: String { rawValue }
+
+    var color: Color {
+        switch self {
+        case .orange: return ThemeTokens.accent
+        case .blue:   return Color(red: 0.20, green: 0.55, blue: 0.95)
+        case .teal:   return Color(red: 0.10, green: 0.75, blue: 0.70)
+        case .pink:   return Color(red: 0.95, green: 0.30, blue: 0.55)
+        }
+    }
+
+    var displayName: String {
+        switch self {
+        case .orange: return "Orange"
+        case .blue:   return "Blue"
+        case .teal:   return "Teal"
+        case .pink:   return "Pink"
+        }
+    }
+}
