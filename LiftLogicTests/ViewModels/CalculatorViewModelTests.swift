@@ -610,4 +610,46 @@ struct CalculatorViewModelTests {
         #expect(vm.lastDelta.isEmpty)
     }
 
+    // MARK: — RPE-adjusted 1RM (#61)
+
+    @Test func oneRMRPEDefaultsToTen() {
+        let vm = CalculatorViewModel(settings: freshSettings())
+        #expect(vm.oneRMRPE == 10.0)
+    }
+
+    @Test func rpeAdjustedOneRMMatchesTableLookup() {
+        let vm = CalculatorViewModel(settings: freshSettings())
+        vm.appendDigit("1")
+        vm.appendDigit("0")
+        vm.appendDigit("0")   // targetWeight = 100
+        vm.oneRMReps = 5
+        vm.oneRMRPE = 8.0
+        let expected = 100.0 / (81.1 / 100)
+        #expect(abs(vm.rpeAdjustedOneRM! - expected) < 0.001)
+    }
+
+    @Test func rpeAdjustedOneRMNilAboveTwelveReps() {
+        let vm = CalculatorViewModel(settings: freshSettings())
+        vm.appendDigit("1")
+        vm.appendDigit("0")
+        vm.appendDigit("0")
+        vm.oneRMReps = 13
+        vm.oneRMRPE = 10.0
+        #expect(vm.rpeAdjustedOneRM == nil)
+    }
+
+    @Test func oneRMResultUnaffectedByOneRMRPE() {
+        let vm = CalculatorViewModel(settings: freshSettings())
+        vm.appendDigit("1")
+        vm.appendDigit("0")
+        vm.appendDigit("0")
+        vm.oneRMReps = 5
+        vm.oneRMRPE = 10.0
+        let resultAtRPE10 = vm.oneRMResult
+        vm.oneRMRPE = 6.0
+        let resultAtRPE6 = vm.oneRMResult
+        #expect(resultAtRPE10.epley == resultAtRPE6.epley)
+        #expect(resultAtRPE10.brzycki == resultAtRPE6.brzycki)
+    }
+
 }

@@ -10,6 +10,7 @@ final class CalculatorViewModel {
     var isSingleSided: Bool = false
     var reversePlateStack: [LoadedPlate] = []
     var oneRMReps: Int = 5
+    var oneRMRPE: Double = 10.0
     private let settings: AppSettings
 
     init(settings: AppSettings) {
@@ -58,6 +59,11 @@ final class CalculatorViewModel {
 
     var oneRMResult: OneRMResult {
         OneRMEngine.calculate(weight: targetWeight, reps: oneRMReps)
+    }
+
+    var rpeAdjustedOneRM: Double? {
+        guard let percent = OneRMEngine.percentOf1RM(reps: oneRMReps, rpe: oneRMRPE) else { return nil }
+        return targetWeight / (percent / 100)
     }
 
     func relativeStrengthResult(bodyweightKg: Double, sex: Sex, liftedKg: Double) -> RelativeStrengthResult {
