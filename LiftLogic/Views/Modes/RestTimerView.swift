@@ -67,7 +67,7 @@ struct RestTimerView: View {
     private func presetChip(seconds: Int, label: String, name: String?) -> some View {
         let isActive = timer.state != .idle && timer.selectedPreset == seconds && seconds > 0
         Button {
-            timer.start(seconds: seconds)
+            timer.start(seconds: seconds, accentColorOption: settings.accentColorOption.rawValue)
         } label: {
             Text(label)
                 .font(sizeClass == .regular ? .subheadline.weight(.semibold) : .footnote.weight(.semibold))

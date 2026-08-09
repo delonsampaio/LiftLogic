@@ -17,13 +17,13 @@ final class TimerService {
     private var task: Task<Void, Never>?
     private var activity: Activity<RestTimerAttributes>?
 
-    func start(seconds: Int) {
+    func start(seconds: Int, accentColorOption: String) {
         stop()
         selectedPreset = seconds
         remainingSeconds = seconds
         state = .running
         startCountdown()
-        Task { await startLiveActivity(totalSeconds: seconds) }
+        Task { await startLiveActivity(totalSeconds: seconds, accentColorOption: accentColorOption) }
     }
 
     /// Reattaches to an existing Live Activity if one survived from a previous
@@ -122,7 +122,7 @@ final class TimerService {
 
     // MARK: — Live Activity
 
-    private func startLiveActivity(totalSeconds: Int) async {
+    private func startLiveActivity(totalSeconds: Int, accentColorOption: String) async {
         // Sweep any leftover activities first — order matters: must complete
         // before we request the new one, otherwise the sweep would kill it.
         for orphan in Activity<RestTimerAttributes>.activities {
@@ -133,7 +133,7 @@ final class TimerService {
             Logger.timer.info("Live Activities disabled by user")
             return
         }
-        let attributes = RestTimerAttributes(totalSeconds: totalSeconds)
+        let attributes = RestTimerAttributes(totalSeconds: totalSeconds, accentColorOption: accentColorOption)
         let state = RestTimerAttributes.ContentState(
             endDate: Date().addingTimeInterval(TimeInterval(totalSeconds)),
             isPaused: false,

@@ -16,7 +16,7 @@ final class AppSettings {
     var accentColorOption: AccentColorOption {
         didSet { UserDefaults.standard.set(accentColorOption.rawValue, forKey: "accentColorOption") }
     }
-    var accentColor: Color { accentColorOption.color }
+    var accentColor: Color { isPro ? accentColorOption.color : ThemeTokens.accent }
     var customBarWeight: Double {
         didSet { UserDefaults.standard.set(customBarWeight, forKey: "customBarWeight") }
     }

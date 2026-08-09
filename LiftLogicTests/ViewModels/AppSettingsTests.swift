@@ -282,8 +282,17 @@ struct AppSettingsTests {
 
     @Test func accentColorReflectsAccentColorOption() {
         let s = freshSettings()
+        s.isPro = true
         s.accentColorOption = .teal
         #expect(s.accentColor == AccentColorOption.teal.color)
+    }
+
+    @Test func accentColorFallsBackToDefaultWhenNotPro() {
+        let s = freshSettings()
+        s.isPro = true
+        s.accentColorOption = .teal
+        s.isPro = false
+        #expect(s.accentColor == ThemeTokens.accent)
     }
 
     @Test func accentColorOptionPersistsAcrossInstances() {

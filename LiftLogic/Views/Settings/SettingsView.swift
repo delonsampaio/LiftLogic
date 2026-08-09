@@ -194,6 +194,9 @@ struct SettingsView: View {
                                         }
                                     }
                                     .onTapGesture { settings.accentColorOption = option }
+                                    .accessibilityElement()
+                                    .accessibilityLabel(option.displayName)
+                                    .accessibilityAddTraits(settings.accentColorOption == option ? [.isButton, .isSelected] : .isButton)
                             }
                         }
                         .padding(.vertical, 4)

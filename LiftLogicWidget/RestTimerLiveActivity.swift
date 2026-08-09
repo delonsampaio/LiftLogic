@@ -2,8 +2,17 @@ import ActivityKit
 import WidgetKit
 import SwiftUI
 
-// LiftLogic accent — duplicated here so the widget target doesn't need to share ThemeTokens.
-private let accentOrange = Color(red: 1.0, green: 0.42, blue: 0.21)
+// LiftLogic accent palette — duplicated here so the widget target doesn't need to share
+// ThemeTokens.swift/AccentColorOption. Keep these 4 RGB values in sync with AccentColorOption's
+// cases in LiftLogic/Services/ThemeTokens.swift if that palette ever changes.
+private func accentColor(for rawValue: String) -> Color {
+    switch rawValue {
+    case "blue": return Color(red: 0.20, green: 0.55, blue: 0.95)
+    case "teal": return Color(red: 0.10, green: 0.75, blue: 0.70)
+    case "pink": return Color(red: 0.95, green: 0.30, blue: 0.55)
+    default:     return Color(red: 1.0, green: 0.42, blue: 0.21)  // "orange" and any unknown value
+    }
+}
 
 struct RestTimerLiveActivity: Widget {
     var body: some WidgetConfiguration {
@@ -12,7 +21,7 @@ struct RestTimerLiveActivity: Widget {
             HStack(spacing: 14) {
                 Image(systemName: "timer")
                     .font(.title2.weight(.semibold))
-                    .foregroundStyle(accentOrange)
+                    .foregroundStyle(accentColor(for: context.attributes.accentColorOption))
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Rest Timer")
                         .font(.caption.weight(.semibold))
@@ -36,7 +45,7 @@ struct RestTimerLiveActivity: Widget {
                 DynamicIslandExpandedRegion(.leading) {
                     Image(systemName: "timer")
                         .font(.title2)
-                        .foregroundStyle(accentOrange)
+                        .foregroundStyle(accentColor(for: context.attributes.accentColorOption))
                 }
                 DynamicIslandExpandedRegion(.trailing) {
                     timerText(context: context)
@@ -54,7 +63,7 @@ struct RestTimerLiveActivity: Widget {
                 }
             } compactLeading: {
                 Image(systemName: "timer")
-                    .foregroundStyle(accentOrange)
+                    .foregroundStyle(accentColor(for: context.attributes.accentColorOption))
             } compactTrailing: {
                 timerText(context: context)
                     .font(.system(size: 14, weight: .bold, design: .monospaced))
@@ -62,9 +71,9 @@ struct RestTimerLiveActivity: Widget {
                     .frame(maxWidth: 50)
             } minimal: {
                 Image(systemName: "timer")
-                    .foregroundStyle(accentOrange)
+                    .foregroundStyle(accentColor(for: context.attributes.accentColorOption))
             }
-            .keylineTint(accentOrange)
+            .keylineTint(accentColor(for: context.attributes.accentColorOption))
         }
     }
 
