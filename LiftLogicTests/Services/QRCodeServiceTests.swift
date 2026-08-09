@@ -11,7 +11,7 @@ struct QRCodeServiceTests {
     @Test func generateImageReturnsNonNilForTypicalPayloadLength() {
         let encoded = PartnerCodeService.encode(
             weight: 225, barType: .olympic45lb, collarType: .none,
-            unit: .lbs, isSingleSided: false
+            unit: .lbs, isSingleSided: false, customBarWeight: nil
         )
         #expect(encoded != nil)
         let image = QRCodeService.generateImage(from: encoded!)

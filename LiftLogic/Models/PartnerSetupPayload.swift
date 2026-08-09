@@ -8,4 +8,5 @@ struct PartnerSetupPayload: Codable, Equatable {
     let collarType: CollarType
     let unit: WeightUnit
     let isSingleSided: Bool
+    let customBarWeight: Double?
 }

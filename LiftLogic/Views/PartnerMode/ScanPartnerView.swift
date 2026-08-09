@@ -13,20 +13,16 @@ struct ScanPartnerView: View {
     /// (LiftingPartnerView, via MainView) closes the ENTIRE Lifting Partner
     /// flow here — not just this screen — since the user's goal is to see
     /// their newly-loaded weight on the main CALC screen immediately, and
-    /// this view sits two presentation layers deep (fullScreenCover > pushed
+    /// this view sits three presentation layers deep (fullScreenCover > pushed
     /// NavigationLink > sheet), where a plain dismiss() would only pop one.
     let onSetupLoaded: () -> Void
 
     @State private var cameraStatus: CameraPermissionStatus = CameraPermissionService.currentStatus()
     @State private var scannedItem: ScannedSetupRef?
 
-    private var scannerAvailable: Bool {
-        DataScannerViewController.isSupported && DataScannerViewController.isAvailable
-    }
-
     var body: some View {
         Group {
-            if !scannerAvailable {
+            if !DataScannerViewController.isSupported {
                 Text("Live scanning isn't available on this device.")
                     .font(.subheadline)
                     .foregroundStyle(ThemeTokens.textMuted)
@@ -34,12 +30,19 @@ struct ScanPartnerView: View {
             } else {
                 switch cameraStatus {
                 case .authorized:
-                    QRScannerView { rawString in
-                        if let payload = PartnerCodeService.decode(rawString) {
-                            scannedItem = ScannedSetupRef(payload: payload)
+                    if DataScannerViewController.isAvailable {
+                        QRScannerView { rawString in
+                            if let payload = PartnerCodeService.decode(rawString) {
+                                scannedItem = ScannedSetupRef(payload: payload)
+                            }
                         }
+                        .ignoresSafeArea()
+                    } else {
+                        Text("Live scanning isn't available right now.")
+                            .font(.subheadline)
+                            .foregroundStyle(ThemeTokens.textMuted)
+                            .padding()
                     }
-                    .ignoresSafeArea()
                 case .denied:
                     deniedMessage
                 case .notDetermined:
@@ -56,6 +59,7 @@ struct ScanPartnerView: View {
         .sheet(item: $scannedItem) { ref in
             PartnerScanConfirmationView(payload: ref.payload) {
                 apply(ref.payload)
+                scannedItem = nil
                 onSetupLoaded()
             }
         }
@@ -63,6 +67,9 @@ struct ScanPartnerView: View {
 
     private func apply(_ payload: PartnerSetupPayload) {
         vm.selectedBar = payload.barType
+        if payload.barType == .custom, let customBarWeight = payload.customBarWeight {
+            settings.customBarWeight = customBarWeight
+        }
         vm.collarType = payload.collarType
         vm.isSingleSided = payload.isSingleSided
         settings.unit = payload.unit

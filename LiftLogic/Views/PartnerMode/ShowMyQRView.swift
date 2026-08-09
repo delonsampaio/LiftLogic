@@ -10,7 +10,8 @@ struct ShowMyQRView: View {
             barType: vm.selectedBar,
             collarType: vm.collarType,
             unit: settings.unit,
-            isSingleSided: vm.isSingleSided
+            isSingleSided: vm.isSingleSided,
+            customBarWeight: settings.customBarWeight
         ) else { return nil }
         return QRCodeService.generateImage(from: encoded)
     }

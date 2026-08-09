@@ -6,7 +6,7 @@ struct PartnerCodeServiceTests {
     @Test func encodeThenDecodeRoundTrips() {
         let encoded = PartnerCodeService.encode(
             weight: 225, barType: .olympic45lb, collarType: .none,
-            unit: .lbs, isSingleSided: false
+            unit: .lbs, isSingleSided: false, customBarWeight: nil
         )
         #expect(encoded != nil)
         let decoded = PartnerCodeService.decode(encoded!)
@@ -20,7 +20,7 @@ struct PartnerCodeServiceTests {
     @Test func encodeThenDecodeRoundTripsSingleSidedKg() {
         let encoded = PartnerCodeService.encode(
             weight: 100, barType: .olympic20kg, collarType: .competition,
-            unit: .kg, isSingleSided: true
+            unit: .kg, isSingleSided: true, customBarWeight: nil
         )
         let decoded = PartnerCodeService.decode(encoded!)
         #expect(decoded?.weight == 100)
@@ -28,6 +28,17 @@ struct PartnerCodeServiceTests {
         #expect(decoded?.collarType == .competition)
         #expect(decoded?.unit == .kg)
         #expect(decoded?.isSingleSided == true)
+    }
+
+    @Test func encodeThenDecodeRoundTripsCustomBarWeight() {
+        let encoded = PartnerCodeService.encode(
+            weight: 135, barType: .custom, collarType: .none,
+            unit: .lbs, isSingleSided: false, customBarWeight: 35
+        )
+        #expect(encoded != nil)
+        let decoded = PartnerCodeService.decode(encoded!)
+        #expect(decoded?.barType == .custom)
+        #expect(decoded?.customBarWeight == 35)
     }
 
     @Test func decodeRejectsNonJSONString() {
@@ -42,5 +53,18 @@ struct PartnerCodeServiceTests {
     @Test func decodeRejectsUnsupportedVersion() {
         let futureVersion = "{\"app\":\"liftlogic\",\"version\":99,\"weight\":225,\"barType\":\"olympic45lb\",\"collarType\":\"none\",\"unit\":\"lbs\",\"isSingleSided\":false}"
         #expect(PartnerCodeService.decode(futureVersion) == nil)
+    }
+
+    @Test func decodeRejectsAbsurdWeight() {
+        let crafted = "{\"app\":\"liftlogic\",\"version\":1,\"weight\":1e30,\"barType\":\"olympic45lb\",\"collarType\":\"none\",\"unit\":\"lbs\",\"isSingleSided\":false}"
+        #expect(PartnerCodeService.decode(crafted) == nil)
+    }
+
+    @Test func decodeAcceptsWeightAtCapBoundary() {
+        let atCapLbs = "{\"app\":\"liftlogic\",\"version\":1,\"weight\":2000,\"barType\":\"olympic45lb\",\"collarType\":\"none\",\"unit\":\"lbs\",\"isSingleSided\":false}"
+        #expect(PartnerCodeService.decode(atCapLbs)?.weight == 2000)
+
+        let atCapKg = "{\"app\":\"liftlogic\",\"version\":1,\"weight\":907,\"barType\":\"olympic45lb\",\"collarType\":\"none\",\"unit\":\"kg\",\"isSingleSided\":false}"
+        #expect(PartnerCodeService.decode(atCapKg)?.weight == 907)
     }
 }
