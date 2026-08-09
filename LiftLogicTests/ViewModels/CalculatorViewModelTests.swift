@@ -551,16 +551,37 @@ struct CalculatorViewModelTests {
         #expect(vm.targetWeight == 100.5)
     }
 
-    @Test func precisionLockHasNoEffectInLbsMode() {
+    @Test func precisionLockRoundsInLbsModeToo() {
         let settings = freshSettings()
         settings.isPro = true
         settings.unit = .lbs
         settings.decimalPrecisionLockEnabled = true
         let vm = CalculatorViewModel(settings: settings)
         vm.selectedBar = .olympic45lb
+        // Standard lbs plates only → smallest enabled lbs plate is 2.5 lb → granularity 5 lb.
+        // 201.3 / 5 = 40.26 → rounds to 40 → 200.0 (verified by direct calculation).
         vm.appendDigit("2"); vm.appendDigit("0"); vm.appendDigit("1"); vm.appendDigit("."); vm.appendDigit("3")
         vm.commitWeight()
-        #expect(vm.targetWeight == 201.3)
+        #expect(vm.targetWeight == 200.0)
+    }
+
+    @Test func precisionLockUsesFinerGranularityInLbsWithMicroPlatesEnabled() {
+        let settings = freshSettings()
+        settings.isPro = true
+        settings.unit = .lbs
+        settings.decimalPrecisionLockEnabled = true
+        // Enable the 0.25 lb micro plate so smallestEnabledPlate becomes 0.25 → granularity 0.5.
+        settings.lbsInventory = settings.lbsInventory.map { item in
+            var updated = item
+            if item.weight == 0.25 { updated.isEnabled = true }
+            return updated
+        }
+        let vm = CalculatorViewModel(settings: settings)
+        vm.selectedBar = .olympic45lb
+        // 200.3 / 0.5 = 400.6 → rounds to 401 → 200.5 (verified by direct calculation).
+        vm.appendDigit("2"); vm.appendDigit("0"); vm.appendDigit("0"); vm.appendDigit("."); vm.appendDigit("3")
+        vm.commitWeight()
+        #expect(vm.targetWeight == 200.5)
     }
 
     @Test func precisionLockHasNoEffectWhenDisabled() {

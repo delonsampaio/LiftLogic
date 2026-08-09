@@ -209,13 +209,13 @@ final class CalculatorViewModel {
     }
 
     /// Snaps `inputString` to the nearest weight achievable with the currently-enabled
-    /// plates, when the Pro Decimal Precision Lock is on and the unit is kg. No-op in
-    /// lbs mode or when the lock is off. Deliberately reuses the same granularity
-    /// formula (`smallestEnabledPlate * 2`) as the +/- quick-increment step, rather
-    /// than a hardcoded constant, so it stays correct whether the user has only
-    /// standard plates enabled or has turned on kg micro-loading.
+    /// plates, when the Pro Decimal Precision Lock is on. No-op when the lock is off.
+    /// Works in both lbs and kg — deliberately reuses the same granularity formula
+    /// (`smallestEnabledPlate * 2`) as the +/- quick-increment step, rather than a
+    /// hardcoded constant, so it stays correct whether the user has only standard
+    /// plates enabled or has turned on micro-loading.
     private func applyDecimalPrecisionLockIfNeeded() {
-        guard settings.decimalPrecisionLockEnabled, settings.isPro, settings.unit == .kg else { return }
+        guard settings.decimalPrecisionLockEnabled, settings.isPro else { return }
         let granularity = smallestEnabledPlate * 2
         guard granularity > 0 else { return }
         let rounded = (targetWeight / granularity).rounded() * granularity

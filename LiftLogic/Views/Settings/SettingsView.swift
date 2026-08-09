@@ -172,7 +172,7 @@ struct SettingsView: View {
                     } header: {
                         Text("Decimal Precision Lock")
                     } footer: {
-                        Text("When enabled, kg weights round to the nearest increment loadable with your enabled plates — no more targets that aren't physically achievable. Has no effect in lbs mode.")
+                        Text("When enabled, weights round to the nearest increment loadable with your enabled plates — no more targets that aren't physically achievable.")
                             .foregroundStyle(ThemeTokens.textMuted)
                     }
                 }
