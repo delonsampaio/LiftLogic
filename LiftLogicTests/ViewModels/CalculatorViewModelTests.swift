@@ -514,4 +514,61 @@ struct CalculatorViewModelTests {
         #expect(vm.warmupSets.map(\.percentage) == [40, 50])
     }
 
+    // MARK: — Decimal precision lock (#60)
+
+    @Test func precisionLockRoundsToNearestGranularityWithStandardPlatesOnly() {
+        let settings = freshSettings()
+        settings.unit = .kg
+        settings.decimalPrecisionLockEnabled = true
+        let vm = CalculatorViewModel(settings: settings)
+        vm.selectedBar = .olympic20kg
+        // Standard kg plates only (no micro-loading enabled) → smallest enabled kg plate
+        // is 1.25 kg → granularity 2.5 kg. 100.6 / 2.5 = 40.24 → rounds to 40 → 100.0
+        // (verified by direct calculation — do not "fix" this test to match different
+        // arithmetic without recomputing it yourself first).
+        vm.appendDigit("1"); vm.appendDigit("0"); vm.appendDigit("0"); vm.appendDigit("."); vm.appendDigit("6")
+        vm.commitWeight()
+        #expect(vm.targetWeight == 100.0)
+    }
+
+    @Test func precisionLockUsesFinerGranularityWithMicroPlatesEnabled() {
+        let settings = freshSettings()
+        settings.unit = .kg
+        settings.decimalPrecisionLockEnabled = true
+        // Enable the 0.25 kg micro plate so smallestEnabledPlate becomes 0.25 → granularity 0.5.
+        settings.kgInventory = settings.kgInventory.map { item in
+            var updated = item
+            if item.weight == 0.25 { updated.isEnabled = true }
+            return updated
+        }
+        let vm = CalculatorViewModel(settings: settings)
+        vm.selectedBar = .olympic20kg
+        // 100.3 / 0.5 = 200.6 → rounds to 201 → 100.5 (verified by direct calculation).
+        vm.appendDigit("1"); vm.appendDigit("0"); vm.appendDigit("0"); vm.appendDigit("."); vm.appendDigit("3")
+        vm.commitWeight()
+        #expect(vm.targetWeight == 100.5)
+    }
+
+    @Test func precisionLockHasNoEffectInLbsMode() {
+        let settings = freshSettings()
+        settings.unit = .lbs
+        settings.decimalPrecisionLockEnabled = true
+        let vm = CalculatorViewModel(settings: settings)
+        vm.selectedBar = .olympic45lb
+        vm.appendDigit("2"); vm.appendDigit("0"); vm.appendDigit("1"); vm.appendDigit("."); vm.appendDigit("3")
+        vm.commitWeight()
+        #expect(vm.targetWeight == 201.3)
+    }
+
+    @Test func precisionLockHasNoEffectWhenDisabled() {
+        let settings = freshSettings()
+        settings.unit = .kg
+        settings.decimalPrecisionLockEnabled = false
+        let vm = CalculatorViewModel(settings: settings)
+        vm.selectedBar = .olympic20kg
+        vm.appendDigit("1"); vm.appendDigit("0"); vm.appendDigit("1"); vm.appendDigit("."); vm.appendDigit("3")
+        vm.commitWeight()
+        #expect(vm.targetWeight == 101.3)
+    }
+
 }

@@ -89,6 +89,12 @@ final class AppSettings {
         didSet { UserDefaults.standard.set(deltaAutoDismissSeconds, forKey: "deltaAutoDismissSeconds") }
     }
 
+    /// Pro, kg-only: rounds committed weights to the nearest increment achievable with
+    /// the user's currently-enabled plates (see CalculatorViewModel.commitWeight()).
+    var decimalPrecisionLockEnabled: Bool {
+        didSet { UserDefaults.standard.set(decimalPrecisionLockEnabled, forKey: "decimalPrecisionLockEnabled") }
+    }
+
     init() {
         let ud = UserDefaults.standard
         let savedUnit = WeightUnit(rawValue: ud.string(forKey: "unit") ?? "") ?? .lbs
@@ -114,6 +120,7 @@ final class AppSettings {
             ?? WarmupEngine.percentages.map { WarmupPercentageStep(id: UUID(), percentage: $0) }
         deltaBannerEnabled = ud.object(forKey: "deltaBannerEnabled") as? Bool ?? true
         deltaAutoDismissSeconds = ud.integer(forKey: "deltaAutoDismissSeconds")  // 0 = off
+        decimalPrecisionLockEnabled = ud.bool(forKey: "decimalPrecisionLockEnabled")
         // Migrate the legacy single custom timer into one named preset on first run only.
         // If the presets key is present (even as []), the user has curated them — don't reseed.
         let legacyCustomTimerSeconds = ud.integer(forKey: "customTimerSeconds")

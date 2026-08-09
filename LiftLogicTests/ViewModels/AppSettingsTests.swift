@@ -257,4 +257,18 @@ struct AppSettingsTests {
         let reloaded = AppSettings()
         #expect(reloaded.sex == .female)
     }
+
+    // MARK: — Decimal precision lock (#60)
+
+    @Test func decimalPrecisionLockDefaultsToDisabled() {
+        let s = freshSettings()
+        #expect(s.decimalPrecisionLockEnabled == false)
+    }
+
+    @Test func decimalPrecisionLockPersistsAcrossRelaunch() {
+        let s = freshSettings()
+        s.decimalPrecisionLockEnabled = true
+        let reloaded = AppSettings()
+        #expect(reloaded.decimalPrecisionLockEnabled == true)
+    }
 }
