@@ -1,5 +1,6 @@
 import Foundation
 import Observation
+import SwiftUI
 
 @Observable
 final class AppSettings {
@@ -12,6 +13,10 @@ final class AppSettings {
     var defaultBar: BarType {
         didSet { UserDefaults.standard.set(defaultBar.rawValue, forKey: "defaultBar") }
     }
+    var accentColorOption: AccentColorOption {
+        didSet { UserDefaults.standard.set(accentColorOption.rawValue, forKey: "accentColorOption") }
+    }
+    var accentColor: Color { accentColorOption.color }
     var customBarWeight: Double {
         didSet { UserDefaults.standard.set(customBarWeight, forKey: "customBarWeight") }
     }
@@ -100,6 +105,7 @@ final class AppSettings {
         let savedUnit = WeightUnit(rawValue: ud.string(forKey: "unit") ?? "") ?? .lbs
         unit = savedUnit
         defaultBar = BarType(rawValue: ud.string(forKey: "defaultBar") ?? "") ?? .olympic45lb
+        accentColorOption = AccentColorOption(rawValue: ud.string(forKey: "accentColorOption") ?? "") ?? .orange
         customBarWeight = ud.double(forKey: "customBarWeight").nonZero ?? 45.0
         lbsInventory = AppSettings.mergedInventory(saved: loadInventory(key: "lbsInventoryJSON"),
                                                    defaults: AppSettings.defaultLbs)

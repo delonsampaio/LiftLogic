@@ -271,4 +271,25 @@ struct AppSettingsTests {
         let reloaded = AppSettings()
         #expect(reloaded.decimalPrecisionLockEnabled == true)
     }
+
+    // MARK: — Accent color (#69)
+
+    @Test func accentColorOptionDefaultsToOrange() {
+        let s = freshSettings()
+        #expect(s.accentColorOption == .orange)
+        #expect(s.accentColor == ThemeTokens.accent)
+    }
+
+    @Test func accentColorReflectsAccentColorOption() {
+        let s = freshSettings()
+        s.accentColorOption = .teal
+        #expect(s.accentColor == AccentColorOption.teal.color)
+    }
+
+    @Test func accentColorOptionPersistsAcrossInstances() {
+        let s1 = freshSettings()
+        s1.accentColorOption = .pink
+        let s2 = AppSettings()
+        #expect(s2.accentColorOption == .pink)
+    }
 }
