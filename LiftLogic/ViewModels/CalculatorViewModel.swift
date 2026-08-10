@@ -1,5 +1,6 @@
 import Foundation
 import Observation
+import WidgetKit
 
 @Observable
 final class CalculatorViewModel {
@@ -205,6 +206,8 @@ final class CalculatorViewModel {
         guard targetWeight >= resolvedBarWeight, targetWeight > 0 else { return }
         applyDecimalPrecisionLockIfNeeded()
         settings.addRecentWeight(targetWeight)
+        WidgetDataStore.recordLastUsedWeight(targetWeight, unit: settings.unit)
+        WidgetCenter.shared.reloadTimelines(ofKind: "LastWeightWidget")
         if settings.isPro {
             settings.recordHistory(weight: targetWeight, barType: selectedBar, collarType: collarType, unit: settings.unit, isSingleSided: isSingleSided)
         }

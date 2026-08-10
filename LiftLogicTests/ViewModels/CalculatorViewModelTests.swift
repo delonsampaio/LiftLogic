@@ -652,4 +652,18 @@ struct CalculatorViewModelTests {
         #expect(resultAtRPE10.brzycki == resultAtRPE6.brzycki)
     }
 
+    // MARK: — Widget data (#33)
+
+    @Test func commitWeightUpdatesWidgetDataStore() {
+        UserDefaults.standard.removePersistentDomain(forName: "group.com.delon.LiftLogic")
+        let vm = CalculatorViewModel(settings: freshSettings())
+        vm.appendDigit("2")
+        vm.appendDigit("2")
+        vm.appendDigit("5")
+        vm.commitWeight()
+        let result = WidgetDataStore.lastUsedWeight()
+        #expect(result?.weight == 225)
+        #expect(result?.unit == .lbs)
+    }
+
 }
