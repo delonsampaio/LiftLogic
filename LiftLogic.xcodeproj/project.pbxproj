@@ -59,6 +59,7 @@
 		14898A112FC5F4D0009A7629 /* LiftLogicWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = LiftLogicWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		14898A122FC5F4D0009A7629 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		14898A142FC5F4D0009A7629 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		149118FA302952540038180D /* LiftLogicWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = LiftLogicWidgetExtension.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -153,6 +154,7 @@
 		143A8F702FC12B7100A0D047 = {
 			isa = PBXGroup;
 			children = (
+				149118FA302952540038180D /* LiftLogicWidgetExtension.entitlements */,
 				143A8F7B2FC12B7100A0D047 /* LiftLogic */,
 				143A8F8B2FC12B7400A0D047 /* LiftLogicTests */,
 				143A8F952FC12B7400A0D047 /* LiftLogicUITests */,
@@ -695,6 +697,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = LiftLogicWidgetExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 4CD86DZ6WP;
@@ -725,6 +728,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = LiftLogicWidgetExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 4CD86DZ6WP;
