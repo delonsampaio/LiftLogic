@@ -43,12 +43,25 @@ final class AppSettings {
     var bodyWeight: Double {
         didSet { UserDefaults.standard.set(bodyWeight, forKey: "bodyWeight") }
     }
+    /// Reference 1RM set by tapping "Average" in 1RM mode — drives the % of 1RM safety cue in
+    /// CALC mode's readout. Like `bodyWeight`, this is a raw number with no unit tag: if the user
+    /// sets it in one unit and later switches units, the stored number is reinterpreted under the
+    /// new unit rather than converted. Matches `bodyWeight`'s existing behavior intentionally.
+    var savedOneRM: Double {
+        didSet { UserDefaults.standard.set(savedOneRM, forKey: "savedOneRM") }
+    }
     var sex: Sex? {
         didSet { UserDefaults.standard.set(sex?.rawValue, forKey: "sex") }
     }
     /// User's preferred custom rest timer duration in seconds. 0 = not yet set.
     var customTimerSeconds: Int {
         didSet { UserDefaults.standard.set(customTimerSeconds, forKey: "customTimerSeconds") }
+    }
+    /// Percent of `savedOneRM` that `weight` represents, or nil if the safety cue shouldn't show
+    /// (not Pro, no reference 1RM saved yet, or below the 85% threshold).
+    func percentOfSavedOneRM(for weight: Double) -> Int? {
+        guard isPro, savedOneRM > 0, weight >= savedOneRM * 0.85 else { return nil }
+        return Int((weight / savedOneRM * 100).rounded())
     }
     // Recent weights — stored per unit so lbs values never surface as kg (or vice versa).
     private var lbsRecentWeights: [Double] {
@@ -114,6 +127,7 @@ final class AppSettings {
         isPro = ud.bool(forKey: "isPro")
         successfulCalculationCount = ud.integer(forKey: "successfulCalculationCount")
         bodyWeight = ud.double(forKey: "bodyWeight")
+        savedOneRM = ud.double(forKey: "savedOneRM")
         sex = ud.string(forKey: "sex").flatMap(Sex.init(rawValue:))
         customTimerSeconds = ud.integer(forKey: "customTimerSeconds")
         // Migrate the pre-1.x single recent-weights list into the active unit's bucket.

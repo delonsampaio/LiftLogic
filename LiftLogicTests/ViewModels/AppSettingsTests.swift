@@ -301,4 +301,52 @@ struct AppSettingsTests {
         let s2 = AppSettings()
         #expect(s2.accentColorOption == .pink)
     }
+
+    // MARK: — Percent of 1RM (#86)
+
+    @Test func savedOneRMDefaultsToZero() {
+        let s = freshSettings()
+        #expect(s.savedOneRM == 0)
+    }
+
+    @Test func savedOneRMPersistsAcrossInstances() {
+        let s1 = freshSettings()
+        s1.savedOneRM = 315
+        let s2 = AppSettings()
+        #expect(s2.savedOneRM == 315)
+    }
+
+    @Test func percentOfSavedOneRMNilWhenNoneSaved() {
+        let s = freshSettings()
+        s.isPro = true
+        #expect(s.percentOfSavedOneRM(for: 300) == nil)
+    }
+
+    @Test func percentOfSavedOneRMNilWhenNotPro() {
+        let s = freshSettings()
+        s.savedOneRM = 315
+        s.isPro = false
+        #expect(s.percentOfSavedOneRM(for: 300) == nil)
+    }
+
+    @Test func percentOfSavedOneRMNilBelowThreshold() {
+        let s = freshSettings()
+        s.isPro = true
+        s.savedOneRM = 315
+        #expect(s.percentOfSavedOneRM(for: 267) == nil)  // 267/315 = 84.8%, just under 85%
+    }
+
+    @Test func percentOfSavedOneRMAtThreshold() {
+        let s = freshSettings()
+        s.isPro = true
+        s.savedOneRM = 100
+        #expect(s.percentOfSavedOneRM(for: 85) == 85)  // exactly 85% — must be included, not excluded
+    }
+
+    @Test func percentOfSavedOneRMAboveThreshold() {
+        let s = freshSettings()
+        s.isPro = true
+        s.savedOneRM = 315
+        #expect(s.percentOfSavedOneRM(for: 300) == 95)  // 300/315 = 95.2%, rounds to 95
+    }
 }
