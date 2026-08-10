@@ -83,6 +83,7 @@
 				Models/RestTimerAttributes.swift,
 				Models/WeightUnit.swift,
 				Services/WidgetDataStore.swift,
+				Helpers/Formatters.swift,
 			);
 			target = 14898A102FC5F4D0009A7629 /* LiftLogicWidgetExtension */;
 		};

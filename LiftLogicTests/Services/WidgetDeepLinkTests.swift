@@ -28,4 +28,14 @@ struct WidgetDeepLinkTests {
         let url = URL(string: "liftlogic://calc?weight=abc&unit=lbs")!
         #expect(WidgetDeepLink.parseCalcWeight(from: url) == nil)
     }
+
+    @Test func rejectsNonFiniteWeight() {
+        let url = URL(string: "liftlogic://calc?weight=nan&unit=lbs")!
+        #expect(WidgetDeepLink.parseCalcWeight(from: url) == nil)
+    }
+
+    @Test func rejectsNonPositiveWeight() {
+        let url = URL(string: "liftlogic://calc?weight=-500&unit=lbs")!
+        #expect(WidgetDeepLink.parseCalcWeight(from: url) == nil)
+    }
 }

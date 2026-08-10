@@ -34,10 +34,10 @@ struct LastWeightWidgetView: View {
 
     var body: some View {
         if let weight = entry.weight, let unit = entry.unit {
-            content(weightText: "\(Int(weight)) \(unit.symbol)")
+            content(weightText: "\(weight.weightStringPrecise) \(unit.symbol)")
                 .widgetURL(URL(string: "liftlogic://calc?weight=\(weight)&unit=\(unit.rawValue)"))
         } else {
-            content(weightText: "Open LiftLogic\nto get started")
+            content(weightText: family == .accessoryInline ? "Open LiftLogic" : "Open LiftLogic\nto get started")
         }
     }
 
@@ -60,9 +60,13 @@ struct LastWeightWidgetView: View {
                     .foregroundStyle(.secondary)
                 Text(weightText)
                     .font(.system(size: 28, weight: .bold, design: .monospaced))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.6)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
-            .padding()
+            .containerBackground(for: .widget) {
+                Color("WidgetBackground")
+            }
         }
     }
 }

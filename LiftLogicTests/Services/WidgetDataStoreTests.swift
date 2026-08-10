@@ -2,8 +2,12 @@ import Testing
 import Foundation
 @testable import LiftLogic
 
-// Serialized: all tests share the App Group UserDefaults suite as global mutable state, so
-// Swift Testing's default parallel execution across test methods would race between them.
+// @MainActor + .serialized: this suite mutates the App Group UserDefaults suite that
+// CalculatorViewModel.commitWeight() also writes to on every commit. CalculatorViewModelTests
+// (which calls commitWeight() dozens of times) is @MainActor too, so putting this suite on the
+// same actor serializes it against that suite instead of racing on a different executor —
+// .serialized alone only orders tests within this one suite, it doesn't prevent cross-suite races.
+@MainActor
 @Suite("WidgetDataStore", .serialized)
 struct WidgetDataStoreTests {
     private func freshStore() {

@@ -196,6 +196,11 @@ struct MainView: View {
         }
         .onOpenURL { url in
             guard let weight = WidgetDeepLink.parseCalcWeight(from: url) else { return }
+            showPaywall = false
+            showSettings = false
+            showSavedSetups = false
+            showLiftingPartner = false
+            showTimer = false
             vm.loadWeight(weight)
             withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
                 vm.currentMode = .calc
