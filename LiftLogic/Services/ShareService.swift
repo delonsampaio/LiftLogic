@@ -20,6 +20,19 @@ struct ShareService {
             .rootViewController?
             .present(ac, animated: true)
     }
+
+    static func exportSavedSetups(_ setups: [SavedSetup]) {
+        guard let data = try? JSONEncoder().encode(setups) else { return }
+        let url = FileManager.default.temporaryDirectory.appendingPathComponent("LiftLogic Saved Setups.json")
+        guard (try? data.write(to: url)) != nil else { return }
+        let ac = UIActivityViewController(activityItems: [url], applicationActivities: nil)
+        UIApplication.shared.connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .flatMap(\.windows)
+            .first { $0.isKeyWindow }?
+            .rootViewController?
+            .present(ac, animated: true)
+    }
 }
 
 struct ShareCardView: View {
