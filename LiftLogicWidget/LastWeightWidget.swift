@@ -34,34 +34,41 @@ struct LastWeightWidgetView: View {
 
     var body: some View {
         if let weight = entry.weight, let unit = entry.unit {
-            content(weightText: "\(weight.weightStringPrecise) \(unit.symbol)")
+            content(text: "\(weight.weightStringPrecise) \(unit.symbol)", isWeight: true)
                 .widgetURL(URL(string: "liftlogic://calc?weight=\(weight)&unit=\(unit.rawValue)"))
         } else {
-            content(weightText: family == .accessoryInline ? "Open LiftLogic" : "Open LiftLogic\nto get started")
+            content(text: family == .accessoryInline ? "Open LiftLogic" : "Open LiftLogic to get started", isWeight: false)
         }
     }
 
+    /// `isWeight` distinguishes the short, single-line weight readout (which shrinks-to-fit
+    /// rather than wrapping) from the longer empty-state message (which needs to wrap, not
+    /// clamp to one line). WidgetKit requires `.containerBackground(for: .widget)` to be
+    /// adopted for every rendered family, including Lock Screen accessory families — the
+    /// system ignores the actual color there, but the call itself is still required.
     @ViewBuilder
-    private func content(weightText: String) -> some View {
+    private func content(text: String, isWeight: Bool) -> some View {
         switch family {
         case .accessoryInline:
-            Text(weightText)
+            Text(text)
+                .containerBackground(for: .widget) { Color.clear }
         case .accessoryRectangular:
             VStack(alignment: .leading, spacing: 2) {
                 Text("Last Weight")
                     .font(.caption2)
-                Text(weightText)
-                    .font(.headline)
+                Text(text)
+                    .font(isWeight ? .headline : .caption2)
             }
+            .containerBackground(for: .widget) { Color.clear }
         default: // .systemSmall
             VStack(alignment: .leading, spacing: 4) {
                 Text("Last Weight")
                     .font(.caption)
                     .foregroundStyle(.secondary)
-                Text(weightText)
-                    .font(.system(size: 28, weight: .bold, design: .monospaced))
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.6)
+                Text(text)
+                    .font(isWeight ? .system(size: 28, weight: .bold, design: .monospaced) : .caption)
+                    .lineLimit(isWeight ? 1 : 2)
+                    .minimumScaleFactor(isWeight ? 0.6 : 1.0)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
             .containerBackground(for: .widget) {
