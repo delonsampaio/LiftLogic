@@ -215,7 +215,7 @@ struct HelpView: View {
             )
             FAQRow(
                 question: "What are saved setups?",
-                answer: "Bookmark any bar configuration — weight, bar type, collar, unit — for one-tap recall. Tap the bookmark icon in the top toolbar to save or load a setup.",
+                answer: "Bookmark any bar configuration — weight, bar type, collar, unit — for one-tap recall. Tap the bookmark icon in the top toolbar to save or load a setup. Tap the export icon to share all your saved setups as a JSON file — handy for backing up or moving to a new device.",
                 isProFeature: true, userIsPro: isPro, accentColor: accentColor
             )
             FAQRow(
@@ -270,7 +270,7 @@ struct HelpView: View {
         .init(section: "Pro", question: "How do I buy Pro?", answer: "Tap the PRO button in the top-right corner of the main screen, or tap any locked mode pill. The price is $0.99 — a one-time purchase with Family Sharing enabled."),
         .init(section: "Pro", question: "Does Pro work on all my devices?", answer: "Yes. Tap \"Restore Purchases\" in Settings → Pro Status to activate Pro on any iPhone signed into the same Apple ID."),
         .init(section: "Pro", question: "How do I set my bodyweight ratio?", answer: "Go to Settings → Pro — Bodyweight & Sex and enter your bodyweight. The ratio (e.g. \"1.87× bodyweight\") appears under the main readout and is included in your Share My Lift card. Setting your sex there also unlocks the Wilks/DOTS/IPF GL Points panel in 1RM mode.", isPro: true),
-        .init(section: "Pro", question: "What are saved setups?", answer: "Bookmark any bar configuration — weight, bar type, collar, unit — for one-tap recall. Tap the bookmark icon in the top toolbar to save or load a setup.", isPro: true),
+        .init(section: "Pro", question: "What are saved setups?", answer: "Bookmark any bar configuration — weight, bar type, collar, unit — for one-tap recall. Tap the bookmark icon in the top toolbar to save or load a setup. Tap the export icon to share all your saved setups as a JSON file — handy for backing up or moving to a new device.", isPro: true),
         .init(section: "Pro", question: "What is Barbell History?", answer: "LiftLogic automatically remembers your last 10 distinct barbell configurations (weight, bar, collar, unit) as you use CALC mode — no need to save anything manually. Tap the bookmark icon, and you'll see a \"Recent\" section above your Saved Setups. Tap any entry to reload it instantly.", isPro: true),
         .init(section: "Pro", question: "What is Lifting Partner Mode?", answer: "Show a QR code of your current setup (weight, bar, collar, unit) for a training partner to scan — tap the new QR icon in the top toolbar, then \"Show My QR Code\" or \"Scan Partner's Code\". Scanning shows a confirmation before loading anything, and requires camera access.", isPro: true),
         .init(section: "Pro", question: "What is Decimal Precision Lock?", answer: "Rounds any weight you commit to the nearest increment actually loadable with your enabled plates — so you never end up with a target that isn't physically achievable. Works in both lbs and kg. Turn it on in Settings.", isPro: true),
