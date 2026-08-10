@@ -93,6 +93,11 @@ struct HelpView: View {
                 answer: "Yes — add the LiftLogic widget to your Home Screen or Lock Screen to see the last weight you calculated. Tap it to reopen the app with that weight loaded straight into CALC.",
                 isProFeature: false, userIsPro: isPro, accentColor: accentColor
             )
+            FAQRow(
+                question: "Can I use Siri to load a weight?",
+                answer: "Yes — say \"Load a weight in LiftLogic,\" tell Siri the number when asked, and the app opens straight into CALC mode with that weight ready to go.",
+                isProFeature: false, userIsPro: isPro, accentColor: accentColor
+            )
         }
     }
 
@@ -250,6 +255,7 @@ struct HelpView: View {
         .init(section: "Getting Started", question: "What are the recent weight chips?", answer: "The last 5 weights you calculated appear as chips between the − and + buttons. Tap one to reload that weight instantly. Long-press a chip to remove it."),
         .init(section: "Getting Started", question: "What is the add / remove per side banner?", answer: "After you load a weight and then change it, a toast appears showing exactly which plates to add or remove per side. Green entries mean add, amber means remove. Tap × to dismiss it. By default it stays until dismissed — go to Settings → Calculator to turn it off or set an auto-dismiss timer with your own duration."),
         .init(section: "Getting Started", question: "Is there a Home Screen or Lock Screen widget?", answer: "Yes — add the LiftLogic widget to your Home Screen or Lock Screen to see the last weight you calculated. Tap it to reopen the app with that weight loaded straight into CALC."),
+        .init(section: "Getting Started", question: "Can I use Siri to load a weight?", answer: "Yes — say \"Load a weight in LiftLogic,\" tell Siri the number when asked, and the app opens straight into CALC mode with that weight ready to go."),
         .init(section: "Plates & Bar", question: "How do I change the bar weight?", answer: "Tap the bar picker in the quick toggle strip below the barbell. Choose Olympic (45 lb), Women's (33 lb), EZ Curl (18 lb), Safety Squat (65 lb), or enter a custom weight."),
         .init(section: "Plates & Bar", question: "What is Single Side mode?", answer: "When enabled, the calculator treats your typed weight as the total for one side only — useful for loading a landmine, single-arm attachment, or any non-symmetric setup."),
         .init(section: "Plates & Bar", question: "What is collar weight?", answer: "Toggles a 2.5 lb collar deduction per side. Enable it if your gym uses locking collars that add meaningful weight to the bar."),
