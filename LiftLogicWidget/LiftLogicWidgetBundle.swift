@@ -5,5 +5,6 @@ import SwiftUI
 struct LiftLogicWidgetBundle: WidgetBundle {
     var body: some Widget {
         RestTimerLiveActivity()
+        LastWeightWidget()
     }
 }
