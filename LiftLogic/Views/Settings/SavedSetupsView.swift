@@ -49,7 +49,7 @@ struct SavedSetupsView: View {
                         ShareService.exportSavedSetups(settings.savedSetups)
                     } label: {
                         Image(systemName: "square.and.arrow.up")
-                            .foregroundStyle(settings.accentColor)
+                            .foregroundStyle(settings.savedSetups.isEmpty ? ThemeTokens.textMuted : settings.accentColor)
                     }
                     .disabled(settings.savedSetups.isEmpty)
                 }

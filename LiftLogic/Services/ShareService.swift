@@ -12,26 +12,34 @@ struct ShareService {
 
     static func share(vm: CalculatorViewModel, settings: AppSettings) {
         guard let image = renderCard(vm: vm, settings: settings) else { return }
-        let ac = UIActivityViewController(activityItems: [image], applicationActivities: nil)
-        UIApplication.shared.connectedScenes
-            .compactMap { $0 as? UIWindowScene }
-            .flatMap(\.windows)
-            .first { $0.isKeyWindow }?
-            .rootViewController?
-            .present(ac, animated: true)
+        present(UIActivityViewController(activityItems: [image], applicationActivities: nil))
     }
 
     static func exportSavedSetups(_ setups: [SavedSetup]) {
         guard let data = try? JSONEncoder().encode(setups) else { return }
         let url = FileManager.default.temporaryDirectory.appendingPathComponent("LiftLogic Saved Setups.json")
         guard (try? data.write(to: url)) != nil else { return }
-        let ac = UIActivityViewController(activityItems: [url], applicationActivities: nil)
-        UIApplication.shared.connectedScenes
+        present(UIActivityViewController(activityItems: [url], applicationActivities: nil))
+    }
+
+    private static var topViewController: UIViewController? {
+        var top = UIApplication.shared.connectedScenes
             .compactMap { $0 as? UIWindowScene }
             .flatMap(\.windows)
             .first { $0.isKeyWindow }?
-            .rootViewController?
-            .present(ac, animated: true)
+            .rootViewController
+        while let presented = top?.presentedViewController { top = presented }
+        return top
+    }
+
+    private static func present(_ ac: UIActivityViewController) {
+        guard let top = topViewController else { return }
+        if let pop = ac.popoverPresentationController {
+            pop.sourceView = top.view
+            pop.sourceRect = CGRect(x: top.view.bounds.midX, y: top.view.bounds.midY, width: 0, height: 0)
+            pop.permittedArrowDirections = []
+        }
+        top.present(ac, animated: true)
     }
 }
 
