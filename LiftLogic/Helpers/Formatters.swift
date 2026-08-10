@@ -3,14 +3,16 @@ import Foundation
 extension Double {
     /// "45" for whole numbers, "2.5" for decimals.
     var weightString: String {
-        truncatingRemainder(dividingBy: 1) == 0
+        guard isFinite, abs(self) < 1e15 else { return String(format: "%.1f", self) }
+        return truncatingRemainder(dividingBy: 1) == 0
             ? String(Int(self))
             : String(self)
     }
 
     /// Two-decimal precision string ("125.50") — for numpad input echo.
     var weightStringPrecise: String {
-        truncatingRemainder(dividingBy: 1) == 0
+        guard isFinite, abs(self) < 1e15 else { return String(format: "%.1f", self) }
+        return truncatingRemainder(dividingBy: 1) == 0
             ? String(Int(self))
             : String(format: "%.2f", self)
     }
