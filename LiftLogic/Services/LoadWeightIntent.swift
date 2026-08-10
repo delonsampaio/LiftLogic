@@ -10,7 +10,7 @@ struct LoadWeightIntent: AppIntent {
     var weight: Double
 
     func perform() async throws -> some IntentResult & ProvidesDialog {
-        guard weight > 0, let url = Self.calcURL(for: weight) else {
+        guard weight.isFinite, weight > 0, let url = Self.calcURL(for: weight) else {
             return .result(dialog: "That doesn't look like a valid weight.")
         }
         await UIApplication.shared.open(url)
