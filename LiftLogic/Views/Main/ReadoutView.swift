@@ -31,6 +31,11 @@ struct ReadoutView: View {
         return String(format: "%.2f× bodyweight", ratio)
     }
 
+    private var percentOf1RMText: String? {
+        guard let percent = settings.percentOfSavedOneRM(for: displayWeight) else { return nil }
+        return "\(percent)% of your 1RM"
+    }
+
     private var secondaryUnitText: String? {
         guard displayWeight > 0 else { return nil }
         let other: WeightUnit = settings.unit == .lbs ? .kg : .lbs
@@ -59,6 +64,10 @@ struct ReadoutView: View {
                 Text(text)
                     .font(.footnote.weight(.medium))
                     .foregroundStyle(ThemeTokens.warningAmber)
+            } else if let text = percentOf1RMText {
+                Text(text)
+                    .font(ThemeTokens.readoutSubFont)
+                    .foregroundStyle(Color(white: 0.4))
             } else if let text = bodyweightRatioText {
                 Text(text)
                     .font(ThemeTokens.readoutSubFont)

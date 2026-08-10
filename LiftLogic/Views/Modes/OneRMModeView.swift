@@ -69,6 +69,7 @@ struct OneRMModeView: View {
 
                             // Average — tap to load
                             Button {
+                                settings.savedOneRM = result.average.rounded()
                                 vm.loadWeight(result.average.rounded())
                                 withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
                                     vm.currentMode = .calc
