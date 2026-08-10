@@ -46,6 +46,15 @@ struct SavedSetupsView: View {
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
+                        ShareService.exportSavedSetups(settings.savedSetups)
+                    } label: {
+                        Image(systemName: "square.and.arrow.up")
+                            .foregroundStyle(settings.accentColor)
+                    }
+                    .disabled(settings.savedSetups.isEmpty)
+                }
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
                         newSetupName = ""
                         showSaveSheet = true
                     } label: {
