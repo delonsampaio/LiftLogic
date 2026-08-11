@@ -91,6 +91,7 @@ struct HelpView: View {
         .init(section: "Pro", question: "What is Decimal Precision Lock?", answer: "Rounds any weight you commit to the nearest increment actually loadable with your enabled plates — so you never end up with a target that isn't physically achievable. Works in both lbs and kg. Turn it on in Settings.", isPro: true),
         .init(section: "Pro", question: "Can I change the accent color?", answer: "Yes — pick from 4 colors (Orange, Blue, Teal, Pink) in Settings → Pro — Accent Color. Applies everywhere the accent appears, including your Share My Lift card.", isPro: true),
     ]
+    static var allFAQQuestions: [String] { allFAQs.map(\.question) }
 }
 
 private struct FAQRow: View {
