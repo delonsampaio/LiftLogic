@@ -15,6 +15,11 @@ struct PartnerScanConfirmationView: View {
                 Text("\(payload.weight.weightString) \(payload.unit.symbol) · \(payload.barType.displayName)")
                     .font(.title2.weight(.semibold))
                     .foregroundStyle(ThemeTokens.textPrimary)
+                if payload.barType == .custom, let customBarWeight = payload.customBarWeight {
+                    Text("Custom bar: \(customBarWeight.weightString) \(payload.unit.symbol)")
+                        .font(.subheadline)
+                        .foregroundStyle(ThemeTokens.textMuted)
+                }
                 Spacer()
             }
             .padding(.top, 32)

@@ -85,7 +85,11 @@ struct SettingsView: View {
                             Spacer()
                             TextField("0", value: Binding(
                                 get: { settings.bodyWeight },
-                                set: { settings.bodyWeight = $0 }
+                                set: { newValue in
+                                    settings.bodyWeight = newValue == 0
+                                        ? 0
+                                        : min(max(newValue, bodyweightRange.lowerBound), bodyweightRange.upperBound)
+                                }
                             ), format: .number)
                             .keyboardType(.decimalPad)
                             .focused($numericFieldFocused)
@@ -302,8 +306,16 @@ struct SettingsView: View {
     }
 
     private var customBarInputValue: Double? {
-        guard let value = Double(customBarInput), value > 0 else { return nil }
+        guard let value = Double(customBarInput), value > 0,
+              value <= (settings.unit == .lbs ? 2000 : 907)
+        else { return nil }
         return value
+    }
+
+    private var bodyweightRange: ClosedRange<Double> {
+        let lo = WeightUnit.kg.convert(20, to: settings.unit)
+        let hi = WeightUnit.kg.convert(300, to: settings.unit)
+        return lo...hi
     }
 
     private var customBarWeightSheet: some View {
