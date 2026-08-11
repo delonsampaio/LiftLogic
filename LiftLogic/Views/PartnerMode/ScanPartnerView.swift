@@ -66,14 +66,9 @@ struct ScanPartnerView: View {
     }
 
     private func apply(_ payload: PartnerSetupPayload) {
-        vm.selectedBar = payload.barType
-        if payload.barType == .custom, let customBarWeight = payload.customBarWeight {
-            settings.customBarWeight = customBarWeight
-        }
-        vm.collarType = payload.collarType
-        vm.isSingleSided = payload.isSingleSided
-        settings.unit = payload.unit
-        vm.loadWeight(payload.weight)
+        vm.applyConfiguration(weight: payload.weight, barType: payload.barType,
+                               customBarWeight: payload.customBarWeight, collarType: payload.collarType,
+                               unit: payload.unit, isSingleSided: payload.isSingleSided)
     }
 
     private var deniedMessage: some View {
