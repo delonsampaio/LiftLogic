@@ -302,6 +302,34 @@ struct AppSettingsTests {
         #expect(s2.accentColorOption == .pink)
     }
 
+    // MARK: — Plate Quantity Limits Pro-gating
+
+    @Test func activeInventoryNormalizesQuantityToUnlimitedWhenNotPro() {
+        let s = freshSettings()
+        s.isPro = true
+        var inventory = s.lbsInventory
+        let index = inventory.firstIndex { $0.weight == 45 }!
+        inventory[index].quantity = 4
+        s.lbsInventory = inventory
+        s.isPro = false
+
+        let active = s.activeInventory.first { $0.weight == 45 }
+        #expect(active?.quantity == Int.max)
+    }
+
+    @Test func activeInventoryPreservesStoredQuantityAcrossProLapse() {
+        let s = freshSettings()
+        s.isPro = true
+        var inventory = s.lbsInventory
+        let index = inventory.firstIndex { $0.weight == 45 }!
+        inventory[index].quantity = 4
+        s.lbsInventory = inventory
+        s.isPro = false
+
+        let stored = s.lbsInventory.first { $0.weight == 45 }
+        #expect(stored?.quantity == 4)
+    }
+
     // MARK: — Percent of 1RM (#86)
 
     @Test func savedOneRMDefaultsToZero() {

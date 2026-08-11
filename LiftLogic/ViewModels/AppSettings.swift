@@ -176,7 +176,11 @@ final class AppSettings {
     // MARK: — Derived
 
     var activeInventory: [PlateInventoryItem] {
-        unit == .lbs ? lbsInventory : kgInventory
+        let base = unit == .lbs ? lbsInventory : kgInventory
+        guard isPro else {
+            return base.map { PlateInventoryItem(weight: $0.weight, isEnabled: $0.isEnabled, quantity: .max) }
+        }
+        return base
     }
 
     // MARK: — Recent Weights
