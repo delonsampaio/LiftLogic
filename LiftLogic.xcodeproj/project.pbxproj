@@ -8,10 +8,10 @@
 
 /* Begin PBXBuildFile section */
 		14897B392FC380BC009A7629 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 14897B382FC380BC009A7629 /* StoreKit.framework */; };
-		14AB00012FCA1000009A7629 /* AppIntents.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 14AB00022FCA1000009A7629 /* AppIntents.framework */; };
 		14898A132FC5F4D0009A7629 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 14898A122FC5F4D0009A7629 /* WidgetKit.framework */; };
 		14898A152FC5F4D0009A7629 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 14898A142FC5F4D0009A7629 /* SwiftUI.framework */; };
 		14898A242FC5F4D2009A7629 /* LiftLogicWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 14898A112FC5F4D0009A7629 /* LiftLogicWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		14AB00012FCA1000009A7629 /* AppIntents.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 14AB00022FCA1000009A7629 /* AppIntents.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -57,11 +57,11 @@
 		143A8F882FC12B7400A0D047 /* LiftLogicTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LiftLogicTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		143A8F922FC12B7400A0D047 /* LiftLogicUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LiftLogicUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		14897B382FC380BC009A7629 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
-		14AB00022FCA1000009A7629 /* AppIntents.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppIntents.framework; path = System/Library/Frameworks/AppIntents.framework; sourceTree = SDKROOT; };
 		14898A112FC5F4D0009A7629 /* LiftLogicWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = LiftLogicWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		14898A122FC5F4D0009A7629 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		14898A142FC5F4D0009A7629 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		149118FA302952540038180D /* LiftLogicWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = LiftLogicWidgetExtension.entitlements; sourceTree = "<group>"; };
+		14AB00022FCA1000009A7629 /* AppIntents.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppIntents.framework; path = System/Library/Frameworks/AppIntents.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
