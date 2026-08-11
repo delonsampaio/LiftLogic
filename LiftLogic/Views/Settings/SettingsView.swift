@@ -341,7 +341,7 @@ struct SettingsView: View {
                 .padding(.horizontal)
 
                 if !customBarInput.isEmpty && customBarInputValue == nil {
-                    Text("Enter a number greater than 0")
+                    Text("Enter a number between 0 and \(settings.unit == .lbs ? 2000 : 907)")
                         .font(.caption)
                         .foregroundStyle(ThemeTokens.warningAmber)
                 }
