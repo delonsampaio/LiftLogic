@@ -190,7 +190,7 @@ struct MainView: View {
             UIApplication.shared.isIdleTimerDisabled = false
         }
         .onChange(of: settings.successfulCalculationCount) { _, count in
-            if count == 5 || count == 20 || count == 75 {
+            if AppReviewManager.shouldRequestReview(atCount: count) {
                 requestReview()
             }
         }
