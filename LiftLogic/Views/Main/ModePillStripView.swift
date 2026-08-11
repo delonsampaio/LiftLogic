@@ -36,6 +36,11 @@ struct ModePillStripView: View {
                             .font(sizeClass == .regular ? .caption.weight(.semibold) : .caption2.weight(.semibold))
                         Text(mode.displayName)
                             .font(sizeClass == .regular ? .subheadline.weight(.semibold) : .caption.weight(.semibold))
+                        if !ProGate.isAllowed(requiresPro: mode.requiresPro, isPro: settings.isPro) {
+                            Image(systemName: "lock.fill")
+                                .font(.system(size: 10 * pillScale))
+                                .foregroundStyle(ThemeTokens.textMuted)
+                        }
                     }
                     .foregroundStyle(vm.currentMode == mode ? settings.accentColor : ThemeTokens.textMuted)
                     .padding(.horizontal, 12 * pillScale)
@@ -59,13 +64,13 @@ struct ModePillStripView: View {
     }
 
     private func onPillTap(_ mode: AppMode) {
-        if mode.requiresPro && !settings.isPro {
+        guard ProGate.isAllowed(requiresPro: mode.requiresPro, isPro: settings.isPro) else {
             showPaywall = true
-        } else {
-            HapticManager.shared.modeSwitch()
-            withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
-                vm.currentMode = mode
-            }
+            return
+        }
+        HapticManager.shared.modeSwitch()
+        withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
+            vm.currentMode = mode
         }
     }
 }
