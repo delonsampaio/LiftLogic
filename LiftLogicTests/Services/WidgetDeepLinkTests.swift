@@ -6,7 +6,26 @@ import Testing
 struct WidgetDeepLinkTests {
     @Test func parsesWellFormedURL() {
         let url = URL(string: "liftlogic://calc?weight=225.0&unit=lbs")!
-        #expect(WidgetDeepLink.parseCalcWeight(from: url) == 225.0)
+        let result = WidgetDeepLink.parseCalcWeight(from: url)
+        #expect(result?.weight == 225.0)
+        #expect(result?.unit == .lbs)
+    }
+
+    @Test func parsesKgUnit() {
+        let url = URL(string: "liftlogic://calc?weight=100.0&unit=kg")!
+        let result = WidgetDeepLink.parseCalcWeight(from: url)
+        #expect(result?.weight == 100.0)
+        #expect(result?.unit == .kg)
+    }
+
+    @Test func rejectsMissingUnitParam() {
+        let url = URL(string: "liftlogic://calc?weight=225.0")!
+        #expect(WidgetDeepLink.parseCalcWeight(from: url) == nil)
+    }
+
+    @Test func rejectsInvalidUnitValue() {
+        let url = URL(string: "liftlogic://calc?weight=225.0&unit=stone")!
+        #expect(WidgetDeepLink.parseCalcWeight(from: url) == nil)
     }
 
     @Test func rejectsWrongScheme() {

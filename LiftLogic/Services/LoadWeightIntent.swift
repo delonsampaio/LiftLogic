@@ -19,7 +19,8 @@ struct LoadWeightIntent: AppIntent {
     }
 
     static func calcURL(for weight: Double) -> URL? {
-        URL(string: "liftlogic://calc?weight=\(weight)")
+        let unit = UserDefaults.standard.string(forKey: "unit") ?? "lbs"
+        return URL(string: "liftlogic://calc?weight=\(weight)&unit=\(unit)")
     }
 }
 
