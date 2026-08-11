@@ -274,10 +274,12 @@ struct SettingsView: View {
                                 .foregroundStyle(ThemeTokens.accentPro)
                         }
                     }
-                    Button("Restore Purchases") {
-                        Task { await store.restorePurchases(settings: settings) }
+                    if !settings.isPro {
+                        Button("Restore Purchases") {
+                            Task { await store.restorePurchases(settings: settings) }
+                        }
+                        .foregroundStyle(settings.accentColor)
                     }
-                    .foregroundStyle(settings.accentColor)
                     if let message = store.restoreMessage ?? store.errorMessage {
                         Text(message)
                             .font(.caption)
