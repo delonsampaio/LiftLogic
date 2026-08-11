@@ -542,6 +542,16 @@ struct CalculatorViewModelTests {
         #expect(settings.barbellHistory.first?.customBarWeight == 33)
     }
 
+    @Test func applyConfigurationRecordsHistoryWithTheNewUnitNotTheOldOne() {
+        let settings = freshSettings()
+        settings.isPro = true
+        settings.unit = .lbs
+        let vm = CalculatorViewModel(settings: settings)
+        vm.applyConfiguration(weight: 100, barType: .olympic20kg, customBarWeight: nil,
+                               collarType: .none, unit: .kg, isSingleSided: false)
+        #expect(settings.barbellHistory.first?.unit == .kg)
+    }
+
     // MARK: — Warmup percentage wiring (#58)
 
     @Test func warmupSetsReflectCustomPercentages() {
