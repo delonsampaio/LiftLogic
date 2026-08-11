@@ -16,8 +16,8 @@ struct PartnerCodeService {
 
     /// Decodes a scanned string into a payload, returning nil for anything that isn't
     /// valid JSON, isn't a LiftLogic-authored code (wrong `app`/unsupported `version`),
-    /// or carries a weight outside the app's own input range (guards against a crafted
-    /// or corrupted QR code causing a crash downstream).
+    /// or carries a weight (or custom bar weight) outside the app's own input range
+    /// (guards against a crafted or corrupted QR code causing a crash downstream).
     static func decode(_ string: String) -> PartnerSetupPayload? {
         guard let data = string.data(using: .utf8),
               let payload = try? JSONDecoder().decode(PartnerSetupPayload.self, from: data),
@@ -25,7 +25,9 @@ struct PartnerCodeService {
               payload.version == currentVersion,
               payload.weight.isFinite,
               payload.weight > 0,
-              payload.weight <= (payload.unit == .lbs ? 2000 : 907) else { return nil }
+              payload.weight <= (payload.unit == .lbs ? 2000 : 907),
+              payload.customBarWeight.map({ $0.isFinite && $0 > 0 && $0 <= (payload.unit == .lbs ? 2000 : 907) }) ?? true
+        else { return nil }
         return payload
     }
 }

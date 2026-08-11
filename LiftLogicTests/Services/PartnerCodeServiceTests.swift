@@ -67,4 +67,25 @@ struct PartnerCodeServiceTests {
         let atCapKg = "{\"app\":\"liftlogic\",\"version\":1,\"weight\":907,\"barType\":\"olympic45lb\",\"collarType\":\"none\",\"unit\":\"kg\",\"isSingleSided\":false}"
         #expect(PartnerCodeService.decode(atCapKg)?.weight == 907)
     }
+
+    @Test func decodeRejectsAbsurdCustomBarWeight() {
+        let crafted = "{\"app\":\"liftlogic\",\"version\":1,\"weight\":135,\"barType\":\"custom\",\"collarType\":\"none\",\"unit\":\"lbs\",\"isSingleSided\":false,\"customBarWeight\":1e30}"
+        #expect(PartnerCodeService.decode(crafted) == nil)
+    }
+
+    @Test func decodeRejectsNegativeCustomBarWeight() {
+        let crafted = "{\"app\":\"liftlogic\",\"version\":1,\"weight\":135,\"barType\":\"custom\",\"collarType\":\"none\",\"unit\":\"lbs\",\"isSingleSided\":false,\"customBarWeight\":-5}"
+        #expect(PartnerCodeService.decode(crafted) == nil)
+    }
+
+    @Test func decodeAcceptsValidCustomBarWeight() {
+        let valid = "{\"app\":\"liftlogic\",\"version\":1,\"weight\":135,\"barType\":\"custom\",\"collarType\":\"none\",\"unit\":\"lbs\",\"isSingleSided\":false,\"customBarWeight\":35}"
+        #expect(PartnerCodeService.decode(valid)?.customBarWeight == 35)
+    }
+
+    @Test func decodeAcceptsNilCustomBarWeightOnNonCustomBar() {
+        let noCustomBar = "{\"app\":\"liftlogic\",\"version\":1,\"weight\":225,\"barType\":\"olympic45lb\",\"collarType\":\"none\",\"unit\":\"lbs\",\"isSingleSided\":false}"
+        #expect(PartnerCodeService.decode(noCustomBar) != nil)
+        #expect(PartnerCodeService.decode(noCustomBar)?.customBarWeight == nil)
+    }
 }
