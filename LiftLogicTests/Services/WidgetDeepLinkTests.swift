@@ -57,4 +57,9 @@ struct WidgetDeepLinkTests {
         let url = URL(string: "liftlogic://calc?weight=-500&unit=lbs")!
         #expect(WidgetDeepLink.parseCalcWeight(from: url) == nil)
     }
+
+    @Test func rejectsEmptyUnitParam() {
+        let url = URL(string: "liftlogic://calc?weight=225.0&unit=")!
+        #expect(WidgetDeepLink.parseCalcWeight(from: url) == nil)
+    }
 }

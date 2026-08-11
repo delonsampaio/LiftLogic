@@ -9,13 +9,4 @@ struct BarTypeTests {
     @Test func olympic20kgWeight() {
         #expect(BarType.olympic20kg.weight(in: .kg) == 20)
     }
-    @Test func customIsSpecialty() {
-        #expect(BarType.custom.isSpecialty)
-    }
-    @Test func trapHexIsSpecialty() {
-        #expect(BarType.trapHex.isSpecialty)
-    }
-    @Test func olympic45NotSpecialty() {
-        #expect(!BarType.olympic45lb.isSpecialty)
-    }
 }

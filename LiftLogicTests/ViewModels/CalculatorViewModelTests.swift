@@ -134,12 +134,22 @@ struct CalculatorViewModelTests {
 
     @Test func canAddPlateRespectsQuantityLimit() {
         let settings = freshSettings()
+        settings.isPro = true
         settings.lbsInventory = [PlateInventoryItem(weight: 45, isEnabled: true, quantity: 2)]
         let vm = CalculatorViewModel(settings: settings)
-        let plate = settings.lbsInventory[0]
+        let plate = settings.activeInventory[0]
         vm.addPlate(plate)                        // 1 per side (quantity 2 / 2 sides)
         #expect(vm.reverseCount(for: 45) == 1)
         #expect(vm.canAddPlate(plate) == false)   // a 2nd per side would exceed the limit
+    }
+
+    @Test func calculatorIgnoresQuantityLimitsWhenNotPro() {
+        let settings = freshSettings()
+        settings.isPro = false
+        settings.lbsInventory = [PlateInventoryItem(weight: 45, isEnabled: true, quantity: 2)]
+        let vm = CalculatorViewModel(settings: settings)
+        let plate = settings.activeInventory[0]   // normalized to .max quantity since not Pro
+        #expect(vm.canAddPlate(plate) == true)
     }
 
     @Test func reverseAllInventoryExhaustedWhenLimitReached() {

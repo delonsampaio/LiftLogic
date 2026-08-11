@@ -41,6 +41,14 @@ struct PartnerCodeServiceTests {
         #expect(decoded?.customBarWeight == 35)
     }
 
+    @Test func encodeThenDecodeRoundTripsCustomBarWeightKg() {
+        let encoded = PartnerCodeService.encode(weight: 60, barType: .custom, collarType: .none,
+                                                 unit: .kg, isSingleSided: false, customBarWeight: 15)
+        let decoded = PartnerCodeService.decode(encoded!)
+        #expect(decoded?.customBarWeight == 15)
+        #expect(decoded?.unit == .kg)
+    }
+
     @Test func decodeRejectsNonJSONString() {
         #expect(PartnerCodeService.decode("not json at all") == nil)
     }

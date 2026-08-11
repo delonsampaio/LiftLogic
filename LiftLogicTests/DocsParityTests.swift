@@ -19,4 +19,12 @@ struct DocsParityTests {
             #expect(html.contains(question), "Missing from docs/index.html: \(question)")
         }
     }
+
+    @Test func htmlHasNoStaleFAQEntriesBeyondSwiftSource() {
+        let html = docsIndexHTML
+        let htmlFAQCount = html.components(separatedBy: "<summary>").count - 1
+        let swiftCount = HelpView.allFAQQuestions.count
+        #expect(htmlFAQCount == swiftCount,
+                 "docs/index.html has \(htmlFAQCount) FAQ entries but HelpView.allFAQQuestions has \(swiftCount) — an HTML-only entry may be stale")
+    }
 }

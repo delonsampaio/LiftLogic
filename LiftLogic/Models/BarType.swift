@@ -37,13 +37,6 @@ enum BarType: String, Codable, CaseIterable, Identifiable {
         }
     }
 
-    var isSpecialty: Bool {
-        switch self {
-        case .olympic45lb, .olympic35lb, .olympic20kg, .olympic15kg: return false
-        case .trapHex, .safetySquat, .ezCurl, .custom: return true
-        }
-    }
-
     func weight(in unit: WeightUnit) -> Double {
         switch self {
         case .olympic45lb:

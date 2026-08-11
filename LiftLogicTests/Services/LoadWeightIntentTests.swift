@@ -21,4 +21,9 @@ struct LoadWeightIntentTests {
         #expect(url?.scheme == "liftlogic")
         #expect(url?.host == "calc")
     }
+
+    @Test func calcURLIncludesUnitParam() {
+        let url = LoadWeightIntent.calcURL(for: 100.0)
+        #expect(url?.absoluteString.contains("unit=") == true)
+    }
 }

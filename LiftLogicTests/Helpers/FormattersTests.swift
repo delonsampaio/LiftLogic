@@ -21,27 +21,36 @@ struct FormattersTests {
     }
 
     @Test func weightStringDoesNotCrashOnInfinity() {
-        _ = Double.infinity.weightString
-        _ = (-Double.infinity).weightString
+        #expect(!Double.infinity.weightString.isEmpty)
+        #expect(!(-Double.infinity).weightString.isEmpty)
     }
 
     @Test func weightStringDoesNotCrashOnNaN() {
-        _ = Double.nan.weightString
+        #expect(!Double.nan.weightString.isEmpty)
     }
 
     @Test func weightStringDoesNotCrashOnAbsurdlyLargeValue() {
-        _ = (1e300).weightString
+        #expect(!(1e300).weightString.isEmpty)
     }
 
     @Test func weightStringPreciseDoesNotCrashOnAbsurdlyLargeValue() {
-        _ = (1e300).weightStringPrecise
+        #expect(!(1e300).weightStringPrecise.isEmpty)
     }
 
     @Test func weightStringPreciseDoesNotCrashOnInfinity() {
-        _ = Double.infinity.weightStringPrecise
+        #expect(!Double.infinity.weightStringPrecise.isEmpty)
     }
 
     @Test func weightStringPreciseDoesNotCrashOnNaN() {
-        _ = Double.nan.weightStringPrecise
+        #expect(!Double.nan.weightStringPrecise.isEmpty)
+    }
+
+    @Test func weightStringJustUnderBoundaryUsesNormalFormatting() {
+        let value = 1e15 - 1
+        #expect(value.weightString == String(Int(value)))
+    }
+
+    @Test func weightStringAtBoundaryUsesFallbackFormatting() {
+        #expect((1e15).weightString == String(format: "%.1f", 1e15))
     }
 }
