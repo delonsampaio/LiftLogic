@@ -163,7 +163,7 @@ struct MainView: View {
             ProPaywallView(settings: settings, store: store)
         }
         .fullScreenCover(isPresented: $showSettings) {
-            SettingsView(settings: settings, vm: vm)
+            SettingsView(settings: settings, vm: vm, store: store)
         }
         .fullScreenCover(isPresented: $showSavedSetups) {
             SavedSetupsView(settings: settings, vm: vm)

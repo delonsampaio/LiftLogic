@@ -3,6 +3,7 @@ import SwiftUI
 struct SettingsView: View {
     let settings: AppSettings
     let vm: CalculatorViewModel
+    let store: StoreKitService
     @State private var showCustomBarSheet = false
     @State private var customBarInput = ""
     @FocusState private var numericFieldFocused: Bool
@@ -272,6 +273,15 @@ struct SettingsView: View {
                             Text("$0.99")
                                 .foregroundStyle(ThemeTokens.accentPro)
                         }
+                    }
+                    Button("Restore Purchases") {
+                        Task { await store.restorePurchases(settings: settings) }
+                    }
+                    .foregroundStyle(settings.accentColor)
+                    if let message = store.restoreMessage ?? store.errorMessage {
+                        Text(message)
+                            .font(.caption)
+                            .foregroundStyle(ThemeTokens.textMuted)
                     }
                 }
             }
