@@ -13,14 +13,15 @@ struct HelpView: View {
     let accentColor: Color
     @State private var searchText = ""
 
-    private var groupedSearchResults: [(section: String, items: [FAQItem])] {
-        guard !searchText.isEmpty else { return [] }
-        let matches = Self.allFAQs.filter {
-            $0.question.localizedCaseInsensitiveContains(searchText) ||
-            $0.answer.localizedCaseInsensitiveContains(searchText)
-        }
+    private func groupedFAQs(matching searchText: String) -> [(section: String, items: [FAQItem])] {
+        let items = searchText.isEmpty
+            ? Self.allFAQs
+            : Self.allFAQs.filter {
+                $0.question.localizedCaseInsensitiveContains(searchText) ||
+                $0.answer.localizedCaseInsensitiveContains(searchText)
+            }
         var groups: [(section: String, items: [FAQItem])] = []
-        for item in matches {
+        for item in items {
             if let index = groups.firstIndex(where: { $0.section == item.section }) {
                 groups[index].items.append(item)
             } else {
@@ -31,22 +32,17 @@ struct HelpView: View {
     }
 
     var body: some View {
+        let groups = groupedFAQs(matching: searchText)
         List {
-            if searchText.isEmpty {
-                gettingStartedSection
-                platesAndBarSection
-                modesSection
-                gesturesSection
-                proFeaturesSection
-            } else if groupedSearchResults.isEmpty {
+            if groups.isEmpty {
                 Text("No results for \"\(searchText)\"")
                     .foregroundStyle(ThemeTokens.textMuted)
                     .listRowBackground(Color.clear)
             } else {
-                ForEach(groupedSearchResults, id: \.section) { group in
+                ForEach(groups, id: \.section) { group in
                     Section(group.section) {
                         ForEach(group.items) { item in
-                            FAQRow(question: item.question, answer: item.answer, isProFeature: item.isPro, userIsPro: isPro, accentColor: accentColor, startExpanded: true)
+                            FAQRow(question: item.question, answer: item.answer, isProFeature: item.isPro, userIsPro: isPro, accentColor: accentColor, startExpanded: !searchText.isEmpty)
                         }
                     }
                 }
@@ -57,193 +53,6 @@ struct HelpView: View {
         .navigationBarTitleDisplayMode(.inline)
         .scrollContentBackground(.hidden)
         .background(ThemeTokens.backgroundPrimary)
-    }
-
-    // MARK: — Sections
-
-    private var gettingStartedSection: some View {
-        Section("Getting Started") {
-            FAQRow(
-                question: "How do I calculate my plate setup?",
-                answer: "Type your total bar weight on the numpad. LiftLogic instantly calculates which plates go on each side and shows them on the barbell graphic.",
-                isProFeature: false, userIsPro: isPro, accentColor: accentColor
-            )
-            FAQRow(
-                question: "What is the barbell graphic?",
-                answer: "A real-time 2D visualizer showing exactly which plates are loaded on each side. Plate colors match the international standard — red for 45 lb, blue for 35 lb, yellow for 25 lb, and so on. It updates live as you type.",
-                isProFeature: false, userIsPro: isPro, accentColor: accentColor
-            )
-            FAQRow(
-                question: "How do I reset the weight?",
-                answer: "Three ways: swipe the barbell left or right, double-tap it, or delete all digits on the numpad. Long-press the barbell to play a fly-off animation.",
-                isProFeature: false, userIsPro: isPro, accentColor: accentColor
-            )
-            FAQRow(
-                question: "What are the recent weight chips?",
-                answer: "The last 5 weights you calculated appear as chips between the − and + buttons. Tap one to reload that weight instantly. Long-press a chip to remove it.",
-                isProFeature: false, userIsPro: isPro, accentColor: accentColor
-            )
-            FAQRow(
-                question: "What is the add / remove per side banner?",
-                answer: "After you load a weight and then change it, a toast appears showing exactly which plates to add or remove per side. Green entries mean add, amber means remove. Tap × to dismiss it. By default it stays until dismissed — go to Settings → Calculator to turn it off or set an auto-dismiss timer with your own duration.",
-                isProFeature: false, userIsPro: isPro, accentColor: accentColor
-            )
-            FAQRow(
-                question: "Is there a Home Screen or Lock Screen widget?",
-                answer: "Yes — add the LiftLogic widget to your Home Screen or Lock Screen to see the last weight you calculated. Tap it to reopen the app with that weight loaded straight into CALC.",
-                isProFeature: false, userIsPro: isPro, accentColor: accentColor
-            )
-            FAQRow(
-                question: "Can I use Siri to load a weight?",
-                answer: "Yes — say \"Load a weight in LiftLogic,\" tell Siri the number when asked, and the app opens straight into CALC mode with that weight ready to go.",
-                isProFeature: false, userIsPro: isPro, accentColor: accentColor
-            )
-        }
-    }
-
-    private var platesAndBarSection: some View {
-        Section("Plates & Bar") {
-            FAQRow(
-                question: "How do I change the bar weight?",
-                answer: "Tap the bar picker in the quick toggle strip below the barbell. Choose Olympic (45 lb), Women's (33 lb), EZ Curl (18 lb), Safety Squat (65 lb), or enter a custom weight.",
-                isProFeature: false, userIsPro: isPro, accentColor: accentColor
-            )
-            FAQRow(
-                question: "What is Single Side mode?",
-                answer: "When enabled, the calculator treats your typed weight as the total for one side only — useful for loading a landmine, single-arm attachment, or any non-symmetric setup.",
-                isProFeature: false, userIsPro: isPro, accentColor: accentColor
-            )
-            FAQRow(
-                question: "What is collar weight?",
-                answer: "Toggles a 2.5 lb collar deduction per side. Enable it if your gym uses locking collars that add meaningful weight to the bar.",
-                isProFeature: false, userIsPro: isPro, accentColor: accentColor
-            )
-            FAQRow(
-                question: "How do I set my plate inventory?",
-                answer: "Go to Settings → Plate Inventory and enable or disable the plates your gym has. Disabled plates are skipped by the calculator. Standard plates (45 lb down to 2.5 lb) are enabled by default.",
-                isProFeature: false, userIsPro: isPro, accentColor: accentColor
-            )
-            FAQRow(
-                question: "What are micro-loading (fractional) plates?",
-                answer: "Ultra-small plates for tiny weight jumps — great for breaking through plateaus on bench press or overhead press. They appear in Settings → Plate Inventory as disabled by default. Toggle them on to include them in calculations. Lbs sizes: 0.25, 0.50, 0.75, 1.00, and 1.25 lb. Kg sizes: 0.25, 0.50, 1.00, 1.50, and 2.00 kg.",
-                isProFeature: false, userIsPro: isPro, accentColor: accentColor
-            )
-            FAQRow(
-                question: "What are plate quantity limits?",
-                answer: "In Settings → Plate Inventory, use the − button next to any enabled plate to set how many of that plate you own. The calculator will never suggest loading more plates than you have available. When you've set quantity limits and a target weight isn't reachable, the readout shows the closest achievable weight followed by \"· Out of Plates\" — the issue is your inventory, not the math. (If you haven't set any quantity limits, the readout shows the usual \"Closest\" warning instead.) In REV mode, plates at their inventory limit are dimmed and tapping them does nothing, with an amber banner above the rack.",
-                isProFeature: true, userIsPro: isPro, accentColor: accentColor
-            )
-            FAQRow(
-                question: "What does \"Check sleeve space\" mean?",
-                answer: "An amber warning that appears below the barbell when 9 or more plates are loaded per side. Most Olympic bar sleeves hold around 8 standard plates before running out of room. Loading is capped at 11 plates per side and 2,000 lb / 907 kg total bar weight.",
-                isProFeature: false, userIsPro: isPro, accentColor: accentColor
-            )
-        }
-    }
-
-    private var modesSection: some View {
-        Section("Modes") {
-            FAQRow(
-                question: "What is CALC mode?",
-                answer: "The main plate calculator. Type a total bar weight and see the exact plates to load per side, with a remainder warning if the weight isn't exactly achievable.",
-                isProFeature: false, userIsPro: isPro, accentColor: accentColor
-            )
-            FAQRow(
-                question: "What is WARMUP mode?",
-                answer: "Automatically generates a warmup ladder based on percentages of your target weight, rounded to loadable plates. Defaults to 50/60/70/80/90%, fully customizable in Settings → Pro — Warmup % (add, remove, or adjust any step, up to 8 total). Tap any row to load that weight into CALC.",
-                isProFeature: true, userIsPro: isPro, accentColor: accentColor
-            )
-            FAQRow(
-                question: "What is 1RM mode?",
-                answer: "Enter a weight and rep count to estimate your one-rep max using the Epley and Brzycki formulas. The average of the Epley and Brzycki figures is shown. Tap the result to load it into CALC — this also saves it as your reference 1RM, so once you're back in CALC, loading 85% or more of it shows a quick \"% of your 1RM\" reminder in the readout, a nudge to grab your belt or wraps. An RPE stepper (6.0–10.0) adds a third, independent RPE Estimate based on the standard RPE-to-%1RM chart used in autoregulated strength training — available for up to 12 reps. If you've set your bodyweight and sex in Settings, a Relative Strength panel below also shows your Wilks, DOTS, and IPF GL Points scores for that lift.",
-                isProFeature: true, userIsPro: isPro, accentColor: accentColor
-            )
-            FAQRow(
-                question: "What are Wilks, DOTS, and IPF GL Points?",
-                answer: "Three real powerlifting formulas that adjust your lift for bodyweight, so you can compare relative strength across different body sizes instead of just raw numbers. They use your estimated 1RM from 1RM mode along with your bodyweight and sex (set in Settings → Pro — Bodyweight & Sex), and all three scores appear together in the 1RM mode panel.",
-                isProFeature: true, userIsPro: isPro, accentColor: accentColor
-            )
-            FAQRow(
-                question: "What is REV (Reverse) mode?",
-                answer: "Build a bar weight by tapping plates one at a time — useful when you're standing at the rack and want to add up what's already loaded. Tap any plate on the barbell to remove it, or use the Undo button to remove the last plate added.",
-                isProFeature: true, userIsPro: isPro, accentColor: accentColor
-            )
-        }
-    }
-
-    private var gesturesSection: some View {
-        Section("Gestures & Controls") {
-            FAQRow(
-                question: "How do I clear the bar with a gesture?",
-                answer: "In CALC mode: long-press the barbell to animate plates flying off, double-tap to reset instantly, or swipe left/right. In REV mode: swipe or long-press the barbell to clear all plates, or tap any individual plate on the barbell to remove it.",
-                isProFeature: false, userIsPro: isPro, accentColor: accentColor
-            )
-            FAQRow(
-                question: "What do the + and − buttons next to the weight do?",
-                answer: "They increment or decrement the weight by the smallest enabled plate × 2 (one increment per side). Useful for fine-tuning without retyping the full number.",
-                isProFeature: false, userIsPro: isPro, accentColor: accentColor
-            )
-            FAQRow(
-                question: "How do I share my lift?",
-                answer: "Tap the share icon in the top toolbar. LiftLogic generates a summary card showing your weight, plate breakdown, and unit — ready to share to Messages, Instagram, or anywhere.",
-                isProFeature: false, userIsPro: isPro, accentColor: accentColor
-            )
-            FAQRow(
-                question: "How do I use the rest timer?",
-                answer: "Tap the timer icon in the top toolbar and pick a preset — the built-in 1:30, 2 min, 3 min, and 5 min chips, plus any named presets you've created. Add your own in Settings → Rest Timer: tap Add Preset, give it a name (e.g. \"Heavy\") and a duration, and it appears as a chip in the timer sheet. Tap a preset in Settings to edit it, or swipe to delete. The countdown appears as a Live Activity on your Lock Screen and in the Dynamic Island, and the timer icon in LiftLogic becomes a live countdown pill — tap it to reopen the controls. Three heavy haptic pulses fire at zero.",
-                isProFeature: true, userIsPro: isPro, accentColor: accentColor
-            )
-        }
-    }
-
-    private var proFeaturesSection: some View {
-        Section("Pro") {
-            FAQRow(
-                question: "What is included in Pro?",
-                answer: "Warmup mode, 1RM estimator, Wilks/DOTS/IPF GL Points relative strength scoring, Reverse mode, bodyweight ratio in the readout, saved setups, Barbell History, rest timer, and plate quantity limits. One-time purchase, no subscription.",
-                isProFeature: false, userIsPro: isPro, accentColor: accentColor
-            )
-            FAQRow(
-                question: "How do I buy Pro?",
-                answer: "Tap the PRO button in the top-right corner of the main screen, or tap any locked mode pill. The price is $0.99 — a one-time purchase with Family Sharing enabled.",
-                isProFeature: false, userIsPro: isPro, accentColor: accentColor
-            )
-            FAQRow(
-                question: "Does Pro work on all my devices?",
-                answer: "Yes. Tap \"Restore Purchases\" in Settings → Pro Status to activate Pro on any iPhone signed into the same Apple ID.",
-                isProFeature: false, userIsPro: isPro, accentColor: accentColor
-            )
-            FAQRow(
-                question: "How do I set my bodyweight ratio?",
-                answer: "Go to Settings → Pro — Bodyweight & Sex and enter your bodyweight. The ratio (e.g. \"1.87× bodyweight\") appears under the main readout and is included in your Share My Lift card. Setting your sex there also unlocks the Wilks/DOTS/IPF GL Points panel in 1RM mode.",
-                isProFeature: true, userIsPro: isPro, accentColor: accentColor
-            )
-            FAQRow(
-                question: "What are saved setups?",
-                answer: "Bookmark any bar configuration — weight, bar type, collar, unit — for one-tap recall. Tap the bookmark icon in the top toolbar to save or load a setup. Tap the export icon to share all your saved setups as a JSON file — handy for backing up or moving to a new device.",
-                isProFeature: true, userIsPro: isPro, accentColor: accentColor
-            )
-            FAQRow(
-                question: "What is Barbell History?",
-                answer: "LiftLogic automatically remembers your last 10 distinct barbell configurations (weight, bar, collar, unit) as you use CALC mode — no need to save anything manually. Tap the bookmark icon, and you'll see a \"Recent\" section above your Saved Setups. Tap any entry to reload it instantly.",
-                isProFeature: true, userIsPro: isPro, accentColor: accentColor
-            )
-            FAQRow(
-                question: "What is Lifting Partner Mode?",
-                answer: "Show a QR code of your current setup (weight, bar, collar, unit) for a training partner to scan — tap the new QR icon in the top toolbar, then \"Show My QR Code\" or \"Scan Partner's Code\". Scanning shows a confirmation before loading anything, and requires camera access.",
-                isProFeature: true, userIsPro: isPro, accentColor: accentColor
-            )
-            FAQRow(
-                question: "What is Decimal Precision Lock?",
-                answer: "Rounds any weight you commit to the nearest increment actually loadable with your enabled plates — so you never end up with a target that isn't physically achievable. Works in both lbs and kg. Turn it on in Settings.",
-                isProFeature: true, userIsPro: isPro, accentColor: accentColor
-            )
-            FAQRow(
-                question: "Can I change the accent color?",
-                answer: "Yes — pick from 4 colors (Orange, Blue, Teal, Pink) in Settings → Pro — Accent Color. Applies everywhere the accent appears, including your Share My Lift card.",
-                isProFeature: true, userIsPro: isPro, accentColor: accentColor
-            )
-        }
     }
 
     // MARK: — Search index
