@@ -499,6 +499,49 @@ struct CalculatorViewModelTests {
         #expect(mostRecent?.isSingleSided == true)
     }
 
+    // MARK: — applyConfiguration (#9)
+
+    @Test func applyConfigurationSetsAllFieldsAndLoadsWeight() {
+        let settings = freshSettings()
+        let vm = CalculatorViewModel(settings: settings)
+        vm.applyConfiguration(weight: 150, barType: .olympic20kg, customBarWeight: nil,
+                               collarType: .competition, unit: .kg, isSingleSided: true)
+        #expect(vm.selectedBar == .olympic20kg)
+        #expect(vm.collarType == .competition)
+        #expect(vm.isSingleSided == true)
+        #expect(settings.unit == .kg)
+        #expect(vm.targetWeight == 150)
+    }
+
+    @Test func applyConfigurationWritesCustomBarWeightWhenBarIsCustom() {
+        let settings = freshSettings()
+        settings.customBarWeight = 45
+        let vm = CalculatorViewModel(settings: settings)
+        vm.applyConfiguration(weight: 100, barType: .custom, customBarWeight: 33,
+                               collarType: .none, unit: .lbs, isSingleSided: false)
+        #expect(vm.selectedBar == .custom)
+        #expect(settings.customBarWeight == 33)
+    }
+
+    @Test func applyConfigurationLeavesCustomBarWeightUntouchedWhenBarIsNotCustom() {
+        let settings = freshSettings()
+        settings.customBarWeight = 45
+        let vm = CalculatorViewModel(settings: settings)
+        vm.applyConfiguration(weight: 100, barType: .olympic45lb, customBarWeight: 33,
+                               collarType: .none, unit: .lbs, isSingleSided: false)
+        #expect(vm.selectedBar == .olympic45lb)
+        #expect(settings.customBarWeight == 45)   // untouched — not a custom bar, passed value ignored
+    }
+
+    @Test func applyConfigurationThreadsCustomBarWeightIntoRecordedHistory() {
+        let settings = freshSettings()
+        settings.isPro = true
+        let vm = CalculatorViewModel(settings: settings)
+        vm.applyConfiguration(weight: 100, barType: .custom, customBarWeight: 33,
+                               collarType: .none, unit: .lbs, isSingleSided: false)
+        #expect(settings.barbellHistory.first?.customBarWeight == 33)
+    }
+
     // MARK: — Warmup percentage wiring (#58)
 
     @Test func warmupSetsReflectCustomPercentages() {

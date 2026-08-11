@@ -195,6 +195,21 @@ final class CalculatorViewModel {
         commitWeight(suppressDelta: true)   // chip tap = "this is what I'm loading", no delta banner
     }
 
+    /// Applies a full saved/scanned configuration in one step: bar, collar, sidedness, unit, and
+    /// (for a custom bar) the bar's weight, then loads the target weight. Centralizes what
+    /// SavedSetupsView and ScanPartnerView each used to reimplement separately.
+    func applyConfiguration(weight: Double, barType: BarType, customBarWeight: Double?,
+                             collarType: CollarType, unit: WeightUnit, isSingleSided: Bool) {
+        selectedBar = barType
+        if barType == .custom, let customBarWeight {
+            settings.customBarWeight = customBarWeight
+        }
+        self.collarType = collarType
+        self.isSingleSided = isSingleSided
+        settings.unit = unit
+        loadWeight(weight)
+    }
+
     /// Increments each time commitWeight() fires — used by CalcModeView to
     /// show the delta toast only after the debounce settles, not mid-keystroke.
     private(set) var commitRevision: Int = 0
@@ -209,7 +224,9 @@ final class CalculatorViewModel {
         WidgetDataStore.recordLastUsedWeight(targetWeight, unit: settings.unit)
         WidgetCenter.shared.reloadTimelines(ofKind: "LastWeightWidget")
         if settings.isPro {
-            settings.recordHistory(weight: targetWeight, barType: selectedBar, collarType: collarType, unit: settings.unit, isSingleSided: isSingleSided)
+            settings.recordHistory(weight: targetWeight, barType: selectedBar, collarType: collarType,
+                                    unit: settings.unit, isSingleSided: isSingleSided,
+                                    customBarWeight: selectedBar == .custom ? settings.customBarWeight : nil)
         }
         settings.successfulCalculationCount += 1
         lastDelta = suppressDelta ? [] : plateDelta   // snapshot diff before advancing baseline (unless caller wants it suppressed)
