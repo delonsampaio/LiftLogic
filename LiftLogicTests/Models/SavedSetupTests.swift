@@ -44,4 +44,25 @@ struct SavedSetupTests {
         let decoded = try JSONDecoder().decode([SavedSetup].self, from: data)
         #expect(decoded == setups)
     }
+
+    @Test func savedSetupWithCustomBarWeightRoundTripsThroughCodable() throws {
+        let setup = SavedSetup(id: UUID(), name: "Custom Bar Squat", weight: 225, barType: .custom,
+                                collarType: .none, unit: .lbs, isSingleSided: false,
+                                customBarWeight: 33, createdAt: Date(timeIntervalSince1970: 0))
+        let data = try JSONEncoder().encode(setup)
+        let decoded = try JSONDecoder().decode(SavedSetup.self, from: data)
+        #expect(decoded == setup)
+        #expect(decoded.customBarWeight == 33)
+    }
+
+    @Test func savedSetupDecodesLegacyJSONMissingCustomBarWeightAsNil() throws {
+        let legacyJSON = """
+        {"id":"00000000-0000-0000-0000-000000000001","name":"Squat","weight":225,
+        "barType":"olympic45lb","collarType":"none","unit":"lbs","isSingleSided":false,
+        "createdAt":0}
+        """.data(using: .utf8)!
+        let decoded = try JSONDecoder().decode(SavedSetup.self, from: legacyJSON)
+        #expect(decoded.customBarWeight == nil)
+        #expect(decoded.name == "Squat")
+    }
 }
