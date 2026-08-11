@@ -144,6 +144,7 @@ struct CalculatorViewModelTests {
 
     @Test func reverseAllInventoryExhaustedWhenLimitReached() {
         let settings = freshSettings()
+        settings.isPro = true
         settings.lbsInventory = [PlateInventoryItem(weight: 45, isEnabled: true, quantity: 2)]
         let vm = CalculatorViewModel(settings: settings)
         #expect(!vm.reverseAllInventoryExhausted)
