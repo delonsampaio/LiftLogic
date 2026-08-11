@@ -65,7 +65,7 @@ struct HelpView: View {
         .init(section: "Getting Started", question: "What is the add / remove per side banner?", answer: "After you load a weight and then change it, a toast appears showing exactly which plates to add or remove per side. Green entries mean add, amber means remove. Tap × to dismiss it. By default it stays until dismissed — go to Settings → Calculator to turn it off or set an auto-dismiss timer with your own duration."),
         .init(section: "Getting Started", question: "Is there a Home Screen or Lock Screen widget?", answer: "Yes — add the LiftLogic widget to your Home Screen or Lock Screen to see the last weight you calculated. Tap it to reopen the app with that weight loaded straight into CALC."),
         .init(section: "Getting Started", question: "Can I use Siri to load a weight?", answer: "Yes — say \"Load a weight in LiftLogic,\" tell Siri the number when asked, and the app opens straight into CALC mode with that weight ready to go."),
-        .init(section: "Plates & Bar", question: "How do I change the bar weight?", answer: "Tap the bar picker in the quick toggle strip below the barbell. Choose Olympic (45 lb / 20 kg), Women's (35 lb / 15 kg), Trap/Hex (55 lb), Safety Squat (65 lb), EZ Curl (25 lb), or enter a custom weight."),
+        .init(section: "Plates & Bar", question: "How do I change the bar weight?", answer: "Tap the bar picker in the quick toggle strip below the barbell. Choose Olympic (45 lb), Women's (35 lb), Olympic (20 kg), Women's (15 kg), Trap / Hex (55 lb), Safety Squat (65 lb), EZ Curl (25 lb), or enter a custom weight."),
         .init(section: "Plates & Bar", question: "What is Single Side mode?", answer: "When enabled, the calculator treats your typed weight as the total for one side only — useful for loading a landmine, single-arm attachment, or any non-symmetric setup."),
         .init(section: "Plates & Bar", question: "What is collar weight?", answer: "Cycles through three options: no collar, Spring Clip (0.5 lb / 0.23 kg per side), or Competition (5.5 lb / 2.5 kg per side). Its weight counts toward your target, so the calculator loads fewer plates to compensate."),
         .init(section: "Plates & Bar", question: "How do I set my plate inventory?", answer: "Go to Settings → Plate Inventory and enable or disable the plates your gym has. Disabled plates are skipped by the calculator. Standard plates (45 lb down to 2.5 lb) are enabled by default."),
@@ -127,6 +127,6 @@ private struct FAQRow: View {
             }
         }
         .tint(accentColor)
-        .onAppear { if startExpanded { expanded = true } }
+        .onChange(of: startExpanded, initial: true) { _, newValue in expanded = newValue }
     }
 }
