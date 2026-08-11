@@ -81,8 +81,10 @@ struct RestTimerLiveActivity: Widget {
     private func timerText(context: ActivityViewContext<RestTimerAttributes>) -> some View {
         if context.state.isPaused {
             Text(formatPaused(context.state.pausedRemaining))
-        } else {
+        } else if context.state.endDate > Date() {
             Text(timerInterval: Date()...context.state.endDate, countsDown: true)
+        } else {
+            Text("0:00")
         }
     }
 
