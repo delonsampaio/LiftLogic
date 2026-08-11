@@ -209,14 +209,15 @@ final class AppSettings {
 
     /// Records a config, promoting an existing identical config to the front instead of
     /// duplicating it, then caps the list at the 10 most recent distinct configs.
-    func recordHistory(weight: Double, barType: BarType, collarType: CollarType, unit: WeightUnit, isSingleSided: Bool) {
+    func recordHistory(weight: Double, barType: BarType, collarType: CollarType, unit: WeightUnit,
+                        isSingleSided: Bool, customBarWeight: Double? = nil) {
         barbellHistory.removeAll {
             $0.weight == weight && $0.barType == barType && $0.collarType == collarType &&
-            $0.unit == unit && $0.isSingleSided == isSingleSided
+            $0.unit == unit && $0.isSingleSided == isSingleSided && $0.customBarWeight == customBarWeight
         }
         let entry = BarbellHistoryEntry(
             id: UUID(), weight: weight, barType: barType, collarType: collarType,
-            unit: unit, isSingleSided: isSingleSided, recordedAt: Date()
+            unit: unit, isSingleSided: isSingleSided, customBarWeight: customBarWeight, recordedAt: Date()
         )
         barbellHistory.insert(entry, at: 0)
         barbellHistory = Array(barbellHistory.prefix(10))

@@ -226,6 +226,15 @@ struct AppSettingsTests {
         #expect(s.barbellHistory.count == 2)
     }
 
+    @Test func recordHistoryTreatsDifferentCustomBarWeightAsDistinctConfig() {
+        let s = freshSettings()
+        s.recordHistory(weight: 225, barType: .custom, collarType: .none, unit: .lbs,
+                         isSingleSided: false, customBarWeight: 33)
+        s.recordHistory(weight: 225, barType: .custom, collarType: .none, unit: .lbs,
+                         isSingleSided: false, customBarWeight: 40)
+        #expect(s.barbellHistory.count == 2)
+    }
+
     @Test func recordHistoryCapsAtTenMostRecent() {
         let s = freshSettings()
         for i in 1...11 {
