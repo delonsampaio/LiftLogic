@@ -4,10 +4,7 @@ struct SettingsView: View {
     let settings: AppSettings
     let vm: CalculatorViewModel
     let store: StoreKitService
-    @State private var showCustomBarSheet = false
-    @State private var customBarInput = ""
     @FocusState private var numericFieldFocused: Bool
-    @FocusState private var customBarFocused: Bool
     @State private var editingPreset: RestTimerPreset?
     @State private var showNewPresetSheet = false
     @Environment(\.dismiss) var dismiss
@@ -30,25 +27,16 @@ struct SettingsView: View {
 
                 // Bar
                 Section("Default Bar") {
-                    ForEach(BarType.allCases) { bar in
+                    NavigationLink {
+                        DefaultBarPickerView(settings: settings)
+                    } label: {
                         HStack {
-                            Text(bar == .custom
-                                 ? "Custom (\(String(format: "%.1f", settings.customBarWeight)) \(settings.unit.symbol))"
-                                 : bar.displayName)
+                            Text("Default Bar")
                             Spacer()
-                            if settings.defaultBar == bar {
-                                Image(systemName: "checkmark")
-                                    .foregroundStyle(settings.accentColor)
-                            }
-                        }
-                        .contentShape(Rectangle())
-                        .onTapGesture {
-                            if bar == .custom {
-                                customBarInput = String(settings.customBarWeight)
-                                showCustomBarSheet = true
-                            } else {
-                                settings.defaultBar = bar
-                            }
+                            Text(settings.defaultBar == .custom
+                                 ? "Custom (\(String(format: "%.1f", settings.customBarWeight)) \(settings.unit.symbol))"
+                                 : settings.defaultBar.displayName)
+                                .foregroundStyle(ThemeTokens.textMuted)
                         }
                     }
                 }
@@ -302,9 +290,6 @@ struct SettingsView: View {
                 }
             }
         }
-        .sheet(isPresented: $showCustomBarSheet) {
-            customBarWeightSheet
-        }
         .sheet(isPresented: $showNewPresetSheet) {
             TimerPresetEditorSheet(initialName: "", initialSeconds: 120, accentColor: settings.accentColor) { name, seconds in
                 settings.addTimerPreset(name: name, seconds: seconds)
@@ -317,73 +302,9 @@ struct SettingsView: View {
         }
     }
 
-    private var customBarInputValue: Double? {
-        guard let value = Double(customBarInput), value > 0,
-              value <= (settings.unit == .lbs ? 2000 : 907)
-        else { return nil }
-        return value
-    }
-
     private var bodyweightRange: ClosedRange<Double> {
         let lo = WeightUnit.kg.convert(20, to: settings.unit)
         let hi = WeightUnit.kg.convert(300, to: settings.unit)
         return lo...hi
-    }
-
-    private var customBarWeightSheet: some View {
-        NavigationStack {
-            VStack(spacing: 20) {
-                Text("Enter Custom Bar Weight")
-                    .font(.headline)
-                    .foregroundStyle(ThemeTokens.textPrimary)
-                HStack {
-                    TextField("45", text: $customBarInput)
-                        .keyboardType(.decimalPad)
-                        .focused($customBarFocused)
-                        .font(.largeTitle.weight(.bold))
-                        .monospaced()
-                        .foregroundStyle(ThemeTokens.textPrimary)
-                        .multilineTextAlignment(.center)
-                    Text(settings.unit.symbol)
-                        .foregroundStyle(ThemeTokens.textMuted)
-                        .font(.title2)
-                }
-                .padding()
-                .background(RoundedRectangle(cornerRadius: 12).fill(ThemeTokens.backgroundCard))
-                .padding(.horizontal)
-
-                if !customBarInput.isEmpty && customBarInputValue == nil {
-                    Text("Enter a number between 0 and \(settings.unit == .lbs ? 2000 : 907)")
-                        .font(.caption)
-                        .foregroundStyle(ThemeTokens.warningAmber)
-                }
-
-                Spacer()
-            }
-            .padding(.top, 32)
-            .background(ThemeTokens.backgroundPrimary.ignoresSafeArea())
-            .navigationTitle("Custom Bar")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Button("Cancel") { showCustomBarSheet = false }
-                }
-                ToolbarItemGroup(placement: .keyboard) {
-                    Spacer()
-                    Button("Done") { customBarFocused = false }
-                }
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button("Save") {
-                        if let value = customBarInputValue {
-                            settings.customBarWeight = value
-                            settings.defaultBar = .custom
-                            showCustomBarSheet = false
-                        }
-                    }
-                    .foregroundStyle(customBarInputValue == nil ? ThemeTokens.textMuted : settings.accentColor)
-                    .disabled(customBarInputValue == nil)
-                }
-            }
-        }
     }
 }
