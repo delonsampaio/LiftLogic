@@ -629,35 +629,43 @@ struct CalculatorViewModelTests {
         let vm = CalculatorViewModel(settings: settings)
         vm.appendDigit("2"); vm.appendDigit("2"); vm.appendDigit("5")
         vm.commitWeight()
+        vm.loadWeight(vm.warmupSets.first!.targetWeight)   // establishes a frozen goal via recall
         #expect(vm.warmupGoalWeight == 225)
 
         vm.resetWeight()
         #expect(vm.warmupGoalWeight == nil)
     }
 
-    @Test func enteringWarmupModeCapturesGoalBeforeFirstCommit() {
-        let settings = freshSettings()
-        let vm = CalculatorViewModel(settings: settings)
-        vm.appendDigit("2"); vm.appendDigit("2"); vm.appendDigit("5")
-        #expect(vm.warmupGoalWeight == nil)   // debounce hasn't fired yet in this test
-
-        vm.currentMode = .warmup
-
-        #expect(vm.warmupGoalWeight == 225)
-    }
-
-    @Test func reenteringWarmupModeDoesNotClobberAnEstablishedGoal() {
+    // Regression test for the actual bug report: typing a genuinely new number (with no
+    // warmup row ever tapped) must update the ladder immediately, without depending on
+    // whether commitWeight()'s debounce has fired yet.
+    @Test func warmupUpdatesImmediatelyWhenTypingANewNumberWithNoRecallInEffect() {
         let settings = freshSettings()
         let vm = CalculatorViewModel(settings: settings)
         vm.appendDigit("2"); vm.appendDigit("2"); vm.appendDigit("5")
         vm.commitWeight()
-        vm.currentMode = .warmup
-        vm.loadWeight(vm.warmupSets.first!.targetWeight)   // -> back to .calc with a different weight
-        vm.currentMode = .calc
+        #expect(vm.warmupSets.last?.targetWeight == 225)
 
-        vm.currentMode = .warmup   // re-entering must not re-capture the now-different live weight
+        vm.resetWeight()
+        vm.appendDigit("3"); vm.appendDigit("1"); vm.appendDigit("5")
+        // Deliberately no commitWeight() call here — this is the exact race from the bug
+        // report: the ladder must already reflect 315 before any debounce fires.
 
+        #expect(vm.warmupSets.last?.targetWeight == 315)
+    }
+
+    @Test func directlyEditingTheNumberAfterARecallClearsTheFrozenGoal() {
+        let settings = freshSettings()
+        let vm = CalculatorViewModel(settings: settings)
+        vm.appendDigit("2"); vm.appendDigit("2"); vm.appendDigit("5")
+        vm.commitWeight()
+        vm.loadWeight(vm.warmupSets.first!.targetWeight)   // establishes a frozen goal = 225
         #expect(vm.warmupGoalWeight == 225)
+
+        vm.appendDigit("0")   // user directly edits the recalled number
+
+        #expect(vm.warmupGoalWeight == nil)
+        #expect(vm.warmupSets.last?.targetWeight == vm.targetWeight)  // ladder now tracks the live number
     }
 
     @Test func warmupSetsOmitDuplicateGoalRowWhenUserAlreadyConfiguredA100PercentStep() {

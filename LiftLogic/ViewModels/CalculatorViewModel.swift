@@ -5,19 +5,7 @@ import WidgetKit
 @Observable
 final class CalculatorViewModel {
     var inputString: String = ""
-    var currentMode: AppMode = .calc {
-        didSet {
-            // Closes a timing gap: if the user navigates to WARMUP before the numpad's
-            // debounce has committed once, there's no frozen goal yet — fall back to
-            // capturing the live weight immediately rather than waiting on the debounce.
-            // Only fires when no goal is established yet (nil), so it never overwrites
-            // a real goal just because the user is re-entering WARMUP after loading a
-            // warmup step back into CALC.
-            if currentMode == .warmup, warmupGoalWeight == nil, targetWeight > 0 {
-                warmupGoalWeight = targetWeight
-            }
-        }
-    }
+    var currentMode: AppMode = .calc
     var selectedBar: BarType
     var collarType: CollarType = .none
     var isSingleSided: Bool = false
@@ -58,13 +46,16 @@ final class CalculatorViewModel {
         )
     }
 
-    /// Frozen target the WARMUP % ladder is computed from — set the moment the user commits
-    /// a weight by typing/nudging it directly, but NOT when a weight is merely recalled via
-    /// `loadWeight` (a warmup row tap, a recent chip, a saved setup, etc.). Without this,
-    /// tapping any warmup row overwrites `targetWeight` with that row's own weight, which
-    /// would silently destroy the original goal and make WARMUP recompute a warmup-of-a-warmup
-    /// the next time it's opened. `nil` until the first real commit; `warmupSets` falls back
-    /// to the live `targetWeight` until then.
+    /// Frozen target the WARMUP % ladder is computed from, whenever it's non-nil. `nil` means
+    /// "no recall is in effect" — `warmupSets` falls back to the live `targetWeight`, so typing
+    /// or nudging a number always shows that number's own ladder immediately, with no dependency
+    /// on the numpad debounce having fired yet.
+    ///
+    /// Set only by `loadWeight` (a warmup row tap, a recent chip, a saved setup, etc.), which
+    /// snapshots whatever was live *before* it overwrites `targetWeight` with the recalled value
+    /// — so the original goal survives being overwritten by that recall. Cleared by any direct
+    /// edit (`appendDigit`, `deleteLastDigit`, `increment`, `decrement`, `resetWeight`), since at
+    /// that point the user is declaring a genuinely new target and any frozen goal is stale.
     var warmupGoalWeight: Double? = nil
 
     var warmupSets: [WarmupSet] {
@@ -189,6 +180,7 @@ final class CalculatorViewModel {
     private var suppressNextCommit = false
 
     func appendDigit(_ digit: String) {
+        warmupGoalWeight = nil   // direct edit — any frozen goal from a prior recall is now stale
         if digit == "." && inputString.contains(".") { return }
         if inputString == "0" && digit != "." { inputString = digit; return }
         inputString.append(contentsOf: digit)
@@ -200,6 +192,7 @@ final class CalculatorViewModel {
 
     func deleteLastDigit() {
         guard !inputString.isEmpty else { return }
+        warmupGoalWeight = nil   // direct edit — see appendDigit
         inputString.removeLast()
     }
 
@@ -214,6 +207,7 @@ final class CalculatorViewModel {
         let step = smallestEnabledPlate * 2
         let newValue = min(targetWeight + step, maxInputWeight)
         inputString = newValue.weightStringPrecise
+        warmupGoalWeight = nil   // direct edit — see appendDigit
         commitWeight(suppressDelta: true)   // explicit action — user is loading this, no delta banner
     }
 
@@ -221,20 +215,25 @@ final class CalculatorViewModel {
         let step = smallestEnabledPlate * 2
         let newValue = max(0, targetWeight - step)
         inputString = newValue == 0 ? "" : newValue.weightStringPrecise
+        warmupGoalWeight = nil   // direct edit — see appendDigit
         if newValue == 0 {
             committedResult = nil
             lastDelta = []
-            warmupGoalWeight = nil
         } else {
             commitWeight(suppressDelta: true)
         }
     }
 
     func loadWeight(_ value: Double) {
+        // Snapshot whatever's live BEFORE this recall overwrites it, so the real goal survives —
+        // but only if nothing's frozen yet, so tapping a 2nd/3rd warmup row in a row doesn't
+        // clobber the original goal with an intermediate recalled value. See warmupGoalWeight's
+        // doc comment.
+        if warmupGoalWeight == nil, targetWeight > 0 {
+            warmupGoalWeight = targetWeight
+        }
         inputString = min(value, maxInputWeight).weightStringPrecise
-        // updatesWarmupGoal: false — this is a recall (chip/warmup row/saved setup/etc.), not
-        // the user declaring a new target; see warmupGoalWeight's doc comment.
-        commitWeight(suppressDelta: true, updatesWarmupGoal: false)
+        commitWeight(suppressDelta: true)
     }
 
     /// Applies a full saved/scanned configuration in one step: bar, collar, sidedness, unit, and
@@ -258,11 +257,10 @@ final class CalculatorViewModel {
 
     /// Captures the current delta into lastDelta, then advances committedResult
     /// to the current weight. Called by the 1.2 s debounce and explicit actions.
-    func commitWeight(suppressDelta: Bool = false, updatesWarmupGoal: Bool = true) {
+    func commitWeight(suppressDelta: Bool = false) {
         if suppressNextCommit { suppressNextCommit = false; return }
         guard targetWeight >= resolvedBarWeight, targetWeight > 0 else { return }
         applyDecimalPrecisionLockIfNeeded()
-        if updatesWarmupGoal { warmupGoalWeight = targetWeight }
         settings.addRecentWeight(targetWeight)
         WidgetDataStore.recordLastUsedWeight(targetWeight, unit: settings.unit)
         WidgetCenter.shared.reloadTimelines(ofKind: "LastWeightWidget")
