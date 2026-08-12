@@ -1,10 +1,12 @@
 {
   "images" : [
     {
+      "filename" : "LiftLogicIcon-1x.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
+      "filename" : "LiftLogicIcon-2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
