@@ -38,9 +38,6 @@ struct WarmupModeView: View {
     private func warmupRow(_ set: WarmupSet) -> some View {
         Button {
             vm.loadWeight(set.targetWeight)
-            withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
-                vm.currentMode = .calc
-            }
             HapticManager.shared.numpadKey()
         } label: {
             HStack {
