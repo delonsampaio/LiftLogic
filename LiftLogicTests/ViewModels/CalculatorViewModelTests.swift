@@ -575,7 +575,103 @@ struct CalculatorViewModelTests {
         let vm = CalculatorViewModel(settings: settings)
         vm.appendDigit("2"); vm.appendDigit("0"); vm.appendDigit("0")
 
-        #expect(vm.warmupSets.map(\.percentage) == [40, 50])
+        // Trailing 100 is the always-present goal row (see warmupGoalWeight), not a 3rd
+        // configured step — settings.warmupPercentages here is still just [40, 50].
+        #expect(vm.warmupSets.map(\.percentage) == [40, 50, 100])
+    }
+
+    // MARK: — Warmup goal weight preservation (manual-testing bug fix)
+
+    @Test func warmupSetsSurviveLoadingAStepBackIntoCalc() {
+        let settings = freshSettings()
+        let vm = CalculatorViewModel(settings: settings)
+        vm.appendDigit("2"); vm.appendDigit("2"); vm.appendDigit("5")
+        vm.commitWeight()
+        let originalPercentages = vm.warmupSets.map(\.percentage)
+        let originalTargets = vm.warmupSets.map(\.targetWeight)
+
+        // Simulate tapping a warmup row: it loads that step's weight back into CALC.
+        let stepWeight = vm.warmupSets.first!.targetWeight
+        vm.loadWeight(stepWeight)
+
+        #expect(vm.targetWeight == stepWeight)          // CALC really did change
+        #expect(vm.warmupSets.map(\.percentage) == originalPercentages)
+        #expect(vm.warmupSets.map(\.targetWeight) == originalTargets)  // table unchanged
+    }
+
+    @Test func warmupSetsIncludeExactGoalAsA100PercentRow() {
+        let settings = freshSettings()
+        let vm = CalculatorViewModel(settings: settings)
+        vm.appendDigit("2"); vm.appendDigit("2"); vm.appendDigit("2"); vm.appendDigit(".")
+        vm.appendDigit("5")
+        vm.commitWeight()
+
+        let goalRow = vm.warmupSets.last
+        #expect(goalRow?.percentage == 100)
+        #expect(goalRow?.targetWeight == 222.5)   // exact, not percentage-rounded
+    }
+
+    @Test func tappingTheGoalRowReloadsTheExactOriginalWeight() {
+        let settings = freshSettings()
+        let vm = CalculatorViewModel(settings: settings)
+        vm.appendDigit("2"); vm.appendDigit("2"); vm.appendDigit("5")
+        vm.commitWeight()
+
+        vm.loadWeight(vm.warmupSets.first!.targetWeight)  // wander off to another step first
+        #expect(vm.targetWeight != 225)
+
+        vm.loadWeight(vm.warmupSets.last!.targetWeight)   // tap the 100% row
+        #expect(vm.targetWeight == 225)
+    }
+
+    @Test func resetWeightClearsTheWarmupGoal() {
+        let settings = freshSettings()
+        let vm = CalculatorViewModel(settings: settings)
+        vm.appendDigit("2"); vm.appendDigit("2"); vm.appendDigit("5")
+        vm.commitWeight()
+        #expect(vm.warmupGoalWeight == 225)
+
+        vm.resetWeight()
+        #expect(vm.warmupGoalWeight == nil)
+    }
+
+    @Test func enteringWarmupModeCapturesGoalBeforeFirstCommit() {
+        let settings = freshSettings()
+        let vm = CalculatorViewModel(settings: settings)
+        vm.appendDigit("2"); vm.appendDigit("2"); vm.appendDigit("5")
+        #expect(vm.warmupGoalWeight == nil)   // debounce hasn't fired yet in this test
+
+        vm.currentMode = .warmup
+
+        #expect(vm.warmupGoalWeight == 225)
+    }
+
+    @Test func reenteringWarmupModeDoesNotClobberAnEstablishedGoal() {
+        let settings = freshSettings()
+        let vm = CalculatorViewModel(settings: settings)
+        vm.appendDigit("2"); vm.appendDigit("2"); vm.appendDigit("5")
+        vm.commitWeight()
+        vm.currentMode = .warmup
+        vm.loadWeight(vm.warmupSets.first!.targetWeight)   // -> back to .calc with a different weight
+        vm.currentMode = .calc
+
+        vm.currentMode = .warmup   // re-entering must not re-capture the now-different live weight
+
+        #expect(vm.warmupGoalWeight == 225)
+    }
+
+    @Test func warmupSetsOmitDuplicateGoalRowWhenUserAlreadyConfiguredA100PercentStep() {
+        let settings = freshSettings()
+        settings.addWarmupPercentage()  // default steps top out at 90; keep adding to reach 100
+        while settings.warmupPercentages.map(\.percentage).max() != 100 {
+            settings.addWarmupPercentage()
+        }
+        let vm = CalculatorViewModel(settings: settings)
+        vm.appendDigit("2"); vm.appendDigit("2"); vm.appendDigit("5")
+        vm.commitWeight()
+
+        let hundredRows = vm.warmupSets.filter { $0.percentage == 100 }
+        #expect(hundredRows.count == 1)
     }
 
     // MARK: — Decimal precision lock (#60)

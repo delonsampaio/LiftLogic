@@ -5,7 +5,19 @@ import WidgetKit
 @Observable
 final class CalculatorViewModel {
     var inputString: String = ""
-    var currentMode: AppMode = .calc
+    var currentMode: AppMode = .calc {
+        didSet {
+            // Closes a timing gap: if the user navigates to WARMUP before the numpad's
+            // debounce has committed once, there's no frozen goal yet — fall back to
+            // capturing the live weight immediately rather than waiting on the debounce.
+            // Only fires when no goal is established yet (nil), so it never overwrites
+            // a real goal just because the user is re-entering WARMUP after loading a
+            // warmup step back into CALC.
+            if currentMode == .warmup, warmupGoalWeight == nil, targetWeight > 0 {
+                warmupGoalWeight = targetWeight
+            }
+        }
+    }
     var selectedBar: BarType
     var collarType: CollarType = .none
     var isSingleSided: Bool = false
@@ -46,16 +58,42 @@ final class CalculatorViewModel {
         )
     }
 
+    /// Frozen target the WARMUP % ladder is computed from — set the moment the user commits
+    /// a weight by typing/nudging it directly, but NOT when a weight is merely recalled via
+    /// `loadWeight` (a warmup row tap, a recent chip, a saved setup, etc.). Without this,
+    /// tapping any warmup row overwrites `targetWeight` with that row's own weight, which
+    /// would silently destroy the original goal and make WARMUP recompute a warmup-of-a-warmup
+    /// the next time it's opened. `nil` until the first real commit; `warmupSets` falls back
+    /// to the live `targetWeight` until then.
+    var warmupGoalWeight: Double? = nil
+
     var warmupSets: [WarmupSet] {
-        WarmupEngine.calculate(
-            target: targetWeight,
+        let goal = warmupGoalWeight ?? targetWeight
+        let configuredPercentages = settings.warmupPercentages.map(\.percentage)
+        let steps = WarmupEngine.calculate(
+            target: goal,
             barWeight: resolvedBarWeight,
             collarWeight: resolvedCollarWeight,
             inventory: settings.activeInventory,
             unit: settings.unit,
             isSingleSided: isSingleSided,
-            percentages: settings.warmupPercentages.map(\.percentage)
+            percentages: configuredPercentages
         )
+        // Always-present "100%" row so the goal itself is one tap away, reusing the same
+        // row-tap-to-load interaction as every other step. Skipped if the user has already
+        // customized their own ladder to include a 100% step (avoids a duplicate WarmupSet.id,
+        // which is keyed by percentage) — and skipped for a zero/uncommitted goal, matching
+        // WarmupEngine's own behavior of returning an empty table via the placeholder above it.
+        guard goal > 0, !configuredPercentages.contains(100) else { return steps }
+        let goalResult = CalculatorEngine.calculate(
+            target: goal,
+            barWeight: resolvedBarWeight,
+            collarWeight: resolvedCollarWeight,
+            inventory: settings.activeInventory,
+            unit: settings.unit,
+            isSingleSided: isSingleSided
+        )
+        return steps + [WarmupSet(percentage: 100, targetWeight: goal, platesPerSide: goalResult.platesPerSide)]
     }
 
     var oneRMResult: OneRMResult {
@@ -169,6 +207,7 @@ final class CalculatorViewModel {
         inputString = ""
         committedResult = nil
         lastDelta = []
+        warmupGoalWeight = nil
     }
 
     func increment() {
@@ -185,6 +224,7 @@ final class CalculatorViewModel {
         if newValue == 0 {
             committedResult = nil
             lastDelta = []
+            warmupGoalWeight = nil
         } else {
             commitWeight(suppressDelta: true)
         }
@@ -192,7 +232,9 @@ final class CalculatorViewModel {
 
     func loadWeight(_ value: Double) {
         inputString = min(value, maxInputWeight).weightStringPrecise
-        commitWeight(suppressDelta: true)   // chip tap = "this is what I'm loading", no delta banner
+        // updatesWarmupGoal: false — this is a recall (chip/warmup row/saved setup/etc.), not
+        // the user declaring a new target; see warmupGoalWeight's doc comment.
+        commitWeight(suppressDelta: true, updatesWarmupGoal: false)
     }
 
     /// Applies a full saved/scanned configuration in one step: bar, collar, sidedness, unit, and
@@ -216,10 +258,11 @@ final class CalculatorViewModel {
 
     /// Captures the current delta into lastDelta, then advances committedResult
     /// to the current weight. Called by the 1.2 s debounce and explicit actions.
-    func commitWeight(suppressDelta: Bool = false) {
+    func commitWeight(suppressDelta: Bool = false, updatesWarmupGoal: Bool = true) {
         if suppressNextCommit { suppressNextCommit = false; return }
         guard targetWeight >= resolvedBarWeight, targetWeight > 0 else { return }
         applyDecimalPrecisionLockIfNeeded()
+        if updatesWarmupGoal { warmupGoalWeight = targetWeight }
         settings.addRecentWeight(targetWeight)
         WidgetDataStore.recordLastUsedWeight(targetWeight, unit: settings.unit)
         WidgetCenter.shared.reloadTimelines(ofKind: "LastWeightWidget")
