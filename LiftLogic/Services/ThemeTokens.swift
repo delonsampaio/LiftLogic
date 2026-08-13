@@ -63,11 +63,6 @@ enum ThemeTokens {
             }
         }
     }
-
-    // Fonts
-    static let readoutFont    = Font.system(size: 72, weight: .black, design: .rounded)
-    static let readoutSubFont = Font.system(size: 16, weight: .medium)
-    static let numpadFont     = Font.system(size: 28, weight: .semibold, design: .rounded)
 }
 
 enum AccentColorOption: String, CaseIterable, Identifiable {

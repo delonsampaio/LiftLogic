@@ -5,7 +5,7 @@ struct ReverseModeView: View {
     let settings: AppSettings
 
     @Environment(\.horizontalSizeClass) private var sizeClass
-    private var scale: CGFloat { sizeClass == .regular ? 1.4 : 1.0 }
+    private var scale: CGFloat { sizeClass == .regular ? 1.7 : 1.0 }
 
     var body: some View {
         VStack(spacing: 12) {

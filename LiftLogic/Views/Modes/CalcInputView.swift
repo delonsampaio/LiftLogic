@@ -7,7 +7,7 @@ struct CalcInputView: View {
     let settings: AppSettings
 
     @Environment(\.horizontalSizeClass) private var sizeClass
-    private var scale: CGFloat { sizeClass == .regular ? 1.4 : 1.0 }
+    private var scale: CGFloat { sizeClass == .regular ? 1.7 : 1.0 }
 
     @State private var commitTask: Task<Void, Never>?
     // Start dismissed so the toast doesn't fire when switching back to CALC with a stale delta.
@@ -26,7 +26,7 @@ struct CalcInputView: View {
                     HapticManager.shared.quickIncrement()
                 } label: {
                     Image(systemName: "minus.circle.fill")
-                        .font(.largeTitle)
+                        .font(.system(size: 34 * scale))
                         .foregroundStyle(ThemeTokens.textSecondary)
                 }
                 .accessibilityLabel("Decrease weight")
@@ -47,7 +47,7 @@ struct CalcInputView: View {
                     HapticManager.shared.quickIncrement()
                 } label: {
                     Image(systemName: "plus.circle.fill")
-                        .font(.largeTitle)
+                        .font(.system(size: 34 * scale))
                         .foregroundStyle(settings.accentColor)
                 }
                 .accessibilityLabel("Increase weight")
@@ -104,7 +104,7 @@ struct CalcInputView: View {
             HapticManager.shared.numpadKey()
         } label: {
             Text(weight.weightStringPrecise)
-                .font(sizeClass == .regular ? .subheadline.weight(.medium) : .footnote.weight(.medium))
+                .font(sizeClass == .regular ? .title3.weight(.medium) : .footnote.weight(.medium))
                 .monospaced()
                 .foregroundStyle(ThemeTokens.textSecondary)
                 .padding(.horizontal, 12 * scale)

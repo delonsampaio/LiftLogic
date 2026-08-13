@@ -6,16 +6,24 @@ struct RestTimerView: View {
     @Binding var isPresented: Bool
 
     @Environment(\.horizontalSizeClass) private var sizeClass
-    private var scale: CGFloat { sizeClass == .regular ? 1.4 : 1.0 }
+    private var scale: CGFloat { sizeClass == .regular ? 2.2 : 1.0 }
 
     var body: some View {
-        VStack(spacing: 20) {
-            // Timer display
-            Text(timer.state == .idle ? "Rest Timer" : timer.formattedTime)
-                .font(.system(size: 48 * scale, weight: .black, design: .monospaced))
-                .foregroundStyle(timer.state == .finished ? settings.accentColor : ThemeTokens.textPrimary)
-                .contentTransition(.numericText())
-                .animation(.spring(response: 0.3), value: timer.remainingSeconds)
+        VStack(spacing: 20 * scale) {
+            // Timer display — idle label uses a smaller wordmark-style font;
+            // the running countdown gets the large monospaced digit treatment.
+            Group {
+                if timer.state == .idle {
+                    Text("Rest Timer")
+                        .font(sizeClass == .regular ? .title.weight(.black) : .title2.weight(.black))
+                } else {
+                    Text(timer.formattedTime)
+                        .font(.system(size: 48 * scale, weight: .black, design: .monospaced))
+                }
+            }
+            .foregroundStyle(timer.state == .finished ? settings.accentColor : ThemeTokens.textPrimary)
+            .contentTransition(.numericText())
+            .animation(.spring(response: 0.3), value: timer.remainingSeconds)
 
             // Preset chips — built-ins first, then the user's named presets.
             // Wraps to additional rows so every preset is visible without scrolling.
@@ -29,7 +37,7 @@ struct RestTimerView: View {
             }
 
             // Controls
-            HStack(spacing: 16) {
+            HStack(spacing: 16 * scale) {
                 if timer.state == .running {
                     Button {
                         timer.pause()
@@ -54,10 +62,10 @@ struct RestTimerView: View {
             }
 
             Button("Dismiss") { isPresented = false }
-                .font(.footnote)
+                .font(sizeClass == .regular ? .subheadline : .footnote)
                 .foregroundStyle(ThemeTokens.textMuted)
         }
-        .padding()
+        .padding(16 * scale)
         .background(ThemeTokens.backgroundCard)
         .clipShape(RoundedRectangle(cornerRadius: 20))
         .padding()
@@ -70,7 +78,7 @@ struct RestTimerView: View {
             timer.start(seconds: seconds, accentColorOption: settings.accentColorOption.rawValue)
         } label: {
             Text(label)
-                .font(sizeClass == .regular ? .subheadline.weight(.semibold) : .footnote.weight(.semibold))
+                .font(sizeClass == .regular ? .title3.weight(.semibold) : .footnote.weight(.semibold))
                 .foregroundStyle(isActive ? settings.accentColor : ThemeTokens.textMuted)
                 .padding(.horizontal, 12 * scale)
                 .padding(.vertical, 8 * scale)
@@ -89,7 +97,7 @@ struct RestTimerView: View {
     @ViewBuilder
     private func controlButton(systemImage: String, color: Color) -> some View {
         Image(systemName: systemImage)
-            .font(sizeClass == .regular ? .largeTitle : .title2)
+            .font(.system(size: 22 * scale))
             .foregroundStyle(color)
             .frame(width: 52 * scale, height: 52 * scale)
             .background(Circle().fill(Color(white: 0.15)))

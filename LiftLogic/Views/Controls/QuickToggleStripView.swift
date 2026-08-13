@@ -6,7 +6,7 @@ struct QuickToggleStripView: View {
 
     @Environment(\.horizontalSizeClass) private var sizeClass
     @State private var containerWidth: CGFloat = 390
-    private var scale: CGFloat { sizeClass == .regular ? 1.4 : 1.0 }
+    private var scale: CGFloat { sizeClass == .regular ? 1.7 : 1.0 }
 
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
@@ -82,10 +82,10 @@ struct QuickToggleStripView: View {
         Button(action: action) {
             HStack(spacing: 4) {
                 Text(title)
-                    .font(sizeClass == .regular ? .subheadline.weight(.medium) : .caption.weight(.medium))
+                    .font(sizeClass == .regular ? .title3.weight(.medium) : .caption.weight(.medium))
                 if showChevron {
                     Image(systemName: "chevron.down")
-                        .font(sizeClass == .regular ? .caption.weight(.semibold) : .caption2.weight(.semibold))
+                        .font(sizeClass == .regular ? .subheadline.weight(.semibold) : .caption2.weight(.semibold))
                 }
             }
             .foregroundStyle(isActive ? settings.accentColor : ThemeTokens.textSecondary)

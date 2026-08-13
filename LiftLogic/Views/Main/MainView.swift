@@ -25,6 +25,8 @@ struct MainView: View {
     @State private var topBarSideWidth: CGFloat = 0
     @Environment(\.requestReview) private var requestReview
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.horizontalSizeClass) private var sizeClass
+    private var scale: CGFloat { sizeClass == .regular ? 1.7 : 1.0 }
 
     init() {
         let s = AppSettings()
@@ -44,7 +46,7 @@ struct MainView: View {
                     // side cluster so it can never overlap either side — the trailing
                     // cluster grows when the running-timer badge shows its digits.
                     Text("LiftLogic")
-                        .font(.callout.weight(.semibold))
+                        .font(sizeClass == .regular ? .title3.weight(.semibold) : .callout.weight(.semibold))
                         .foregroundStyle(ThemeTokens.textMuted)
                         .lineLimit(1)
                         .minimumScaleFactor(0.7)
@@ -54,12 +56,12 @@ struct MainView: View {
                     // Left side: settings + rest timer (kept together so the timer
                     // button doesn't jump sides between its idle and running states)
                     HStack {
-                        HStack(spacing: 12) {
+                        HStack(spacing: 12 * scale) {
                             Button {
                                 showSettings = true
                             } label: {
                                 Image(systemName: "gearshape")
-                                    .font(.title3)
+                                    .font(.system(size: 20 * scale))
                                     .foregroundStyle(ThemeTokens.textMuted)
                             }
                             .accessibilityLabel("Settings")
@@ -71,21 +73,21 @@ struct MainView: View {
                                 if timer.state == .running || timer.state == .paused {
                                     HStack(spacing: 4) {
                                         Image(systemName: "timer")
-                                            .font(.caption.weight(.semibold))
+                                            .font(sizeClass == .regular ? .subheadline.weight(.semibold) : .caption.weight(.semibold))
                                         Text(timer.formattedTime)
-                                            .font(.footnote.weight(.bold))
+                                            .font(sizeClass == .regular ? .callout.weight(.bold) : .footnote.weight(.bold))
                                             .monospacedDigit()
                                             .contentTransition(.numericText())
                                             .animation(.spring(response: 0.3), value: timer.remainingSeconds)
                                     }
                                     .foregroundStyle(settings.accentColor)
-                                    .padding(.horizontal, 8)
-                                    .padding(.vertical, 3)
+                                    .padding(.horizontal, 8 * scale)
+                                    .padding(.vertical, 3 * scale)
                                     .background(Capsule().fill(settings.accentColor.opacity(0.15)))
                                     .overlay(Capsule().strokeBorder(settings.accentColor.opacity(0.35), lineWidth: 1))
                                 } else {
                                     Image(systemName: "timer")
-                                        .font(.title3)
+                                        .font(.system(size: 20 * scale))
                                         .foregroundStyle(ThemeTokens.textMuted)
                                 }
                             }
@@ -103,12 +105,12 @@ struct MainView: View {
                     // Right side: evenly spaced action icons
                     HStack {
                         Spacer()
-                        HStack(spacing: 20) {
+                        HStack(spacing: 20 * scale) {
                             Button {
                                 ShareService.share(vm: vm, settings: settings)
                             } label: {
                                 Image(systemName: "square.and.arrow.up")
-                                    .font(.system(size: 20))
+                                    .font(.system(size: 20 * scale))
                                     .foregroundStyle(ThemeTokens.textMuted)
                             }
                             .accessibilityLabel("Share lift")
@@ -118,7 +120,7 @@ struct MainView: View {
                                     showSavedSetups = true
                                 } label: {
                                     Image(systemName: "bookmark")
-                                        .font(.system(size: 20))
+                                        .font(.system(size: 20 * scale))
                                         .foregroundStyle(ThemeTokens.textMuted)
                                 }
                                 .accessibilityLabel("Saved setups")
@@ -127,7 +129,7 @@ struct MainView: View {
                                     showLiftingPartner = true
                                 } label: {
                                     Image(systemName: "qrcode")
-                                        .font(.system(size: 20))
+                                        .font(.system(size: 20 * scale))
                                         .foregroundStyle(ThemeTokens.textMuted)
                                 }
                                 .accessibilityLabel("Lifting Partner Mode")
@@ -136,10 +138,10 @@ struct MainView: View {
                                     showPaywall = true
                                 } label: {
                                     Text("PRO")
-                                        .font(.caption2.weight(.bold))
+                                        .font(sizeClass == .regular ? .caption.weight(.bold) : .caption2.weight(.bold))
                                         .foregroundStyle(ThemeTokens.accentPro)
-                                        .padding(.horizontal, 8)
-                                        .padding(.vertical, 3)
+                                        .padding(.horizontal, 8 * scale)
+                                        .padding(.vertical, 3 * scale)
                                         .background(Capsule().fill(ThemeTokens.accentPro.opacity(0.15)))
                                 }
                                 .accessibilityLabel("Upgrade to Pro")
@@ -216,10 +218,10 @@ struct MainView: View {
 
         if vm.isSingleSided {
             Label("Single Side", systemImage: "arrow.right")
-                .font(.caption2.weight(.semibold))
+                .font(sizeClass == .regular ? .caption.weight(.semibold) : .caption2.weight(.semibold))
                 .foregroundStyle(settings.accentColor)
-                .padding(.horizontal, 8)
-                .padding(.vertical, 3)
+                .padding(.horizontal, 8 * scale)
+                .padding(.vertical, 3 * scale)
                 .background(Capsule().fill(settings.accentColor.opacity(0.15)))
                 .transition(.opacity.combined(with: .scale(scale: 0.9)))
                 .animation(.easeInOut(duration: 0.2), value: vm.isSingleSided)
@@ -234,7 +236,7 @@ struct MainView: View {
             : vm.plateResult.platesPerSide.count
         if visiblePlateCount >= 9 {
             Label("Check sleeve space", systemImage: "exclamationmark.triangle")
-                .font(.caption.weight(.medium))
+                .font(sizeClass == .regular ? .subheadline.weight(.medium) : .caption.weight(.medium))
                 .foregroundStyle(ThemeTokens.warningAmber)
                 .transition(.opacity.combined(with: .scale(scale: 0.95)))
                 .animation(.easeInOut(duration: 0.25), value: visiblePlateCount >= 9)

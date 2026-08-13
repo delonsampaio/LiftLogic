@@ -22,7 +22,7 @@ struct ModePillStripView: View {
     }
 
     private var pillScale: CGFloat {
-        sizeClass == .regular ? 1.4 : min(1.0, containerWidth / 390)
+        sizeClass == .regular ? 1.7 : min(1.0, containerWidth / 390)
     }
 
     private func pillRow(pillScale: CGFloat) -> some View {
@@ -33,9 +33,9 @@ struct ModePillStripView: View {
                 } label: {
                     HStack(spacing: 4 * pillScale) {
                         Image(systemName: mode.iconName)
-                            .font(sizeClass == .regular ? .caption.weight(.semibold) : .caption2.weight(.semibold))
+                            .font(sizeClass == .regular ? .subheadline.weight(.semibold) : .caption2.weight(.semibold))
                         Text(mode.displayName)
-                            .font(sizeClass == .regular ? .subheadline.weight(.semibold) : .caption.weight(.semibold))
+                            .font(sizeClass == .regular ? .title3.weight(.semibold) : .caption.weight(.semibold))
                         if !ProGate.isAllowed(requiresPro: mode.requiresPro, isPro: settings.isPro) {
                             Image(systemName: "lock.fill")
                                 .font(.system(size: 10 * pillScale))

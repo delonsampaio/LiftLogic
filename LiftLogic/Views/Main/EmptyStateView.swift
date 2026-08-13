@@ -3,10 +3,13 @@ import SwiftUI
 struct EmptyStateView: View {
     @State private var arrowOffset: CGFloat = 0
 
+    @Environment(\.horizontalSizeClass) private var sizeClass
+    private var scale: CGFloat { sizeClass == .regular ? 1.7 : 1.0 }
+
     var body: some View {
-        VStack(spacing: 6) {
+        VStack(spacing: 6 * scale) {
             Image(systemName: "chevron.down")
-                .font(.system(size: 16, weight: .light))
+                .font(.system(size: 16 * scale, weight: .light))
                 .foregroundStyle(ThemeTokens.textMuted)
                 .offset(y: arrowOffset)
                 .onAppear {
@@ -15,10 +18,10 @@ struct EmptyStateView: View {
                     }
                 }
             Text("Type a weight to get started")
-                .font(.system(size: 13))
+                .font(.system(size: 13 * scale))
                 .foregroundStyle(ThemeTokens.textMuted)
         }
         .frame(maxWidth: .infinity)
-        .padding(.vertical, 6)
+        .padding(.vertical, 6 * scale)
     }
 }

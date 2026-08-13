@@ -4,6 +4,9 @@ struct ReadoutView: View {
     let vm: CalculatorViewModel
     let settings: AppSettings
 
+    @Environment(\.horizontalSizeClass) private var sizeClass
+    private var scale: CGFloat { sizeClass == .regular ? 1.7 : 1.0 }
+
     private var displayWeight: Double {
         vm.currentMode == .reverse ? vm.reverseTotal : vm.targetWeight
     }
@@ -47,7 +50,7 @@ struct ReadoutView: View {
         VStack(spacing: 2) {
             HStack(alignment: .firstTextBaseline, spacing: 8) {
                 Text(displayWeight == 0 ? "0" : displayWeight.weightStringPrecise)
-                    .font(ThemeTokens.readoutFont)
+                    .font(.system(size: 72 * scale, weight: .black, design: .rounded))
                     .foregroundStyle(isAmber ? ThemeTokens.warningAmber : ThemeTokens.textPrimary)
                     .contentTransition(.numericText())
                     .animation(.spring(response: 0.3, dampingFraction: 0.8), value: displayWeight)
@@ -55,26 +58,26 @@ struct ReadoutView: View {
                     .lineLimit(1)
 
                 Text(settings.unit.symbol)
-                    .font(.title2.weight(.semibold))
+                    .font(sizeClass == .regular ? .title.weight(.semibold) : .title2.weight(.semibold))
                     .foregroundStyle(ThemeTokens.textMuted)
                     .padding(.bottom, 8)
             }
 
             if let text = remainderText {
                 Text(text)
-                    .font(.footnote.weight(.medium))
+                    .font(sizeClass == .regular ? .subheadline.weight(.medium) : .footnote.weight(.medium))
                     .foregroundStyle(ThemeTokens.warningAmber)
             } else if let text = percentOf1RMText {
                 Text(text)
-                    .font(ThemeTokens.readoutSubFont)
+                    .font(.system(size: 16 * scale, weight: .medium))
                     .foregroundStyle(Color(white: 0.4))
             } else if let text = bodyweightRatioText {
                 Text(text)
-                    .font(ThemeTokens.readoutSubFont)
+                    .font(.system(size: 16 * scale, weight: .medium))
                     .foregroundStyle(Color(white: 0.4))
             } else if let text = secondaryUnitText {
                 Text(text)
-                    .font(.subheadline.weight(.medium))
+                    .font(sizeClass == .regular ? .title3.weight(.medium) : .subheadline.weight(.medium))
                     .monospaced()
                     .foregroundStyle(ThemeTokens.textMuted)
                     .contentTransition(.numericText())
